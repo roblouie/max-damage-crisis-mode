@@ -1,17 +1,42 @@
 import { chunkArrayInGroups } from "./game-asset-unpacker";
 import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
+import { BackgroundLayer } from "./background-layer";
 
 export class DrawingEngine {
   private tileSize = 16;
-  constructor(private palettes: string[][], private tiles: number[][],  private sprites: Sprite[], private canvasContext: CanvasRenderingContext2D) {}
+  private canvasContext: CanvasRenderingContext2D;
+  private offscreenCanvases: HTMLCanvasElement[] = [];
+  private offscreenContexts: CanvasRenderingContext2D[] = [];
+
+  constructor(
+    private palettes: string[][],
+    private tiles: number[][],
+    private sprites: Sprite[],
+    public backgrounds: BackgroundLayer[][],
+    private canvas: HTMLCanvasElement,
+  ) {
+    this.canvasContext = canvas.getContext('2d')!;
+    this.canvasContext.imageSmoothingEnabled = false;
+
+    document.querySelectorAll<HTMLCanvasElement>('.oc').forEach(e => {
+      this.offscreenCanvases.push(e);
+      const c = e!.getContext('2d')!
+      c.imageSmoothingEnabled = false;
+      this.offscreenContexts.push(c);
+    });
+  }
+
+  getCanvas(): HTMLCanvasElement {
+    return this.canvas;
+  }
 
   getContext(): CanvasRenderingContext2D {
     return this.canvasContext;
   }
 
   clearContext(): void {
-    this.canvasContext.clearRect(0, 0, 320, 240);
+    this.canvasContext.clearRect(0, 0, 240, 320);
   }
 
   tileToImageData(tile: number[], palette: string[]): ImageData {
@@ -32,7 +57,19 @@ export class DrawingEngine {
     return imageData;
   }
 
-  drawSpriteToCanvas(spriteNumber: number, positionX: number, positionY: number) {
+  loadSpritesToSpriteCanvas() {
+    this.sprites.forEach((sprite, index) => {
+      this.drawSpriteToCanvas(index, index * 32, 0, 3);
+    });
+  }
+
+  drawSprite(spriteNumber: number, positionX: number, positionY: number) {
+    const sprite = this.sprites[spriteNumber];
+    const canvas = this.offscreenCanvases[3];
+    this.canvasContext.drawImage(canvas, spriteNumber * 32, 0, sprite.width * 16, sprite.height * 16, positionX, positionY, sprite.width * 16, sprite.height * 16);
+  }
+
+  private drawSpriteToCanvas(spriteNumber: number, positionX: number, positionY: number, ocContextNumber?: number) {
     const sprite = this.sprites[spriteNumber];
     sprite.spriteTiles.forEach((spriteTile: SpriteTile, index: number) => {
       const tile = this.tiles[spriteTile.tileNumber];
@@ -46,19 +83,41 @@ export class DrawingEngine {
         imageData = this.flipImageDataVertically(imageData);
       }
 
-      if (index === 0) {
-        this.canvasContext.putImageData(imageData, positionX, positionY);
-      } else if (index === 1 && sprite.width === 1) {
-        this.canvasContext.putImageData(imageData, positionX, positionY + this.tileSize);
-      } else if (index === 1 && sprite.width === 2) {
-        this.canvasContext.putImageData(imageData, positionX + this.tileSize, positionY);
-      } else if (index === 2) {
-        this.canvasContext.putImageData(imageData, positionX, positionY + this.tileSize);
-      } else if (index === 3) {
-        this.canvasContext.putImageData(imageData, positionX + this.tileSize, positionY + this.tileSize);
+      let context = this.canvasContext;
+
+      if (ocContextNumber !== undefined) {
+        context = this.offscreenContexts[ocContextNumber];
       }
 
+      if (index === 0) {
+        context.putImageData(imageData, positionX, positionY);
+      } else if (index === 1 && sprite.width === 1) {
+        context.putImageData(imageData, positionX, positionY + this.tileSize);
+      } else if (index === 1 && sprite.width === 2) {
+        context.putImageData(imageData, positionX + this.tileSize, positionY);
+      } else if (index === 2) {
+        context.putImageData(imageData, positionX, positionY + this.tileSize);
+      } else if (index === 3) {
+        context.putImageData(imageData, positionX + this.tileSize, positionY + this.tileSize);
+      }
     });
+  }
+
+  drawBackgroundLayerToBackgroundCanvases(backgroundIndex: number) {
+    for (let i = 0; i < 3; i++) {
+      this.offscreenContexts[i].clearRect(0, 0, 128, 256);
+      const backgroundLayer = this.backgrounds[backgroundIndex][i];
+
+      backgroundLayer.sprites.forEach(sprite => {
+        const gridX = sprite.position % 4;
+        const gridY = Math.floor(sprite.position / 4);
+        this.drawSpriteToCanvas(backgroundLayer.spriteStartOffset + sprite.spriteIndex, gridX * 32, gridY * 32, i);
+      });
+    }
+  }
+
+  getBackgroundLayerCanvas(backgroundIndex: number) {
+    return this.offscreenCanvases[backgroundIndex];
   }
 
   flipImageDataHorizontally(imageData: ImageData): ImageData {
