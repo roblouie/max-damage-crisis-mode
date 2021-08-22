@@ -3,14 +3,18 @@ import { DrawingEngine } from "../from-asset-engine/drawing-engine";
 
 export let assetEngine: { drawEngine: DrawingEngine };
 
-export async function initializeAssetEngine(canvasContext: CanvasRenderingContext2D) {
+export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
   const assetFile = await getFileFromServer('./a');
   const assets = unpackGameAssets(assetFile);
-  const context = document.querySelector('canvas')!.getContext('2d')!;
-  context.imageSmoothingEnabled = false;
 
   assetEngine = {
-    drawEngine: new DrawingEngine(assets.paletteAsset.data, assets.tileAsset.data, assets.spriteAsset.data, canvasContext)
+    drawEngine: new DrawingEngine(
+      assets.paletteAsset.data,
+      assets.tileAsset.data,
+      assets.spriteAsset.data,
+      assets.backgroundAsset.data,
+      canvas
+    )
   };
 }
 
