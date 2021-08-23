@@ -35,8 +35,12 @@ class BackgroundManager {
     assetEngine.drawEngine.drawBackgroundLayerToBackgroundCanvases(backgroundNumber);
   }
 
-  updateBackgrounds(interval: number) {
-    //TODO: take into account the time interval so scrolling speed is consistent across refresh rates
+  private tempBackgroundLocations = [0, 0, 0];
+
+  updateBackgrounds() {
+    this.tempBackgroundLocations[0] += 0.25;
+    this.tempBackgroundLocations[1] += 0.5;
+    this.tempBackgroundLocations[2] += 1;
 
     for (let i = 0; i < 3; i++) {
       const position = this.positions[i];
@@ -46,8 +50,12 @@ class BackgroundManager {
         for (const verticalPosition in position[horizontalPosition]) {
           // @ts-ignore
           this.updateGameCanvas(i, position[horizontalPosition][verticalPosition], horizontalPosition === 'right');
-          // @ts-ignore
-          position[horizontalPosition][verticalPosition] += i / 4 + 0.5;
+
+          if (Number.isInteger(this.tempBackgroundLocations[i])) {
+            // @ts-ignore
+            position[horizontalPosition][verticalPosition] = position[horizontalPosition][verticalPosition] + this.tempBackgroundLocations[i];
+          }
+
 
           // @ts-ignore
           if (position[horizontalPosition][verticalPosition] === 512) {
@@ -56,6 +64,10 @@ class BackgroundManager {
           }
         }
 
+      }
+
+      if (Number.isInteger(this.tempBackgroundLocations[i])) {
+        this.tempBackgroundLocations[i] = 0;
       }
     }
   }
@@ -69,9 +81,9 @@ class BackgroundManager {
     }
     if (isRightSide) {
       context.scale(-1, 1);
-      context.drawImage(layerCanvas, -248, yPos, 128, 257);
+      context.drawImage(layerCanvas, -248, yPos, 128, 256);
     } else {
-      context.drawImage(layerCanvas, -8, yPos, 128, 257);
+      context.drawImage(layerCanvas, -8, yPos, 128, 256);
     }
     context.restore();
   }
