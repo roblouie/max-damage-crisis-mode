@@ -1,13 +1,17 @@
 import { assetEngine, initializeAssetEngine } from "./core/asset-engine-instance";
-import { createStateMachine, stateMachine } from "./core/state-machine";
 import { menu } from "./menu";
-import { game } from "./game";
+import { controls, initializeControls } from "./core/controls";
+import { createGameStateMachine, gameStateMachine } from "./game-state-machine";
+import { Game } from "./game";
+
 
 window.onload = async () => {
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;
   await initializeAssetEngine(canvas);
+  initializeControls();
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();
-  createStateMachine([
+  const game = new Game();
+  createGameStateMachine([
     {
       stateName: 'menu',
       onEnter: () => menu.onEnter(),
@@ -18,7 +22,7 @@ window.onload = async () => {
       stateName: 'game',
       onEnter: () => game.onEnter(),
       onLeave: () => game.onLeave(),
-      onUpdate: (timeElapsed: number) => game.onUpdate(timeElapsed),
+      onUpdate: () => game.onUpdate(),
     }
   ], 'menu');
 
@@ -26,7 +30,8 @@ window.onload = async () => {
 }
 
 function update(timeElapsed: number) {
-  stateMachine.getState().onUpdate(timeElapsed);
+  gameStateMachine.getState().onUpdate(timeElapsed);
+  controls.queryButtons();
   requestAnimationFrame(update);
 }
 

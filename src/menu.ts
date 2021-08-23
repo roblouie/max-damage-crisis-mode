@@ -1,6 +1,7 @@
 import { State } from "./core/state";
 import { assetEngine } from "./core/asset-engine-instance";
-import { stateMachine } from "./core/state-machine";
+import { controls } from "./core/controls";
+import { gameStateMachine } from "./game-state-machine";
 
 class Menu implements State {
   onUpdate() {
@@ -11,12 +12,13 @@ class Menu implements State {
 
   onEnter() {
     assetEngine.drawEngine.clearContext();
-    assetEngine.drawEngine.getCanvas().onclick = () => {
-      stateMachine.setState('game');
-    }
+    controls.onClick(() => {
+      gameStateMachine.setState('game');
+    });
   }
 
   onLeave() {
+    controls.onClick(undefined);
   }
 }
 
