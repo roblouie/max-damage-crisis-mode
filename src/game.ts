@@ -3,17 +3,27 @@ import { assetEngine } from "./core/asset-engine-instance";
 import { backgroundManager } from "./background-manager";
 import { Enemy } from "./enemies/enemy";
 import { Player } from "./player/player";
-import { controls } from "./core/controls";
 import { Point } from "./core/point";
+import { Level } from "./levels/level";
+import { EnemyWave } from "./levels/enemy-wave";
 
 export class Game implements State {
   player = new Player();
+  currentLevel: Level;
 
-  enemies = [new Enemy(40, -40), new Enemy(200,-90), new Enemy(100, -20)];
+  constructor() {
+    const enemies = [new Enemy(40, -40), new Enemy(200,-90), new Enemy(100, -20)];
+    const enemies2 = [new Enemy(50, -60), new Enemy(100,-110), new Enemy(150, -10)];
+    const enemyWave = new EnemyWave(0, enemies);
+    const enemyWave2 = new EnemyWave(3, enemies2);
+    const level = new Level(0, 1, [enemyWave, enemyWave2]);
+    this.currentLevel = level;
+  }
+
 
   onEnter() {
-    backgroundManager.loadBackgrounds(0);
-    assetEngine.musicEngine.startSong(1);
+    backgroundManager.loadBackgrounds(this.currentLevel.backgroundIndex);
+    assetEngine.musicEngine.startSong(this.currentLevel.songIndex);
     this.player = new Player();
   }
 
@@ -26,10 +36,11 @@ export class Game implements State {
     backgroundManager.updateBackgrounds();
 
     this.player.update();
-    this.enemies.forEach(enemy => enemy.update());
+    this.currentLevel.update();
+    this.currentLevel.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.player.isJumping()) {
-      this.enemies.forEach(enemy => {
+      this.currentLevel.activeEnemies.forEach(enemy => {
         if (enemy !== this.player.enemyAttachedTo && Point.DistanceBetweenTwo(enemy.position, this.player.position) <= enemy.size) {
           this.player.landOnEnemy(enemy);
         }
