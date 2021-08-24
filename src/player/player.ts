@@ -5,7 +5,9 @@ import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
 
 export class Player {
-  position = { x: 120, y: 280 };
+  private startX = 120;
+  private startY = 280
+  position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
   isOnEnemy = false;
@@ -26,6 +28,11 @@ export class Player {
         stateName: 'jumping',
         onEnter: () => this.onJumpingEnter(),
         onUpdate: () => this.onJumpingUpdate(),
+      },
+      {
+        stateName: 'respawning',
+        onEnter: () => this.onRespawningEnter(),
+        onUpdate: () => this.onRespawningUpdate(),
       }
     ], 'landed');
   }
@@ -38,6 +45,10 @@ export class Player {
 
   isJumping() {
     return this.stateMachine.getState().stateName === 'jumping';
+  }
+
+  getRadius() {
+    return this.width / 2;
   }
 
   getCenter() {
@@ -59,34 +70,68 @@ export class Player {
     });
   }
 
+  onLandedUpdate() {
+    this.drawAtAngle(this.angle);
+    if (this.isOnEnemy && this.enemyAttachedTo) {
+      this.position.x = this.enemyAttachedTo?.position.x - this.getRadius();
+      this.position.y = this.enemyAttachedTo?.position.y - this.getRadius();
+    }
+    if (this.isPlayerOffScreen()) {
+      this.stateMachine.setState('respawning');
+    }
+  }
+
+
   onJumpingEnter() {
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
     this.isOnEnemy = false;
   }
 
-  onLandedUpdate() {
-    this.drawAtAngle(this.angle);
-    if (this.isOnEnemy && this.enemyAttachedTo) {
-      this.position.x = this.enemyAttachedTo?.position.x;
-      this.position.y = this.enemyAttachedTo?.position.y;
-    }
-  }
-
   onJumpingUpdate() {
     this.drawAtAngle(this.jumpAngle);
 
-    this.position.x -= this.speed * Math.cos((this.angle) * Math.PI / 180);
-    this.position.y -= this.speed * Math.sin((this.angle) * Math.PI / 180);
+    this.position.x -= this.speed * Math.cos((this.jumpAngle) * Math.PI / 180);
+    this.position.y -= this.speed * Math.sin((this.jumpAngle) * Math.PI / 180);
+    if (this.isPlayerOffScreen()) {
+      this.stateMachine.setState('respawning');
+    }
+  }
+
+  onRespawningEnter() {
+    // TODO: disable controls
+    this.position = { x: this.startX, y: this.startY + 60}
+  }
+
+  onRespawningUpdate() {
+    if (this.position.y > this.startY) {
+      this.position.y -= 0.5;
+      this.angle = 90
+      this.drawAtAngle(this.angle);
+    } else {
+      this.stateMachine.setState('landed');
+    }
   }
 
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
     context.save();
+    if (this.stateMachine.getState().stateName === 'respawning') {
+      context.globalAlpha = 0.5;
+    }
     const center = this.getCenter();
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     assetEngine.drawEngine.drawSprite(13, -this.width / 2, -this.height / 2);
     context.restore();
+  }
+
+  isPlayerOffScreen() {
+    const pixelBuffer = 5
+    const isOffVertical = this.position.y - pixelBuffer > assetEngine.drawEngine.getHeight()
+      || this.position.y + this.height + pixelBuffer < 0;
+    const isOffHorizontal = this.position.x - pixelBuffer > assetEngine.drawEngine.getScreenWidth()
+      || this.position.x + this.width + pixelBuffer < 0;
+    return isOffVertical || isOffHorizontal;
   }
 }

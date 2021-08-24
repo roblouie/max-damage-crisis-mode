@@ -6,6 +6,8 @@ import { BackgroundLayer } from "./background-layer";
 export class DrawingEngine {
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
+  private readonly width = 240;
+  private readonly height = 320;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
 
@@ -35,8 +37,16 @@ export class DrawingEngine {
     return this.canvasContext;
   }
 
+  getScreenWidth(): number {
+    return this.width;
+  }
+
+  getHeight(): number {
+    return this.height;
+  }
+
   clearContext(): void {
-    this.canvasContext.clearRect(0, 0, 240, 320);
+    this.canvasContext.clearRect(0, 0, this.width, this.height);
   }
 
   tileToImageData(tile: number[], palette: string[]): ImageData {
