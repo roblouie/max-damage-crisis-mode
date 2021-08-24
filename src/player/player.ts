@@ -86,7 +86,7 @@ export class Player {
     const center = this.getCenter();
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
-    assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(13, -this.width / 2, -this.height / 2);
     context.restore();
   }
 }

@@ -48,10 +48,17 @@ export class DrawingEngine {
       const red = parseInt(colorString.substr(1, 2), 16);
       const green = parseInt(colorString.substr(3, 2), 16);
       const blue = parseInt(colorString.substr(5, 2), 16);
+      let alpha = 255;
+      if (pixelValue === 15 && colorString === '#000000') {
+        alpha = 140;
+      } else if (pixelValue === 0 && colorString === '#000000') {
+        alpha = 0;
+      }
+
       imageData.data[imageDataIndex] = red;
       imageData.data[imageDataIndex + 1] = green;
       imageData.data[imageDataIndex + 2] = blue;
-      imageData.data[imageDataIndex + 3] = (colorString === '#000000' && pixelValue === 0) ? 0 : 255;
+      imageData.data[imageDataIndex + 3] = alpha;
     });
 
     return imageData;
