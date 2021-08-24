@@ -13,6 +13,7 @@ export class Game implements State {
 
   onEnter() {
     backgroundManager.loadBackgrounds(0);
+    assetEngine.musicEngine.startSong(1);
     this.player = new Player();
   }
 
