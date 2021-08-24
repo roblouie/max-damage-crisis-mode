@@ -41,7 +41,7 @@ export class Game implements State {
 
     if (this.player.isJumping()) {
       this.currentLevel.activeEnemies.forEach(enemy => {
-        if (enemy !== this.player.enemyAttachedTo && Point.DistanceBetweenTwo(enemy.position, this.player.position) <= enemy.size) {
+        if (enemy !== this.player.enemyAttachedTo && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
           this.player.landOnEnemy(enemy);
         }
       });
