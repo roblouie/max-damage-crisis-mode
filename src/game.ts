@@ -6,14 +6,17 @@ import { Player } from "./player/player";
 import { Point } from "./core/point";
 import { Level } from "./levels/level";
 import { EnemyWave } from "./levels/enemy-wave";
+import { RedEnemy } from "./enemies/red-enemy";
+import { GreenEnemy } from "./enemies/green-enemy";
+import { BlueEnemy } from "./enemies/blue-enemy";
 
 export class Game implements State {
   player = new Player();
   currentLevel: Level;
 
   constructor() {
-    const enemies = [new Enemy(40, -40), new Enemy(200,-90), new Enemy(100, -20)];
-    const enemies2 = [new Enemy(50, -60), new Enemy(100,-110), new Enemy(150, -10)];
+    const enemies = [new RedEnemy(40, -40), new GreenEnemy(200,-90), new BlueEnemy(100, -20)];
+    const enemies2 = [new BlueEnemy(50, -60), new RedEnemy(100,-110), new GreenEnemy(150, -10)];
     const enemyWave = new EnemyWave(0, enemies);
     const enemyWave2 = new EnemyWave(3, enemies2);
     const level = new Level(0, 1, [enemyWave, enemyWave2]);
@@ -35,7 +38,6 @@ export class Game implements State {
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
-    this.player.update();
     this.currentLevel.update();
     this.currentLevel.activeEnemies.forEach(enemy => enemy.update());
 
@@ -46,5 +48,7 @@ export class Game implements State {
         }
       });
     }
+
+    this.player.update();
   }
 }
