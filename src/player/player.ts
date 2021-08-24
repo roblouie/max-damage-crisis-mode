@@ -37,14 +37,8 @@ export class Player {
     ], 'landed');
   }
 
-  landOnEnemy(enemy: Enemy) {
-    this.isOnEnemy = true;
-    this.enemyAttachedTo = enemy;
-    this.stateMachine.setState('landed');
-  }
-
-  isJumping() {
-    return this.stateMachine.getState().stateName === 'jumping';
+  update() {
+    this.stateMachine.getState().onUpdate();
   }
 
   getRadius() {
@@ -55,8 +49,25 @@ export class Player {
     return { x: this.position.x + (this.width / 2), y: this.position.y + (this.height / 2)};
   }
 
-  update() {
-    this.stateMachine.getState().onUpdate();
+  isJumping() {
+    return this.stateMachine.getState().stateName === 'jumping';
+  }
+
+  isPlayerOffScreen() {
+    const pixelBuffer = this.getRadius() + 2;
+    const center = this.getCenter();
+    const isOffVertical = center.y - pixelBuffer > assetEngine.drawEngine.getHeight()
+      || center.y + this.height + pixelBuffer < 0;
+    const isOffHorizontal = center.x - pixelBuffer > assetEngine.drawEngine.getScreenWidth()
+      || center.x + this.width + pixelBuffer < 0;
+    return isOffVertical || isOffHorizontal;
+  }
+
+
+  landOnEnemy(enemy: Enemy) {
+    this.isOnEnemy = true;
+    this.enemyAttachedTo = enemy;
+    this.stateMachine.setState('landed');
   }
 
   onLandedEnter() {
@@ -101,6 +112,10 @@ export class Player {
   onRespawningEnter() {
     // TODO: disable controls
     this.position = { x: this.startX, y: this.startY + 60}
+    this.isOnEnemy = false;
+    this.enemyAttachedTo = undefined;
+    controls.onClick(undefined)
+    controls.onMouseMove(undefined);
   }
 
   onRespawningUpdate() {
@@ -122,16 +137,7 @@ export class Player {
     const center = this.getCenter();
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
-    assetEngine.drawEngine.drawSprite(13, -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
     context.restore();
-  }
-
-  isPlayerOffScreen() {
-    const pixelBuffer = 5
-    const isOffVertical = this.position.y - pixelBuffer > assetEngine.drawEngine.getHeight()
-      || this.position.y + this.height + pixelBuffer < 0;
-    const isOffHorizontal = this.position.x - pixelBuffer > assetEngine.drawEngine.getScreenWidth()
-      || this.position.x + this.width + pixelBuffer < 0;
-    return isOffVertical || isOffHorizontal;
   }
 }
