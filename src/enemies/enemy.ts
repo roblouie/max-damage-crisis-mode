@@ -5,6 +5,7 @@ export abstract class Enemy {
   speed: number;
   size: number;
   color = '#000000';
+  isDead = false;
 
   protected constructor(x: number, y: number, speed: number, size: number, color: string) {
     this.position.x = x;

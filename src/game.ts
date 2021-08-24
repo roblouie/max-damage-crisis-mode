@@ -42,12 +42,22 @@ export class Game implements State {
     this.currentLevel.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.player.isJumping()) {
+      if (this.player.enemyAttachedTo) {
+        // TODO: You can add points to the user's score here
+        this.player.enemyAttachedTo.isDead = true;
+        this.player.enemyAttachedTo = undefined;
+      }
       this.currentLevel.activeEnemies.forEach(enemy => {
-        if (enemy !== this.player.enemyAttachedTo && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
+        if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
           this.player.landOnEnemy(enemy);
         }
       });
     }
+
+    // TODO: If enemy goes off the bottom of the screen, also mark it as dead
+    // But also call takeHit on the meter
+
+    this.currentLevel.activeEnemies = this.currentLevel.activeEnemies.filter(enemy => !enemy.isDead);
 
     this.player.update();
   }
