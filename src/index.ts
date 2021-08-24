@@ -3,6 +3,7 @@ import { menu } from "./menu";
 import { controls, initializeControls } from "./core/controls";
 import { createGameStateMachine, gameStateMachine } from "./game-state-machine";
 import { Game } from "./game";
+import {startScreen} from "./start-screen";
 
 
 window.onload = async () => {
@@ -12,6 +13,12 @@ window.onload = async () => {
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();
   const game = new Game();
   createGameStateMachine([
+    {
+      stateName: 'start-screen',
+      onEnter: () => startScreen.onEnter(),
+      onLeave: () => startScreen.onLeave(),
+      onUpdate: () => startScreen.onUpdate(),
+    },
     {
       stateName: 'menu',
       onEnter: () => menu.onEnter(),
@@ -24,7 +31,7 @@ window.onload = async () => {
       onLeave: () => game.onLeave(),
       onUpdate: () => game.onUpdate(),
     }
-  ], 'menu');
+  ], 'start-screen');
 
   requestAnimationFrame(update);
 }

@@ -4,18 +4,18 @@ import { controls } from "./core/controls";
 import { gameStateMachine } from "./game-state-machine";
 import {audioContext} from "./from-asset-engine/audio-initializer";
 
-class Menu implements State {
+class StartScreen implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.getContext().fillStyle = 'white';
-    assetEngine.drawEngine.getContext().fillText('Main Menu', 100, 100);
+    assetEngine.drawEngine.getContext().fillText('Click to start', 100, 100);
   }
 
   onEnter() {
     assetEngine.drawEngine.clearContext();
-    assetEngine.musicEngine.startSong(0);
     controls.onClick(() => {
-      gameStateMachine.setState('game');
+      audioContext.resume();
+      gameStateMachine.setState('menu');
     });
   }
 
@@ -24,4 +24,4 @@ class Menu implements State {
   }
 }
 
-export const menu = new Menu();
+export const startScreen = new StartScreen();
