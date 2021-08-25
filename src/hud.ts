@@ -37,13 +37,13 @@ export class Hud {
     const context = assetEngine.drawEngine.getContext();
 
     context.save();
-    context.fillStyle = 'white';
+    context.fillStyle = 'black';
     context.fillRect(0, this.top, this.right, this.height);
     context.fillStyle = 'red';
     context.fillRect(this.meterLeft, this.meterTop, this.meterWidth * (this.healthPercent * .01), this.meterHeight);
-    context.strokeStyle = 'black';
+    context.strokeStyle = 'white';
     context.strokeRect(this.meterLeft, this.meterTop, this.meterWidth, this.meterHeight);
-    context.fillStyle = 'black'
+    context.fillStyle = 'white'
     context.fillText('Earth Resistance Forces', this.meterLeft + 14, this.meterTop - 2, this.meterWidth - 28);
     context.fillText(`Score: ${ this.score }`, 180, this.top + 15, 40)
     context.restore();
