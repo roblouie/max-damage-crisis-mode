@@ -12,6 +12,7 @@ class GameOver implements State {
 
   onEnter() {
     assetEngine.musicEngine.stopSong();
+    assetEngine.musicEngine.startSong(2, false);
     assetEngine.drawEngine.clearContext();
     controls.onClick(() => {
       gameStateMachine.setState('game');
