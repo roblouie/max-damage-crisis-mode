@@ -12,7 +12,6 @@ class Menu implements State {
   }
 
   onEnter() {
-    assetEngine.drawEngine.clearContext();
     assetEngine.musicEngine.startSong(0);
     controls.onClick(() => {
       gameStateMachine.setState('game');

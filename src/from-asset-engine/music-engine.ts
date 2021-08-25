@@ -21,7 +21,7 @@ export class MusicEngine {
   startSong(songIndex: number, isRepeat = true): void {
     if (!this.isCtxStarted) {
       this.createContext();
-      this.createOscillators();
+      this.createOscillators(this.songs[songIndex]);
       this.isCtxStarted = true;
     }
     if (this.isSongPlaying) {
@@ -30,7 +30,7 @@ export class MusicEngine {
     this.isSongPlaying = true;
     this.currentTempo = this.songs[songIndex].tempo;
     this.masterGain!.gain.value = .2;
-    this.songs[songIndex].tracks.forEach(track => this.scheduleTrackNotes(track));
+    this.songs[songIndex].tracks.forEach((track, index) => this.scheduleTrackNotes(track, index));
     let totalNotePositionsUsed = 0;
     this.songs[songIndex].tracks.forEach(track => {
       const lastNote = track.notes[track.notes.length - 1] || null;
@@ -69,29 +69,24 @@ export class MusicEngine {
     this.masterGain.connect(this.ctx.destination);
   }
 
-  private createOscillators() {
-    this.oscillators[0] = new OscillatorNode(this.ctx, { type: 'sawtooth' });
-    this.oscillators[1] = new OscillatorNode(this.ctx, { type: 'square' });
-    this.oscillators[2] = new OscillatorNode(this.ctx, { type: 'sawtooth' });
-    this.oscillators[3] = new OscillatorNode(this.ctx, { type: 'sine' });
-    this.oscillators.forEach((osc: OscillatorNode, index: number) => {
+  private createOscillators(song: Song) {
+    song.tracks.forEach((track, index) => {
+      this.oscillators[index] = new OscillatorNode(this.ctx, { type: track.wave });
       this.gainNodes.push(this.ctx.createGain());
-      osc.connect(this.gainNodes[index]);
-      osc.start();
-    });
-    this.gainNodes.forEach((gain: GainNode) => {
-      gain.gain.value = 0;
-      gain.connect(this.masterGain!);
-    });
+      this.oscillators[index].connect(this.gainNodes[index]);
+      this.gainNodes[index].gain.value = 0;
+      this.gainNodes[index].connect(this.masterGain!)
+      this.oscillators[index].start();
+    })
   }
 
-  private scheduleTrackNotes(track: Track) {
+  private scheduleTrackNotes(track: Track, index: number) {
     track.notes.forEach((note) => {
       const startTimeInSeconds = this.getDurationInSeconds(note.startPosition);
       const endTimeInSeconds = this.getDurationInSeconds(note.startPosition + note.duration);
-      this.oscillators[track.trackId].frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds);
-      this.gainNodes[track.trackId].gain.setValueAtTime(track.trackId === 2 ? .5 : 1, this.ctx.currentTime + startTimeInSeconds);
-      this.gainNodes[track.trackId].gain.setValueAtTime(0, this.ctx.currentTime + endTimeInSeconds);
+      this.oscillators[index].frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds);
+      this.gainNodes[index].gain.setValueAtTime(track.wave === 'sine' ? .5 : 1, this.ctx.currentTime + startTimeInSeconds);
+      this.gainNodes[index].gain.setValueAtTime(0, this.ctx.currentTime + endTimeInSeconds);
     });
   }
 
