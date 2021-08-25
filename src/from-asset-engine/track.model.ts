@@ -1,6 +1,6 @@
-import { NotePosition } from "./note-position.model";
+import {NotePosition} from "./note-position.model";
 
 export interface Track {
-  trackId: number;
+  wave?: 'sawtooth' | 'sine' | 'square' | 'triangle',
   notes: NotePosition[];
 }

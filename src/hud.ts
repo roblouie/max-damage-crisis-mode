@@ -5,11 +5,11 @@ export class Hud {
   private score = 0;
   private top: number;
   private right: number;
-  private height = 20;
+  private height = 40;
   private meterTop: number;
   private meterLeft = 5;
-  private meterHeight = 8;
-  private meterWidth = 120
+  private meterHeight = 14;
+  private meterWidth = 200;
   healthPercent = 100;
 
   constructor() {
@@ -18,7 +18,7 @@ export class Hud {
 
     this.top = screenHeight - this.height;
     this.right = screenWidth;
-    this.meterTop = this.top + 10;
+    this.meterTop = this.top + 14;
   }
 
   update(score: number) {
@@ -44,8 +44,8 @@ export class Hud {
     context.strokeStyle = 'white';
     context.strokeRect(this.meterLeft, this.meterTop, this.meterWidth, this.meterHeight);
     context.fillStyle = 'white'
-    context.fillText('Earth Resistance Forces', this.meterLeft + 14, this.meterTop - 2, this.meterWidth - 28);
-    context.fillText(`Score: ${ this.score }`, 180, this.top + 15, 40)
+    context.fillText('Earth Resistance Forces', this.meterLeft + 10, this.meterTop - 3, this.meterWidth);
+    context.fillText(`Score: ${ this.score }`, 360, this.top + 15, 100)
     context.restore();
   }
 }

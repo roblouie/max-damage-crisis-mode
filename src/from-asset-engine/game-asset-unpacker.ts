@@ -175,6 +175,13 @@ function bytesToBackgrounds(arrayBuffer: ArrayBuffer, startingOffset: number): U
     finalByteIndex: startingOffset + bytePosition,
   };
 }
+const waves = [
+  'sawtooth',
+  'sine',
+  'square',
+  'triangle',
+] as any;
+
 
 function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
   if (startingOffset >= arrayBuffer.byteLength) {
@@ -193,26 +200,31 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
 
   while (songsParsed < numberOfSongs) {
     const tempo = dataView.getUint8(bytePosition);
-    bytePosition++;
+    bytePosition ++;
     const numberOfTracks = dataView.getUint8(bytePosition);
-    bytePosition++;
+    bytePosition ++;
 
     const tracks: Track[] = [];
     let tracksParsed = 0;
     while (tracksParsed < numberOfTracks) {
-      const numberOfPitches = dataView.getUint8(bytePosition);
-      bytePosition++;
+      const waveformAndPitches = dataView.getUint8(bytePosition);
+      const waveformIndex = waveformAndPitches >> 4;
+      const waveform = waves.find((wave: any, index: number) => index === waveformIndex);
+      const numberOfPitches = (waveformAndPitches &15) + 1;
+      bytePosition ++;
 
       let pitchesParsed = 0;
       const pitches = [];
       while (pitchesParsed < numberOfPitches) {
-        pitches.push(dataView.getUint16(bytePosition));
-        pitchesParsed++;
+        const firstHalf = dataView.getUint8(bytePosition);
+        const secondHalf = dataView.getUint8(bytePosition + 1);
+        pitches.push((firstHalf << 8) + secondHalf);
+        pitchesParsed ++;
         bytePosition += 2;
       }
 
       const numberOfNotes = dataView.getUint8(bytePosition);
-      bytePosition++;
+      bytePosition ++;
 
       let notesParsed = 0;
       const notes: NotePosition[] = [];
@@ -220,7 +232,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
       while (notesParsed < numberOfNotes) {
         const combinedInstruction = dataView.getUint8(bytePosition);
         const pitchIndex = combinedInstruction >> 4;
-        const noteLength = (combinedInstruction & 15) + 1; // note length is stored 0-indexed
+        const noteLength = (combinedInstruction & 0b1111) + 1; // note length is stored 0-indexed
 
         if (pitchIndex !== 0) {
           const noteFrequency = pitches[pitchIndex];
@@ -232,12 +244,12 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
           });
         }
         currentStepPosition += noteLength;
-        bytePosition++;
-        notesParsed++;
+        bytePosition ++;
+        notesParsed ++;
       }
 
-      tracks.push({ trackId: tracksParsed, notes: notes });
-      tracksParsed++;
+      tracks.push({ wave: waveform, notes: notes });
+      tracksParsed ++;
     }
     songs.push(new Song(tempo, tracks));
     songsParsed++;
