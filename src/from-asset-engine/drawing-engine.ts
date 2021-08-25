@@ -6,8 +6,8 @@ import { BackgroundLayer } from "./background-layer";
 export class DrawingEngine {
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
-  private readonly width = 240;
-  private readonly height = 320;
+  private readonly width = 480;
+  private readonly height = 640;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
 
@@ -83,7 +83,10 @@ export class DrawingEngine {
   drawSprite(spriteNumber: number, positionX: number, positionY: number) {
     const sprite = this.sprites[spriteNumber];
     const canvas = this.offscreenCanvases[3];
+    this.canvasContext.save();
+    this.canvasContext.scale(2, 2);
     this.canvasContext.drawImage(canvas, spriteNumber * 32, 0, sprite.width * 16, sprite.height * 16, positionX, positionY, sprite.width * 16, sprite.height * 16);
+    this.canvasContext.restore();
   }
 
   private drawSpriteToCanvas(spriteNumber: number, positionX: number, positionY: number, ocContextNumber?: number) {

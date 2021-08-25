@@ -76,6 +76,7 @@ class BackgroundManager {
     const context = assetEngine.drawEngine.getContext();
     const layerCanvas = assetEngine.drawEngine.getBackgroundLayerCanvas(layerNumber);
     context.save();
+    context.scale(2, 2);
     if (assetEngine.drawEngine.backgrounds[this.backgroundNumber][layerNumber].isSemiTransparent) {
       context.globalAlpha = 0.65;
     }
