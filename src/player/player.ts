@@ -15,7 +15,7 @@ export class Player {
   enemyAttachedTo?: Enemy;
   angle = 90;
   stateMachine: StateMachine;
-  speed = 9;
+  speed = 10.5;
   jumpAngle = 0;
 
   constructor() {

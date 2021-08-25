@@ -25,8 +25,8 @@ export class Game implements State {
     const enemies2 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
     const enemies3 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
     const enemyWave = new EnemyWave(0, enemies);
-    const enemyWave2 = new EnemyWave(6, enemies2);
-    const enemyWave3 = new EnemyWave(12, enemies3);
+    const enemyWave2 = new EnemyWave(2, enemies2);
+    const enemyWave3 = new EnemyWave(4, enemies3);
 
     const level = new Level(0, 1, [enemyWave, enemyWave2, enemyWave3]);
     this.currentLevel = level;

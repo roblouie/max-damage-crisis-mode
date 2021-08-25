@@ -58,4 +58,3 @@ function update(currentTime: number) {
   }
   requestAnimationFrame(update);
 }
-
