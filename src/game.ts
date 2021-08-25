@@ -9,10 +9,14 @@ import { EnemyWave } from "./levels/enemy-wave";
 import { RedEnemy } from "./enemies/red-enemy";
 import { GreenEnemy } from "./enemies/green-enemy";
 import { BlueEnemy } from "./enemies/blue-enemy";
+import {Hud} from "./hud";
+import {gameStateMachine} from "./game-state-machine";
 
 export class Game implements State {
   player = new Player();
   currentLevel: Level;
+  hud: Hud;
+  score = 0;
 
   constructor() {
     const enemies = [new RedEnemy(40, -40), new GreenEnemy(200,-90), new BlueEnemy(100, -20)];
@@ -21,6 +25,7 @@ export class Game implements State {
     const enemyWave2 = new EnemyWave(3, enemies2);
     const level = new Level(0, 1, [enemyWave, enemyWave2]);
     this.currentLevel = level;
+    this.hud = new Hud();
   }
 
 
@@ -35,6 +40,9 @@ export class Game implements State {
   }
 
   onUpdate(): void {
+    if (this.hud.healthPercent <= 0) {
+      gameStateMachine.setState('game-over');
+    }
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
@@ -43,9 +51,9 @@ export class Game implements State {
 
     if (this.player.isJumping()) {
       if (this.player.enemyAttachedTo) {
-        // TODO: You can add points to the user's score here
         this.player.enemyAttachedTo.isDead = true;
         this.player.enemyAttachedTo = undefined;
+        this.score += 1;
       }
       this.currentLevel.activeEnemies.forEach(enemy => {
         if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
@@ -54,11 +62,17 @@ export class Game implements State {
       });
     }
 
-    // TODO: If enemy goes off the bottom of the screen, also mark it as dead
-    // But also call takeHit on the meter
+    this.currentLevel.activeEnemies.forEach(enemy => {
+      if (enemy.isEnemyOffScreen()) {
+        enemy.isDead = true;
+        this.hud.takeHit();
+      }
+    })
+
 
     this.currentLevel.activeEnemies = this.currentLevel.activeEnemies.filter(enemy => !enemy.isDead);
 
     this.player.update();
+    this.hud.update(this.score);
   }
 }

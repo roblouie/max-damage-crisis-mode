@@ -3,10 +3,11 @@ import { StateMachine } from "../core/state-machine";
 import { controls } from "../core/controls";
 import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
+import {Satellite} from "../npcs/satellite";
 
 export class Player {
   private startX = 120;
-  private startY = 280
+  private startY = 270
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
@@ -16,6 +17,7 @@ export class Player {
   stateMachine: StateMachine;
   speed = 1;
   jumpAngle = 0;
+  satellite?: Satellite;
 
   constructor() {
     this.stateMachine = new StateMachine([
@@ -38,6 +40,13 @@ export class Player {
   }
 
   update() {
+    if (this.satellite) {
+      if (this.satellite.isInvisible) {
+        this.satellite = undefined;
+      } else {
+        this.satellite.update();
+      }
+    }
     this.stateMachine.getState().onUpdate();
   }
 
@@ -97,6 +106,9 @@ export class Player {
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
     this.isOnEnemy = false;
+    if (this.satellite) {
+      this.satellite.stateMachine.setState('abandoned');
+    }
   }
 
   onJumpingUpdate() {
@@ -114,6 +126,7 @@ export class Player {
     this.position = { x: this.startX, y: this.startY + 60}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
+    this.satellite = new Satellite();
     controls.onClick(undefined)
     controls.onMouseMove(undefined);
   }
@@ -122,10 +135,12 @@ export class Player {
     if (this.position.y > this.startY) {
       this.position.y -= 0.5;
       this.angle = 90
+      this.satellite?.setPosition({ x: this.position.x, y: this.position.y + this.getRadius() });
       this.drawAtAngle(this.angle);
     } else {
       this.stateMachine.setState('landed');
     }
+
   }
 
   drawAtAngle(angle: number) {

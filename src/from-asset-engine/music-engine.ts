@@ -18,7 +18,7 @@ export class MusicEngine {
   constructor(private songs: Song[]) {
   }
 
-  startSong(songIndex: number): void {
+  startSong(songIndex: number, isRepeat = true): void {
     if (!this.isCtxStarted) {
       this.createContext();
       this.createOscillators();
@@ -44,8 +44,10 @@ export class MusicEngine {
     });
     const songLengthInMeasures = Math.ceil(totalNotePositionsUsed / 16);
     const songEndInSeconds = this.getDurationInSeconds(songLengthInMeasures * 16);
+    if (isRepeat) {
+      this.repeatTimer = setTimeout(() => this.startSong(songIndex), songEndInSeconds * 1000);
+    }
 
-    this.repeatTimer = setTimeout(() => this.startSong(songIndex), songEndInSeconds * 1000);
   }
 
   stopSong() {
