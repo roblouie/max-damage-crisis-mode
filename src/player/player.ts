@@ -6,8 +6,8 @@ import { Enemy } from "../enemies/enemy";
 import {Satellite} from "../npcs/satellite";
 
 export class Player {
-  private startX = 120;
-  private startY = 270
+  private startX = 240;
+  private startY = 540
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
@@ -122,7 +122,6 @@ export class Player {
   }
 
   onRespawningEnter() {
-    // TODO: disable controls
     this.position = { x: this.startX, y: this.startY + 60}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
@@ -140,7 +139,6 @@ export class Player {
     } else {
       this.stateMachine.setState('landed');
     }
-
   }
 
   drawAtAngle(angle: number) {
