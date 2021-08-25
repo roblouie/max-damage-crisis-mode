@@ -38,14 +38,23 @@ window.onload = async () => {
       onLeave: () => gameOver.onLeave(),
       onUpdate: () => gameOver.onUpdate(),
     }
-  ], 'start-screen');
+  ], 'game');
 
   requestAnimationFrame(update);
 }
 
-function update(timeElapsed: number) {
-  gameStateMachine.getState().onUpdate(timeElapsed);
-  controls.queryButtons();
+let previousTime = 0;
+const maxFps = 60;
+const interval = 1000 / maxFps;
+
+function update(currentTime: number) {
+  const delta = currentTime - previousTime;
+
+  if (delta >= interval || !previousTime) {
+    previousTime = currentTime - (delta % interval);
+
+    gameStateMachine.getState().onUpdate(currentTime);
+    controls.queryButtons();
+  }
   requestAnimationFrame(update);
 }
-

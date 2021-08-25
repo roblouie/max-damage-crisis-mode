@@ -26,7 +26,7 @@ export abstract class Enemy {
     this.position.y += this.speed;
   }
 
-  isOffscreen() {
-    return this.position.y >= assetEngine.drawEngine.getHeight();
+  isOffScreen() {
+    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getHeight();
   }
 }

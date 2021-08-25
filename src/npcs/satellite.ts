@@ -1,58 +1,22 @@
 import {assetEngine} from "../core/asset-engine-instance";
-import {StateMachine} from "../core/state-machine";
 
-export class Satellite {
-  private startX = 248;
-  private startY = 540;
-  position = { x: this.startX, y: this.startY };
-  width = 16;
-  height = 16;
-  stateMachine: StateMachine;
-  opacity = 1;
-  isInvisible = false;
+class Satellite {
+  private startX = 120;
+  private startY = 270;
+  private size = 16;
+  private position = { x: this.startX, y: this.startY };
 
-  constructor() {
-    this.stateMachine = new StateMachine([
-      {
-        stateName: 'occupied',
-        onUpdate: () => this.draw(),
-      },
-      {
-        stateName: 'abandoned',
-        onUpdate: () => this.onAbandonedUpdate(),
-      },
-    ], 'occupied');
+  getRadius() {
+    return this.size / 2;
+  }
+
+  getCenter() {
+    return { x: this.startX - this.getRadius(), y: this.startY - this.getRadius() };
   }
 
   update() {
-    this.stateMachine.getState().onUpdate();
-  }
-
-
-  setPosition(position: { x: number, y: number }) {
-    this.position = position;
-  }
-
-  private onAbandonedUpdate() {
-    this.opacity -= .01;
-    if (this.opacity <= 0) {
-      this.isInvisible = true;
-    }
-    this.draw()
-  }
-
-
-  draw() {
-    if (this.isInvisible) {
-      return;
-    }
-    const context = assetEngine.drawEngine.getContext();
-    context.save();
-    if (this.stateMachine.getState().stateName === 'abandoned') {
-      context.globalAlpha = this.opacity;
-    }
-    assetEngine.drawEngine.drawSprite(13, this.position.x, this.position.y);
-    context.restore();
+    assetEngine.drawEngine.drawSprite(13, this.position.x - this.getRadius(), this.position.y - this.getRadius());
   }
 }
 
+export const satellite = new Satellite();
