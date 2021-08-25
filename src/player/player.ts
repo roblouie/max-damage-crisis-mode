@@ -15,7 +15,7 @@ export class Player {
   enemyAttachedTo?: Enemy;
   angle = 90;
   stateMachine: StateMachine;
-  speed = 1;
+  speed = 2.7;
   jumpAngle = 0;
   satellite?: Satellite;
 
@@ -62,8 +62,12 @@ export class Player {
     return this.stateMachine.getState().stateName === 'jumping';
   }
 
-  isPlayerOffScreen() {
-    const pixelBuffer = this.getRadius() + 2;
+  isRespawning() {
+    return this.stateMachine.getState().stateName === 'respawning';
+  }
+
+  private isPlayerOffScreen() {
+    const pixelBuffer = this.getRadius() + 100;
     const center = this.getCenter();
     const isOffVertical = center.y - pixelBuffer > assetEngine.drawEngine.getHeight()
       || center.y + this.height + pixelBuffer < 0;

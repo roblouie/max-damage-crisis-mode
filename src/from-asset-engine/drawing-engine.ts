@@ -2,6 +2,7 @@ import { chunkArrayInGroups } from "./game-asset-unpacker";
 import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
+import { assetEngine } from "../core/asset-engine-instance";
 
 export class DrawingEngine {
   private tileSize = 16;
@@ -47,6 +48,18 @@ export class DrawingEngine {
 
   clearContext(): void {
     this.canvasContext.clearRect(0, 0, this.width, this.height);
+  }
+
+  drawText(text: string, fontSize: number, color: string, x: number, y: number) {
+    const context = this.canvasContext;
+    context.save();
+    context.font = `${fontSize}px impact`;
+    context.strokeStyle = 'black';
+    context.lineWidth = 2;
+    context.strokeText(text, x, y);
+    context.fillStyle = color;
+    context.fillText(text, x, y);
+    context.restore();
   }
 
   tileToImageData(tile: number[], palette: string[]): ImageData {

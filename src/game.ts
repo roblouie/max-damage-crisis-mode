@@ -11,6 +11,7 @@ import { GreenEnemy } from "./enemies/green-enemy";
 import { BlueEnemy } from "./enemies/blue-enemy";
 import {Hud} from "./hud";
 import {gameStateMachine} from "./game-state-machine";
+import { comboEngine } from "./combo-engine";
 
 export class Game implements State {
   player = new Player();
@@ -21,9 +22,12 @@ export class Game implements State {
   constructor() {
     const enemies = [new RedEnemy(40, -40), new GreenEnemy(200,-90), new BlueEnemy(100, -20)];
     const enemies2 = [new BlueEnemy(50, -60), new RedEnemy(100,-110), new GreenEnemy(150, -10)];
+    const enemies3 = [new BlueEnemy(50, -60), new RedEnemy(100,-110), new GreenEnemy(150, -10)];
     const enemyWave = new EnemyWave(0, enemies);
     const enemyWave2 = new EnemyWave(3, enemies2);
-    const level = new Level(0, 1, [enemyWave, enemyWave2]);
+    const enemyWave3 = new EnemyWave(6, enemies3);
+
+    const level = new Level(0, 1, [enemyWave, enemyWave2, enemyWave3]);
     this.currentLevel = level;
     this.hud = new Hud();
   }
@@ -51,19 +55,26 @@ export class Game implements State {
 
     if (this.player.isJumping()) {
       if (this.player.enemyAttachedTo) {
+        comboEngine.updateOnKill(this.player.enemyAttachedTo);
         this.player.enemyAttachedTo.isDead = true;
         this.player.enemyAttachedTo = undefined;
-        this.score += 1;
+        this.score += (10 * comboEngine.getComboMultiplier());
+        console.log(10 * comboEngine.getComboMultiplier());
       }
       this.currentLevel.activeEnemies.forEach(enemy => {
         if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
           this.player.landOnEnemy(enemy);
+          comboEngine.updateOnLand(enemy);
         }
       });
     }
 
+    if (this.player.isRespawning()) {
+      comboEngine.reset();
+    }
+
     this.currentLevel.activeEnemies.forEach(enemy => {
-      if (enemy.isEnemyOffScreen()) {
+      if (enemy.isOffScreen()) {
         enemy.isDead = true;
         this.hud.takeHit();
       }
@@ -74,5 +85,6 @@ export class Game implements State {
 
     this.player.update();
     this.hud.update(this.score);
+    comboEngine.update();
   }
 }
