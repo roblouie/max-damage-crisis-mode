@@ -4,6 +4,7 @@ import { controls, initializeControls } from "./core/controls";
 import { createGameStateMachine, gameStateMachine } from "./game-state-machine";
 import { Game } from "./game";
 import {startScreen} from "./start-screen";
+import {gameOver} from "./game-over";
 
 
 window.onload = async () => {
@@ -30,6 +31,12 @@ window.onload = async () => {
       onEnter: () => game.onEnter(),
       onLeave: () => game.onLeave(),
       onUpdate: () => game.onUpdate(),
+    },
+    {
+      stateName: 'game-over',
+      onEnter: () => gameOver.onEnter(),
+      onLeave: () => gameOver.onLeave(),
+      onUpdate: () => gameOver.onUpdate(),
     }
   ], 'start-screen');
 
