@@ -12,6 +12,7 @@ import { BlueEnemy } from "./enemies/blue-enemy";
 import {Hud} from "./hud";
 import {gameStateMachine} from "./game-state-machine";
 import { comboEngine } from "./combo-engine";
+import { satellite } from "./npcs/satellite";
 
 export class Game implements State {
   player = new Player();
@@ -20,12 +21,12 @@ export class Game implements State {
   score = 0;
 
   constructor() {
-    const enemies = [new RedEnemy(40, -40), new GreenEnemy(200,-90), new BlueEnemy(100, -20)];
-    const enemies2 = [new BlueEnemy(50, -60), new RedEnemy(100,-110), new GreenEnemy(150, -10)];
-    const enemies3 = [new BlueEnemy(50, -60), new RedEnemy(100,-110), new GreenEnemy(150, -10)];
+    const enemies = [new RedEnemy(80, -80), new GreenEnemy(400,-180), new BlueEnemy(200, -40)];
+    const enemies2 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
+    const enemies3 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
     const enemyWave = new EnemyWave(0, enemies);
-    const enemyWave2 = new EnemyWave(3, enemies2);
-    const enemyWave3 = new EnemyWave(6, enemies3);
+    const enemyWave2 = new EnemyWave(6, enemies2);
+    const enemyWave3 = new EnemyWave(12, enemies3);
 
     const level = new Level(0, 1, [enemyWave, enemyWave2, enemyWave3]);
     this.currentLevel = level;
@@ -54,13 +55,14 @@ export class Game implements State {
     this.currentLevel.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.player.isJumping()) {
+
       if (this.player.enemyAttachedTo) {
         comboEngine.updateOnKill(this.player.enemyAttachedTo);
         this.player.enemyAttachedTo.isDead = true;
         this.player.enemyAttachedTo = undefined;
         this.score += (10 * comboEngine.getComboMultiplier());
-        console.log(10 * comboEngine.getComboMultiplier());
       }
+
       this.currentLevel.activeEnemies.forEach(enemy => {
         if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
           this.player.landOnEnemy(enemy);
@@ -68,6 +70,15 @@ export class Game implements State {
         }
       });
     }
+
+    // If the player is still in a jumping state after checking collision against enemies, check if he collides with the
+    // satellite. It's important that we check this separately because landing on enemies should always have priority.
+    // You should only be able to land on a satellite if no enemies are around.
+    // if (this.player.isJumping()) {
+    //   if (!this.player.isOnSatelite && Point.DistanceBetweenTwo(this.player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + this.player.getRadius()) {
+    //     this.player.landOnSatellite();
+    //   }
+    // }
 
     if (this.player.isRespawning()) {
       comboEngine.reset();
@@ -83,6 +94,7 @@ export class Game implements State {
 
     this.currentLevel.activeEnemies = this.currentLevel.activeEnemies.filter(enemy => !enemy.isDead);
 
+    satellite.update();
     this.player.update();
     this.hud.update(this.score);
     comboEngine.update();

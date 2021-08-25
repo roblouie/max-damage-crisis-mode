@@ -38,9 +38,9 @@ class BackgroundManager {
   private tempBackgroundLocations = [0, 0, 0];
 
   updateBackgrounds() {
-    this.tempBackgroundLocations[0] += 0.25;
-    this.tempBackgroundLocations[1] += 0.5;
-    this.tempBackgroundLocations[2] += 1;
+    this.tempBackgroundLocations[0] += 0.5;
+    this.tempBackgroundLocations[1] += 1;
+    this.tempBackgroundLocations[2] += 2;
 
     for (let i = 0; i < 3; i++) {
       const position = this.positions[i];
@@ -76,7 +76,7 @@ class BackgroundManager {
     const context = assetEngine.drawEngine.getContext();
     const layerCanvas = assetEngine.drawEngine.getBackgroundLayerCanvas(layerNumber);
     context.save();
-    context.scale(2, 2);
+    context.scale(4, 4);
     if (assetEngine.drawEngine.backgrounds[this.backgroundNumber][layerNumber].isSemiTransparent) {
       context.globalAlpha = 0.65;
     }

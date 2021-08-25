@@ -7,8 +7,8 @@ import { assetEngine } from "../core/asset-engine-instance";
 export class DrawingEngine {
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
-  private readonly width = 480;
-  private readonly height = 640;
+  private readonly width = 960;
+  private readonly height = 1280;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
 
@@ -53,9 +53,9 @@ export class DrawingEngine {
   drawText(text: string, fontSize: number, color: string, x: number, y: number) {
     const context = this.canvasContext;
     context.save();
-    context.font = `${fontSize}px impact`;
+    context.font = `${fontSize}px Impact, Roboto`;
     context.strokeStyle = 'black';
-    context.lineWidth = 2;
+    context.lineWidth = 4;
     context.strokeText(text, x, y);
     context.fillStyle = color;
     context.fillText(text, x, y);
@@ -97,7 +97,7 @@ export class DrawingEngine {
     const sprite = this.sprites[spriteNumber];
     const canvas = this.offscreenCanvases[3];
     this.canvasContext.save();
-    this.canvasContext.scale(2, 2);
+    this.canvasContext.scale(4, 4);
     this.canvasContext.drawImage(canvas, spriteNumber * 32, 0, sprite.width * 16, sprite.height * 16, positionX, positionY, sprite.width * 16, sprite.height * 16);
     this.canvasContext.restore();
   }

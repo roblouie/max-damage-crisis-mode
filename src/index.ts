@@ -38,14 +38,13 @@ window.onload = async () => {
       onLeave: () => gameOver.onLeave(),
       onUpdate: () => gameOver.onUpdate(),
     }
-  ], 'start-screen');
+  ], 'game');
 
-  requestAnimationFrame(update);
+  setInterval(update, 16.7);
 }
 
 function update(timeElapsed: number) {
   gameStateMachine.getState().onUpdate(timeElapsed);
   controls.queryButtons();
-  requestAnimationFrame(update);
 }
 
