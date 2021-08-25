@@ -12,7 +12,6 @@ class StartScreen implements State {
   }
 
   onEnter() {
-    assetEngine.drawEngine.clearContext();
     controls.onClick(() => {
       audioContext.resume();
       gameStateMachine.setState('menu');

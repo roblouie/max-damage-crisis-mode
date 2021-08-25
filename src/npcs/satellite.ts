@@ -2,8 +2,8 @@ import {assetEngine} from "../core/asset-engine-instance";
 import {StateMachine} from "../core/state-machine";
 
 export class Satellite {
-  private startX = 120;
-  private startY = 400;
+  private startX = 248;
+  private startY = 540;
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
@@ -15,7 +15,7 @@ export class Satellite {
     this.stateMachine = new StateMachine([
       {
         stateName: 'occupied',
-        onUpdate: () => this.onOccupiedUpdate(),
+        onUpdate: () => this.draw(),
       },
       {
         stateName: 'abandoned',
@@ -31,10 +31,6 @@ export class Satellite {
 
   setPosition(position: { x: number, y: number }) {
     this.position = position;
-  }
-
-  onOccupiedUpdate() {
-    this.draw();
   }
 
   private onAbandonedUpdate() {

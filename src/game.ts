@@ -63,7 +63,7 @@ export class Game implements State {
     }
 
     this.currentLevel.activeEnemies.forEach(enemy => {
-      if (enemy.isEnemyOffScreen()) {
+      if (enemy.isOffscreen()) {
         enemy.isDead = true;
         this.hud.takeHit();
       }
