@@ -10,7 +10,7 @@ export class Hud {
   healthPercent = 100;
 
   constructor() {
-    const screenHeight = assetEngine.drawEngine.getHeight();
+    const screenHeight = assetEngine.drawEngine.getScreenHeight();
     this.meterTop = screenHeight - this.height;
   }
 

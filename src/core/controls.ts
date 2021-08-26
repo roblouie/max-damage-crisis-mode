@@ -13,7 +13,7 @@ class Controls {
     const canvas = assetEngine.drawEngine.getCanvas();
     //TODO: cleanup duplicate logic
     canvas.onclick = event => {
-      const zoom = canvas.offsetWidth / canvas.width;
+      const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
       const posX = event.offsetX / zoom;
       const posY = event.offsetY / zoom;
       if (this._onClick) {
@@ -22,7 +22,7 @@ class Controls {
     }
 
     canvas.ontouchstart = event => {
-      const zoom = canvas.offsetWidth / canvas.width;
+      const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
       const posX = (event.touches[0].clientX - canvas.offsetLeft) / zoom;
       const posY = (event.touches[0].clientY - canvas.offsetTop) / zoom;
       if (this._onClick) {
@@ -32,7 +32,7 @@ class Controls {
     }
 
     canvas.onmousemove = event => {
-      const zoom = canvas.offsetWidth / canvas.width;
+      const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
       const posX = event.offsetX / zoom;
       const posY = event.offsetY / zoom;
       if (this._onHover) {

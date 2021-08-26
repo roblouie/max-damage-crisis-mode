@@ -8,6 +8,7 @@ export class DrawingEngine {
   private canvasContext: CanvasRenderingContext2D;
   private readonly width = 960;
   private readonly height = 1280;
+  private readonly renderMultiplier = 4;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
 
@@ -41,8 +42,12 @@ export class DrawingEngine {
     return this.width;
   }
 
-  getHeight(): number {
+  getScreenHeight(): number {
     return this.height;
+  }
+
+  getRenderMultiplier(): number {
+    return this.renderMultiplier;
   }
 
   clearContext(): void {

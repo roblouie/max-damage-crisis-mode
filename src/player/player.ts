@@ -5,17 +5,18 @@ import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
 
 export class Player {
-  private startX = 480;
-  private startY = 1080;
+  private startX = 112;
+  private startY = 262;
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
   isOnSatelite = true;
+  isLeavingSatellite = true;
   isOnEnemy = false;
   enemyAttachedTo?: Enemy;
   angle = 90;
   stateMachine: StateMachine;
-  speed = 10.5;
+  speed = 3.7;
   jumpAngle = 0;
 
   constructor() {
@@ -58,12 +59,13 @@ export class Player {
     return this.stateMachine.getState().stateName === 'respawning';
   }
 
-  private isPlayerOffScreen() {
+  private isOffScreen() {
     const pixelBuffer = this.getRadius() + 100;
     const center = this.getCenter();
-    const isOffVertical = center.y - pixelBuffer > assetEngine.drawEngine.getHeight()
+    const renderMultiplier = assetEngine.drawEngine.getRenderMultiplier();
+    const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
       || center.y + this.height + pixelBuffer < 0;
-    const isOffHorizontal = center.x - pixelBuffer > assetEngine.drawEngine.getScreenWidth()
+    const isOffHorizontal = center.x - pixelBuffer > (assetEngine.drawEngine.getScreenWidth() / renderMultiplier)
       || center.x + this.width + pixelBuffer < 0;
     return isOffVertical || isOffHorizontal;
   }
@@ -73,10 +75,12 @@ export class Player {
     this.isOnEnemy = true;
     this.enemyAttachedTo = enemy;
     this.stateMachine.setState('landed');
+    this.isLeavingSatellite = false;
   }
 
   landOnSatellite() {
     this.isOnSatelite = true;
+    this.isLeavingSatellite = true;
     this.stateMachine.setState('landed');
   }
 
@@ -107,12 +111,12 @@ export class Player {
       this.stateMachine.setState('jumping');
     }
 
-    // if (this.isOnSatelite) {
-    //   this.position.x = this.startX;
-    //   this.position.y = this.startY;
-    // }
+    if (this.isOnSatelite) {
+      this.position.x = this.startX;
+      this.position.y = this.startY;
+    }
 
-    if (this.isPlayerOffScreen()) {
+    if (this.isOffScreen()) {
       this.stateMachine.setState('respawning');
     }
   }
@@ -122,6 +126,7 @@ export class Player {
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
     this.isOnEnemy = false;
+    this.isOnSatelite = false;
   }
 
   onJumpingUpdate() {
@@ -129,13 +134,13 @@ export class Player {
 
     this.position.x -= this.speed * Math.cos((this.jumpAngle) * Math.PI / 180);
     this.position.y -= this.speed * Math.sin((this.jumpAngle) * Math.PI / 180);
-    if (this.isPlayerOffScreen()) {
+    if (this.isOffScreen()) {
       this.stateMachine.setState('respawning');
     }
   }
 
   onRespawningEnter() {
-    this.position = { x: this.startX, y: this.startY + 60}
+    this.position = { x: this.startX, y: this.startY + 40}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
     controls.onClick(undefined)
@@ -155,12 +160,11 @@ export class Player {
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
     context.save();
-    if (this.stateMachine.getState().stateName === 'respawning') {
-      context.globalAlpha = 0.5;
-    }
     const center = this.getCenter();
+    context.scale(4, 4);
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
+    context.scale(1/4, 1/4);
     assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
     context.restore();
   }
