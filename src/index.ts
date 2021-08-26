@@ -1,10 +1,10 @@
 import { assetEngine, initializeAssetEngine } from "./core/asset-engine-instance";
-import { menu } from "./menu";
 import { controls, initializeControls } from "./core/controls";
 import { createGameStateMachine, gameStateMachine } from "./game-state-machine";
-import { Game } from "./game";
-import {startScreen} from "./start-screen";
-import {gameOver} from "./game-over";
+import { Game } from "./game-states/game";
+import { startScreen } from "./game-states/start-screen";
+import { menu } from "./game-states/menu";
+import { gameOver } from "./game-states/game-over";
 
 
 window.onload = async () => {
@@ -38,7 +38,7 @@ window.onload = async () => {
       onLeave: () => gameOver.onLeave(),
       onUpdate: () => gameOver.onUpdate(),
     }
-  ], 'game');
+  ], 'menu');
 
   requestAnimationFrame(update);
 }
