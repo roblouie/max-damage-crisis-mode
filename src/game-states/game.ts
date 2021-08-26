@@ -20,9 +20,9 @@ export class Game implements State {
   score = 0;
 
   constructor() {
-    const enemies = [new RedEnemy(80, -80), new GreenEnemy(400,-180), new BlueEnemy(200, -40)];
-    const enemies2 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
-    const enemies3 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(300, -20)];
+    const enemies = [new RedEnemy(80, -80), new GreenEnemy(100,-180), new BlueEnemy(200, -40)];
+    const enemies2 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(150, -20)];
+    const enemies3 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(150, -20)];
     const enemyWave = new EnemyWave(0, enemies);
     const enemyWave2 = new EnemyWave(2, enemies2);
     const enemyWave3 = new EnemyWave(4, enemies3);
@@ -73,11 +73,11 @@ export class Game implements State {
     // If the player is still in a jumping state after checking collision against enemies, check if he collides with the
     // satellite. It's important that we check this separately because landing on enemies should always have priority.
     // You should only be able to land on a satellite if no enemies are around.
-    // if (this.player.isJumping()) {
-    //   if (!this.player.isOnSatelite && Point.DistanceBetweenTwo(this.player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + this.player.getRadius()) {
-    //     this.player.landOnSatellite();
-    //   }
-    // }
+    if (!this.player.isLeavingSatellite && this.player.isJumping()) {
+      if (Point.DistanceBetweenTwo(this.player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + this.player.getRadius()) {
+        this.player.landOnSatellite();
+      }
+    }
 
     if (this.player.isRespawning()) {
       comboEngine.reset();

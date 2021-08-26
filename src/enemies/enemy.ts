@@ -17,16 +17,19 @@ export abstract class Enemy {
 
   update() {
     const context = assetEngine.drawEngine.getContext();
+    context.save();
     context.fillStyle = this.color;
     context.beginPath();
+    context.scale(4, 4);
     context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI);
     context.stroke();
     context.fill();
+    context.restore();
 
     this.position.y += this.speed;
   }
 
   isOffScreen() {
-    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getHeight();
+    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getScreenHeight();
   }
 }
