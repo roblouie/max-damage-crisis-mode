@@ -2,7 +2,6 @@ import { chunkArrayInGroups } from "./game-asset-unpacker";
 import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
-import { assetEngine } from "../core/asset-engine-instance";
 
 export class DrawingEngine {
   private tileSize = 16;
@@ -53,7 +52,7 @@ export class DrawingEngine {
   drawText(text: string, fontSize: number, color: string, x: number, y: number) {
     const context = this.canvasContext;
     context.save();
-    context.font = `${fontSize}px Impact, Roboto`;
+    context.font = `${fontSize}px Impact, sans-serif-black`;
     context.strokeStyle = 'black';
     context.lineWidth = 4;
     context.strokeText(text, x, y);

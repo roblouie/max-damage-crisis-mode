@@ -98,6 +98,15 @@ export class Player {
       this.position.y = this.enemyAttachedTo?.position.y - this.getRadius();
     }
 
+    if (controls.isAnalogStickPressed) {
+      this.angle = controls.analogStickAngle;
+    }
+
+    if (controls.isJumpPressed) {
+      this.jumpAngle = this.angle;
+      this.stateMachine.setState('jumping');
+    }
+
     // if (this.isOnSatelite) {
     //   this.position.x = this.startX;
     //   this.position.y = this.startY;

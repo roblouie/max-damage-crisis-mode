@@ -1,18 +1,17 @@
-import { State } from "./core/state";
-import { assetEngine } from "./core/asset-engine-instance";
-import { backgroundManager } from "./background-manager";
-import { Enemy } from "./enemies/enemy";
-import { Player } from "./player/player";
-import { Point } from "./core/point";
-import { Level } from "./levels/level";
-import { EnemyWave } from "./levels/enemy-wave";
-import { RedEnemy } from "./enemies/red-enemy";
-import { GreenEnemy } from "./enemies/green-enemy";
-import { BlueEnemy } from "./enemies/blue-enemy";
-import {Hud} from "./hud";
-import {gameStateMachine} from "./game-state-machine";
-import { comboEngine } from "./combo-engine";
-import { satellite } from "./npcs/satellite";
+import { State } from "../core/state";
+import { assetEngine } from "../core/asset-engine-instance";
+import { backgroundManager } from "../background-manager";
+import { Player } from "../player/player";
+import { Point } from "../core/point";
+import { Level } from "../levels/level";
+import { EnemyWave } from "../levels/enemy-wave";
+import { RedEnemy } from "../enemies/red-enemy";
+import { GreenEnemy } from "../enemies/green-enemy";
+import { BlueEnemy } from "../enemies/blue-enemy";
+import {Hud} from "../hud";
+import {gameStateMachine} from "../game-state-machine";
+import { comboEngine } from "../combo-engine";
+import { satellite } from "../npcs/satellite";
 
 export class Game implements State {
   player = new Player();
@@ -64,7 +63,7 @@ export class Game implements State {
       }
 
       this.currentLevel.activeEnemies.forEach(enemy => {
-        if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= enemy.size) {
+        if (enemy !== this.player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, this.player.getCenter()) <= this.player.getRadius() + enemy.size) {
           this.player.landOnEnemy(enemy);
           comboEngine.updateOnLand(enemy);
         }

@@ -1,7 +1,7 @@
-import { State } from "./core/state";
-import { assetEngine } from "./core/asset-engine-instance";
-import { controls } from "./core/controls";
-import { gameStateMachine } from "./game-state-machine";
+import { State } from "../core/state";
+import { assetEngine } from "../core/asset-engine-instance";
+import { controls } from "../core/controls";
+import { gameStateMachine } from "../game-state-machine";
 
 class GameOver implements State {
   onUpdate() {
@@ -18,9 +18,7 @@ class GameOver implements State {
     });
   }
 
-  onLeave() {
-    //
-  }
+  onLeave() {}
 }
 
 export const gameOver = new GameOver();
