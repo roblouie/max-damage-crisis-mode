@@ -16,6 +16,8 @@ export class Level {
   }
 
   update() {
+    this.activeEnemies.forEach(enemy => enemy.update());
+
     if (this.mostRecentWaveIndex === this.enemyWaves.length - 1) {
       return;
     }

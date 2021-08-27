@@ -18,6 +18,7 @@ export class Player {
   stateMachine: StateMachine;
   speed = 3.7;
   jumpAngle = 0;
+  respawnScale = 1;
 
   constructor() {
     this.stateMachine = new StateMachine([
@@ -143,16 +144,20 @@ export class Player {
     this.position = { x: this.startX, y: this.startY + 40}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
+    this.respawnScale = 0;
     controls.onClick(undefined)
     controls.onMouseMove(undefined);
   }
 
   onRespawningUpdate() {
     if (this.position.y > this.startY) {
-      this.position.y -= 0.5;
+      this.position.y -= 0.6;
+      this.respawnScale += 0.015;
       this.angle = 90;
       this.drawAtAngle(this.angle);
     } else {
+      this.drawAtAngle(this.angle);
+      this.respawnScale = 1;
       this.stateMachine.setState('landed');
     }
   }
@@ -164,7 +169,7 @@ export class Player {
     context.scale(4, 4);
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
-    context.scale(1/4, 1/4);
+    context.scale(1/4 * this.respawnScale, 1/4 * this.respawnScale);
     assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
     context.restore();
   }

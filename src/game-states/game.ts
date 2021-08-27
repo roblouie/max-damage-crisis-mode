@@ -12,6 +12,11 @@ import {Hud} from "../hud";
 import {gameStateMachine} from "../game-state-machine";
 import { comboEngine } from "../combo-engine";
 import { satellite } from "../npcs/satellite";
+import { StraightPattern } from "../enemies/enemy-patterns/straight-pattern";
+import { WavePattern } from "../enemies/enemy-patterns/wave-pattern";
+import { PausePattern } from "../enemies/enemy-patterns/pause-pattern";
+import { SwoopPattern } from "../enemies/enemy-patterns/swoop-pattern";
+import { ScreenEdgeBouncePattern } from "../enemies/enemy-patterns/screen-edge-bounce-pattern";
 
 export class Game implements State {
   player = new Player();
@@ -20,12 +25,24 @@ export class Game implements State {
   score = 0;
 
   constructor() {
-    const enemies = [new RedEnemy(80, -80), new GreenEnemy(100,-180), new BlueEnemy(200, -40)];
-    const enemies2 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(150, -20)];
-    const enemies3 = [new BlueEnemy(100, -120), new RedEnemy(200,-220), new GreenEnemy(150, -20)];
+    const enemies = [
+      new RedEnemy(100, -40, new ScreenEdgeBouncePattern(true)),
+      new GreenEnemy(100,-80, new ScreenEdgeBouncePattern(false)),
+      new BlueEnemy(100, -120, new ScreenEdgeBouncePattern(true))
+    ];
+    const enemies2 = [
+      new BlueEnemy(100, -120,new PausePattern(10)),
+      new RedEnemy(200,-220, new PausePattern(10)),
+      new GreenEnemy(150, -20, new PausePattern(10))
+    ];
+    const enemies3 = [
+      new BlueEnemy(100, -120, new WavePattern(true)),
+      new RedEnemy(200,-220, new StraightPattern()),
+      new GreenEnemy(150, -20, new WavePattern(false))
+    ];
     const enemyWave = new EnemyWave(0, enemies);
-    const enemyWave2 = new EnemyWave(2, enemies2);
-    const enemyWave3 = new EnemyWave(4, enemies3);
+    const enemyWave2 = new EnemyWave(6, enemies2);
+    const enemyWave3 = new EnemyWave(12, enemies3);
 
     const level = new Level(0, 1, [enemyWave, enemyWave2, enemyWave3]);
     this.currentLevel = level;
@@ -51,7 +68,6 @@ export class Game implements State {
     backgroundManager.updateBackgrounds();
 
     this.currentLevel.update();
-    this.currentLevel.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.player.isJumping()) {
 
