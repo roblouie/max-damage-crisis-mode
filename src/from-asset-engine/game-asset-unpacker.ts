@@ -4,6 +4,7 @@ import { BackgroundLayer } from "./background-layer";
 import { Song } from "./song.model";
 import { Track } from "./track.model";
 import { NotePosition } from "./note-position.model";
+import {SoundEffect} from "./sound-effect.model";
 
 interface UnpackedAsset {
   data: any;
@@ -16,6 +17,7 @@ export function unpackGameAssets(arrayBuffer: ArrayBuffer) {
   const spriteAsset = bytesToSprites(arrayBuffer, tileAsset.finalByteIndex);
   const backgroundAsset = bytesToBackgrounds(arrayBuffer, spriteAsset.finalByteIndex);
   const songsAsset = bytesToSongs(arrayBuffer, backgroundAsset.finalByteIndex);
+  const soundEffectsAsset = bytesToSoundEffects(arrayBuffer, songsAsset.finalByteIndex);
 
   return {
     paletteAsset,
@@ -23,6 +25,7 @@ export function unpackGameAssets(arrayBuffer: ArrayBuffer) {
     spriteAsset,
     backgroundAsset,
     songsAsset,
+    soundEffectsAsset,
   };
 }
 
@@ -175,6 +178,7 @@ function bytesToBackgrounds(arrayBuffer: ArrayBuffer, startingOffset: number): U
     finalByteIndex: startingOffset + bytePosition,
   };
 }
+
 const waves = [
   'sawtooth',
   'sine',
@@ -190,7 +194,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
       finalByteIndex: startingOffset,
     };
   }
-
+  
   const dataView = new DataView(arrayBuffer, startingOffset);
   const numberOfSongs = dataView.getUint8(0);
 
@@ -200,9 +204,9 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
 
   while (songsParsed < numberOfSongs) {
     const tempo = dataView.getUint8(bytePosition);
-    bytePosition ++;
+    bytePosition++;
     const numberOfTracks = dataView.getUint8(bytePosition);
-    bytePosition ++;
+    bytePosition++;
 
     const tracks: Track[] = [];
     let tracksParsed = 0;
@@ -216,15 +220,13 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
       let pitchesParsed = 0;
       const pitches = [];
       while (pitchesParsed < numberOfPitches) {
-        const firstHalf = dataView.getUint8(bytePosition);
-        const secondHalf = dataView.getUint8(bytePosition + 1);
-        pitches.push((firstHalf << 8) + secondHalf);
-        pitchesParsed ++;
+        pitches.push(dataView.getUint16(bytePosition));
+        pitchesParsed++;
         bytePosition += 2;
       }
 
       const numberOfNotes = dataView.getUint8(bytePosition);
-      bytePosition ++;
+      bytePosition++;
 
       let notesParsed = 0;
       const notes: NotePosition[] = [];
@@ -232,7 +234,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
       while (notesParsed < numberOfNotes) {
         const combinedInstruction = dataView.getUint8(bytePosition);
         const pitchIndex = combinedInstruction >> 4;
-        const noteLength = (combinedInstruction & 0b1111) + 1; // note length is stored 0-indexed
+        const noteLength = (combinedInstruction & 15) + 1; // note length is stored 0-indexed
 
         if (pitchIndex !== 0) {
           const noteFrequency = pitches[pitchIndex];
@@ -244,12 +246,12 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
           });
         }
         currentStepPosition += noteLength;
-        bytePosition ++;
-        notesParsed ++;
+        bytePosition++;
+        notesParsed++;
       }
 
       tracks.push({ wave: waveform, notes: notes });
-      tracksParsed ++;
+      tracksParsed++;
     }
     songs.push(new Song(tempo, tracks));
     songsParsed++;
@@ -257,6 +259,71 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
 
   return {
     data: songs,
+    finalByteIndex: startingOffset + bytePosition,
+  };
+}
+
+function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
+  if (startingOffset >= arrayBuffer.byteLength) {
+    return {
+      data: [],
+      finalByteIndex: startingOffset,
+    };
+  }
+
+  const dataView = new DataView(arrayBuffer, startingOffset);
+  const numberOfSoundEffects = dataView.getUint8(0);
+
+  let bytePosition = 1;
+  let soundEffectsParsed = 0;
+  const soundEffects: SoundEffect[] = [];
+
+  while (soundEffectsParsed < numberOfSoundEffects) {
+    const combinedInstructions = dataView.getUint8(bytePosition);
+    const numberOfGainInstructions = combinedInstructions >> 4;
+    const numberOfOtherInstructions = combinedInstructions & 0b1111;
+    bytePosition++;
+
+    let gainInstructionsParsed = 0;
+    const gainInstructions = [];
+    while (gainInstructionsParsed < numberOfGainInstructions) {
+      const gainInstruction = dataView.getUint8(bytePosition);
+      const gain = (gainInstruction >> 6) / 3;
+      const isWhiteNoise = ((gainInstruction >> 5) & 0b1) === 1;
+      const timeFromLastInstruction = (gainInstruction & 0b11111) / 10;
+      gainInstructions.push({ gain, isWhiteNoise, timeFromLastInstruction });
+      gainInstructionsParsed ++;
+      bytePosition ++;
+    }
+
+    let otherInstructionsParsed = 0;
+    const widthInstructions = [];
+    const pitchInstructions = [];
+
+    while (otherInstructionsParsed < numberOfOtherInstructions) {
+      const otherInstruction = dataView.getUint8(bytePosition);
+      const isWidth = otherInstruction >> 7 === 1;
+      if (isWidth) {
+        const timeFromLastInstruction = (otherInstruction & 0b11111) / 10;
+        widthInstructions.push({ timeFromLastInstruction, isWidth });
+      } else {
+        const isLinearRampTo = ((otherInstruction >> 5) & 0b1) === 1;
+        const durationInSeconds = (otherInstruction & 0b11111) / 10;
+        debugger;
+        bytePosition++;
+        const pitchBytes = dataView.getUint8(bytePosition);
+        const pitch = (pitchBytes * 70) + 1;
+        pitchInstructions.push({ pitch, durationInSeconds, isLinearRampTo });
+      }
+      otherInstructionsParsed ++;
+      bytePosition ++;
+    }
+    soundEffects.push({ gainInstructions, widthInstructions, pitchInstructions });
+    soundEffectsParsed ++;
+  }
+
+  return {
+    data: soundEffects,
     finalByteIndex: startingOffset + bytePosition,
   };
 }
