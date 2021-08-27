@@ -1,19 +1,16 @@
 import { assetEngine } from "../core/asset-engine-instance";
-import { EnemyPattern } from "./enemy-patterns/enemy-pattern";
 
 export abstract class Enemy {
   position = { x: 0, y: 0 };
-  enemyPattern: EnemyPattern;
   size: number;
   color = '#000000';
   isDead = false;
 
-  protected constructor(x: number, y: number, size: number, color: string, enemyPattern: EnemyPattern) {
+  protected constructor(x: number, y: number, size: number, color: string) {
     this.position.x = x;
     this.position.y = y;
     this.size = size;
     this.color = color;
-    this.enemyPattern = enemyPattern;
   }
 
   update() {
@@ -26,7 +23,6 @@ export abstract class Enemy {
     context.stroke();
     context.fill();
     context.restore();
-    this.enemyPattern.update(this.position);
   }
 
   isOffScreen() {

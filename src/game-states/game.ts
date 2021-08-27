@@ -5,18 +5,15 @@ import { Player } from "../player/player";
 import { Point } from "../core/point";
 import { Level } from "../levels/level";
 import { EnemyWave } from "../levels/enemy-wave";
-import { RedEnemy } from "../enemies/red-enemy";
-import { GreenEnemy } from "../enemies/green-enemy";
-import { BlueEnemy } from "../enemies/blue-enemy";
 import {Hud} from "../hud";
 import {gameStateMachine} from "../game-state-machine";
 import { comboEngine } from "../combo-engine";
 import { satellite } from "../npcs/satellite";
-import { StraightPattern } from "../enemies/enemy-patterns/straight-pattern";
-import { WavePattern } from "../enemies/enemy-patterns/wave-pattern";
-import { PausePattern } from "../enemies/enemy-patterns/pause-pattern";
-import { SwoopPattern } from "../enemies/enemy-patterns/swoop-pattern";
-import { ScreenEdgeBouncePattern } from "../enemies/enemy-patterns/screen-edge-bounce-pattern";
+import { StraightEnemy } from "../enemies/straight-enemy";
+import { PauseEnemy } from "../enemies/pause-enemy";
+import { WaveEnemy } from "../enemies/wave-enemy";
+import { SwoopEnemy } from "../enemies/swoop-enemy";
+import { ScreenEdgeBounceEnemy } from "../enemies/screen-edge-bounce-enemy";
 
 export class Game implements State {
   player = new Player();
@@ -26,19 +23,19 @@ export class Game implements State {
 
   constructor() {
     const enemies = [
-      new RedEnemy(100, -40, new ScreenEdgeBouncePattern(true)),
-      new GreenEnemy(100,-80, new ScreenEdgeBouncePattern(false)),
-      new BlueEnemy(100, -120, new ScreenEdgeBouncePattern(true))
+      new StraightEnemy(100, -40, '#ff0000'),
+      new PauseEnemy(100,-80, '#00ff00'),
+      new WaveEnemy(100, -120, '#0000ff')
     ];
     const enemies2 = [
-      new BlueEnemy(100, -120,new PausePattern(10)),
-      new RedEnemy(200,-220, new PausePattern(10)),
-      new GreenEnemy(150, -20, new PausePattern(10))
+      new SwoopEnemy(100, -120, '#ff0000'),
+      new ScreenEdgeBounceEnemy(200,-220, '#00ff00'),
+      new PauseEnemy(150, -20, '#0000ff')
     ];
     const enemies3 = [
-      new BlueEnemy(100, -120, new WavePattern(true)),
-      new RedEnemy(200,-220, new StraightPattern()),
-      new GreenEnemy(150, -20, new WavePattern(false))
+      new StraightEnemy(100, -120, '#ff0000'),
+      new PauseEnemy(200,-220, '#00ff00'),
+      new ScreenEdgeBounceEnemy(150, -20, '#0000ff')
     ];
     const enemyWave = new EnemyWave(0, enemies);
     const enemyWave2 = new EnemyWave(6, enemies2);
