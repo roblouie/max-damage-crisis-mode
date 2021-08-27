@@ -11,7 +11,7 @@ export class MusicEngine {
   private isSongPlaying = false;
   private isCtxStarted = false;
 
-  private oscillators: OscillatorNode[][] = [];
+  private oscillators: OscillatorNode[] = [];
   private gainNodes: GainNode[] = [];
   private repeatTimer?: any;
 
@@ -54,7 +54,7 @@ export class MusicEngine {
     this.isSongPlaying = false;
     this.masterGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
-    this.oscillators.forEach(osc => osc.forEach(o => o.frequency.cancelScheduledValues(this.ctx.currentTime)));
+    this.oscillators.forEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
     this.gainNodes.forEach(gain => {
       gain.gain.cancelScheduledValues(this.ctx.currentTime);
       gain.gain.value = 0;
@@ -71,14 +71,12 @@ export class MusicEngine {
 
   private createOscillators(song: Song) {
     song.tracks.forEach((track, index) => {
-      this.oscillators.push([]);
-      this.oscillators[index][0] = new OscillatorNode(this.ctx, { type: track.wave });
-      if (track.wave === 'sawtooth') this.oscillators[index][1] = new OscillatorNode(this.ctx, { type: track.wave, detune: 10})
+      this.oscillators[index] = new OscillatorNode(this.ctx, { type: track.wave });
       this.gainNodes.push(this.ctx.createGain());
-      this.oscillators[index].forEach(osc => osc.connect(this.gainNodes[index]));
+      this.oscillators[index].connect(this.gainNodes[index]);
       this.gainNodes[index].gain.value = 0;
       this.gainNodes[index].connect(this.masterGain!)
-      this.oscillators[index].forEach(osc => osc.start());
+      this.oscillators[index].start();
     })
   }
 
@@ -86,7 +84,7 @@ export class MusicEngine {
     track.notes.forEach((note) => {
       const startTimeInSeconds = this.getDurationInSeconds(note.startPosition);
       const endTimeInSeconds = this.getDurationInSeconds(note.startPosition + note.duration);
-      this.oscillators[index].forEach(osc => osc.frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds));
+      this.oscillators[index].frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds);
       this.gainNodes[index].gain.setValueAtTime(track.wave === 'sine' ? .5 : 1, this.ctx.currentTime + startTimeInSeconds);
       this.gainNodes[index].gain.setValueAtTime(0, this.ctx.currentTime + endTimeInSeconds);
     });
