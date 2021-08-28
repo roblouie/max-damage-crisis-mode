@@ -5,12 +5,14 @@ import { Game } from "./game-states/game";
 import { startScreen } from "./game-states/start-screen";
 import { menu } from "./game-states/menu";
 import { gameOver } from "./game-states/game-over";
+import { whiteNoiseLoading } from "./from-asset-engine/audio-initializer";
 
 
 window.onload = async () => {
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;
   await initializeAssetEngine(canvas);
   initializeControls();
+  await whiteNoiseLoading;
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();
   const game = new Game();
   createGameStateMachine([
@@ -38,7 +40,7 @@ window.onload = async () => {
       onLeave: () => gameOver.onLeave(),
       onUpdate: () => gameOver.onUpdate(),
     }
-  ], 'menu');
+  ], 'start-screen');
 
   requestAnimationFrame(update);
 }
