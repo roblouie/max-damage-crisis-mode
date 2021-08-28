@@ -86,6 +86,7 @@ export class Player {
   }
 
   onLandedEnter() {
+    assetEngine.sfxEngine.playEffect(3);
     controls.onClick(position => {
       this.jumpAngle = Point.AngleBetweenTwo(this.getCenter(), position);
       this.stateMachine.setState('jumping');
@@ -124,6 +125,7 @@ export class Player {
 
 
   onJumpingEnter() {
+    assetEngine.sfxEngine.playEffect(2);
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
     this.isOnEnemy = false;

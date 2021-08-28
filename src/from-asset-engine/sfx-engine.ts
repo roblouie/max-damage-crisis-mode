@@ -1,11 +1,10 @@
 import {SoundEffect} from "./sound-effect.model";
-import {audioContext, whiteNoiseLoading} from "./audio-initializer";
+import {audioContext} from "./audio-initializer";
 import {SfxPitchInstruction} from "./sfx-pitch-instruction.model";
 import {SfxGainInstruction} from "./sfx-gain-instruction.model";
 import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
-  ctx = audioContext;
   soundEffects: SoundEffect[];
 
   constructor(soundEffects: SoundEffect[]) {
@@ -14,14 +13,11 @@ export class SfxEngine {
 
   async playEffect(effectIndex: number) {
     const soundEffect = this.soundEffects.find((effect, index) => index === effectIndex);
-    if (!soundEffect || !this.ctx) {
+    if (!soundEffect || !audioContext) {
       return;
     }
-
-    await this.ctx.resume();
-    const gainNode = new GainNode(this.ctx);
+    const gainNode = new GainNode(audioContext);
     gainNode.gain.value = 1;
-    await whiteNoiseLoading;
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'white-noise-gain-processor');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('changesPerSecond')!;
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('counterWidth')!;
@@ -58,8 +54,6 @@ export class SfxEngine {
       });
     });
 
-    oscillator.start();
-
     let totalGainTimePerChanel = [0, 0];
     let isSeven = true;
 
@@ -79,6 +73,7 @@ export class SfxEngine {
     });
 
     gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
+    oscillator.start();
   }
 }
 
