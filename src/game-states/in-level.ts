@@ -12,6 +12,7 @@ import { controls } from "../core/controls";
 
 export class InLevel implements State {
   currentLevel = new Level([]);
+  levelNumber = 0;
 
   onEnter(levelNumber: number) {
     comboEngine.reset();
@@ -20,6 +21,7 @@ export class InLevel implements State {
     hud.resetHealth();
     initializePlayer();
     this.currentLevel = assetEngine.levels[levelNumber];
+    this.levelNumber = levelNumber;
     assetEngine.resetLevels();
   }
 
@@ -78,8 +80,7 @@ export class InLevel implements State {
     this.currentLevel.activeEnemies = this.currentLevel.activeEnemies.filter(enemy => !enemy.isDead);
 
     if (this.currentLevel.isOver && player.isOnSatelite) {
-      //TODO: Put in real level number
-      gameStateMachine.setState('end-of-level', 0);
+      gameStateMachine.setState('end-of-level', this.levelNumber);
     }
 
     satellite.update();

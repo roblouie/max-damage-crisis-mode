@@ -94,7 +94,6 @@ class EndOfLevelState implements State {
     const expectedTime = assetEngine.levels[levelNumber].enemyWaves.length * 10;
     const baseBonus = (expectedTime - Math.floor(levelTime / 1000)) * 10000;
     this.timeBonus = baseBonus > 0 ? baseBonus : 0;
-    backgroundManager.loadBackgrounds(0); // Remove, this will be in place from the previous level
     backgroundManager.updateBackgrounds();
     hud.update();
     comboEngine.update();
