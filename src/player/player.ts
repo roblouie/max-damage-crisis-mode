@@ -172,7 +172,7 @@ export class Player {
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * this.respawnScale, 1/4 * this.respawnScale);
-    assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(9, -this.width / 2, -this.height / 2);
     context.restore();
   }
 }

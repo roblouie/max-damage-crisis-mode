@@ -2,6 +2,7 @@ import { chunkArrayInGroups } from "./game-asset-unpacker";
 import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
+import { split24Bit } from "../core/binary-helperts";
 
 export class DrawingEngine {
   private tileSize = 16;
@@ -13,7 +14,7 @@ export class DrawingEngine {
   private offscreenContexts: CanvasRenderingContext2D[] = [];
 
   constructor(
-    private palettes: string[][],
+    private palettes: number[][],
     private tiles: number[][],
     private sprites: Sprite[],
     public backgrounds: BackgroundLayer[][],
@@ -66,22 +67,20 @@ export class DrawingEngine {
     context.restore();
   }
 
-  tileToImageData(tile: number[], palette: string[]): ImageData {
+  tileToImageData(tile: number[], palette: number[]): ImageData {
     const imageData = new ImageData(this.tileSize, this.tileSize);
 
     tile.forEach((pixelValue, index) => {
       const imageDataIndex = index * 4;
-      const colorString = palette[pixelValue];
-      const red = parseInt(colorString.substr(1, 2), 16);
-      const green = parseInt(colorString.substr(3, 2), 16);
-      const blue = parseInt(colorString.substr(5, 2), 16);
+      const color = palette[pixelValue];
       let alpha = 255;
-      if (pixelValue === 15 && colorString === '#000000') {
+      if (pixelValue === 15 && color === 0) {
         alpha = 140;
-      } else if (pixelValue === 0 && colorString === '#000000') {
+      } else if (pixelValue === 0 && color === 0) {
         alpha = 0;
       }
 
+      const [blue, green, red] = split24Bit(color, 16, 8);
       imageData.data[imageDataIndex] = red;
       imageData.data[imageDataIndex + 1] = green;
       imageData.data[imageDataIndex + 2] = blue;
@@ -142,13 +141,13 @@ export class DrawingEngine {
 
   drawBackgroundLayerToBackgroundCanvases(backgroundIndex: number) {
     for (let i = 0; i < 3; i++) {
-      this.offscreenContexts[i].clearRect(0, 0, 128, 256);
+      this.offscreenContexts[i].clearRect(0, 0, 256, 320);
       const backgroundLayer = this.backgrounds[backgroundIndex][i];
 
       backgroundLayer.sprites.forEach(sprite => {
-        const gridX = sprite.position % 4;
-        const gridY = Math.floor(sprite.position / 4);
-        this.drawSpriteToCanvas(backgroundLayer.spriteStartOffset + sprite.spriteIndex, gridX * 32, gridY * 32, i);
+        const gridX = sprite.position % 8;
+        const gridY = Math.floor(sprite.position / 8);
+        this.drawSpriteToCanvas(sprite.spriteIndex, gridX * 32, gridY * 32, i);
       });
     }
   }
@@ -192,4 +191,3 @@ export class DrawingEngine {
     return flippedImageData;
   }
 }
-
