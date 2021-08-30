@@ -6,6 +6,13 @@ import { Track } from "./track.model";
 import { NotePosition } from "./note-position.model";
 import {SoundEffect} from "./sound-effect.model";
 import { split16Bit, splitByte } from "../core/binary-helperts";
+import { SwoopEnemy } from "../enemies/swoop-enemy";
+import { ScreenEdgeBounceEnemy } from "../enemies/screen-edge-bounce-enemy";
+import { WaveEnemy } from "../enemies/wave-enemy";
+import { PauseEnemy } from "../enemies/pause-enemy";
+import { StraightEnemy } from "../enemies/straight-enemy";
+import { EnemyWave } from "../levels/enemy-wave";
+import { Level } from "../levels/level";
 
 interface UnpackedAsset {
   data: any;
@@ -19,6 +26,7 @@ export function unpackGameAssets(arrayBuffer: ArrayBuffer) {
   const backgroundAsset = bytesToBackgrounds(arrayBuffer, spriteAsset.finalByteIndex);
   const songsAsset = bytesToSongs(arrayBuffer, backgroundAsset.finalByteIndex);
   const soundEffectsAsset = bytesToSoundEffects(arrayBuffer, songsAsset.finalByteIndex);
+  const levelsAsset = bytesToLevels(arrayBuffer, soundEffectsAsset.finalByteIndex);
 
   return {
     paletteAsset,
@@ -27,6 +35,7 @@ export function unpackGameAssets(arrayBuffer: ArrayBuffer) {
     backgroundAsset,
     songsAsset,
     soundEffectsAsset,
+    levelsAsset,
   };
 }
 
@@ -71,12 +80,6 @@ function bytesToTiles(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
 }
 
 function bytesToSprites(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
-  if (startingOffset >= arrayBuffer.byteLength) {
-    return {
-      data: [],
-      finalByteIndex: startingOffset,
-    };
-  }
   const dataView = new DataView(arrayBuffer, startingOffset);
   const numberOfSprites = dataView.getUint8(0);
 
@@ -104,13 +107,6 @@ function bytesToSprites(arrayBuffer: ArrayBuffer, startingOffset: number): Unpac
 }
 
 function bytesToBackgrounds(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
-  if (startingOffset >= arrayBuffer.byteLength) {
-    return {
-      data: [],
-      finalByteIndex: startingOffset,
-    };
-  }
-
   const dataView = new DataView(arrayBuffer, startingOffset);
   const numberOfBackgrounds = dataView.getUint8(0);
   const numberOfBackgroundLayers = numberOfBackgrounds * 3;
@@ -270,6 +266,74 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
   return {
     data: soundEffects,
     finalByteIndex: startingOffset + bytePosition,
+  };
+}
+
+function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
+  const dataView = new DataView(arrayBuffer, startingOffset);
+  const numberOfLevels = dataView.getUint8(0);
+  let bytePosition = 1;
+
+  const levels: Level[] =[];
+
+  for (let i = 0; i < numberOfLevels; i++) {
+    const level = new Level([]);
+
+    const numberOfWaves = dataView.getUint8(bytePosition);
+    bytePosition++;
+
+    for (let j = 0; j < numberOfWaves; j++) {
+      const wave = new EnemyWave([]);
+
+      const numberOfEnemies = dataView.getUint8(bytePosition);
+      bytePosition++;
+
+      for (let k = 0; k < numberOfEnemies; k++) {
+        const combinedData = dataView.getUint8(bytePosition);
+        bytePosition++;
+
+        const colorNum = combinedData & 0b1111;
+        const typeNum = combinedData >> 4;
+
+        const position = dataView.getUint8(bytePosition);
+        bytePosition++;
+
+        switch (typeNum) {
+          case 0:
+            wave.enemies.push(new StraightEnemy(position, colorNum));
+            break;
+          case 1:
+            wave.enemies.push(new PauseEnemy(position, colorNum));
+            break;
+          case 2:
+            wave.enemies.push(new WaveEnemy(position, colorNum, true));
+            break;
+          case 3:
+            wave.enemies.push(new WaveEnemy(position, colorNum, false));
+            break;
+          case 4:
+            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, true));
+            break;
+          case 5:
+            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, false));
+            break;
+          case 6:
+            wave.enemies.push(new SwoopEnemy(position, colorNum, true));
+            break;
+          case 7:
+            wave.enemies.push(new SwoopEnemy(position, colorNum, false));
+            break;
+        }
+      }
+
+      level.enemyWaves.push(wave);
+    }
+    levels.push(level);
+  }
+
+  return {
+    data: levels,
+    finalByteIndex: bytePosition,
   };
 }
 

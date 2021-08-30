@@ -2,11 +2,13 @@ import { unpackGameAssets } from "../from-asset-engine/game-asset-unpacker";
 import { DrawingEngine } from "../from-asset-engine/drawing-engine";
 import { MusicEngine } from "../from-asset-engine/music-engine";
 import { SfxEngine } from "../from-asset-engine/sfx-engine";
+import { Level } from "../levels/level";
 
-export let assetEngine: { drawEngine: DrawingEngine, musicEngine: MusicEngine, sfxEngine: SfxEngine };
+export let assetEngine: { drawEngine: DrawingEngine, musicEngine: MusicEngine, sfxEngine: SfxEngine, levels: Level[], resetLevels: () => void };
+let assetFile: ArrayBuffer;
 
 export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
-  const assetFile = await getFileFromServer('./a');
+  assetFile = await getFileFromServer('./a');
   const assets = unpackGameAssets(assetFile);
 
   assetEngine = {
@@ -19,6 +21,10 @@ export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
     ),
     musicEngine: new MusicEngine(assets.songsAsset.data),
     sfxEngine: new SfxEngine(assets.soundEffectsAsset.data),
+    levels: assets.levelsAsset.data,
+    resetLevels() {
+      this.levels = unpackGameAssets(assetFile).levelsAsset.data;
+    }
   };
 }
 
