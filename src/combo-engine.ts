@@ -30,6 +30,8 @@ export class ComboEngine {
       if (this.comboCount > 2) {
         this.comboChain++;
         this.comboChainSizeMultiplier = 1.3;
+      } else {
+        this.comboChain = 0;
       }
 
       this.comboCount = 0;

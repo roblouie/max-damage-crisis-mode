@@ -6,11 +6,18 @@ export abstract class Enemy {
   color = '#000000';
   isDead = false;
 
-  protected constructor(x: number, y: number, size: number, color: string) {
-    this.position.x = x;
-    this.position.y = y;
+  static Colors = [
+    '#ff0000',
+    '#00ff00',
+    '#0000ff',
+    '#ff00ff',
+  ];
+
+  protected constructor(gridPosition: number, size: number, colorNum: number) {
+    this.position.x = (gridPosition % 7) * 32 + 16;
+    this.position.y = Math.floor(gridPosition / 7) * 32;
     this.size = size;
-    this.color = color;
+    this.color = Enemy.Colors[colorNum];
   }
 
   update() {

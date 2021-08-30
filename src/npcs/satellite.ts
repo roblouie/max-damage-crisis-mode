@@ -15,7 +15,7 @@ class Satellite {
   }
 
   update() {
-    assetEngine.drawEngine.drawSprite(10, this.position.x - this.getRadius(), this.position.y - this.getRadius());
+    assetEngine.drawEngine.drawSprite(14, this.position.x - this.getRadius(), this.position.y - this.getRadius());
   }
 }
 

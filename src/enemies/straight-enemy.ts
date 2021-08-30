@@ -1,12 +1,12 @@
 import { Enemy } from "./enemy";
 
 export class StraightEnemy extends Enemy {
-  constructor(x: number, y: number, color: string) {
-    super(x, y, 16, color);
+  constructor(gridPosition: number, colorNum: number) {
+    super(gridPosition, 16, colorNum);
   }
 
   update() {
-    this.position.y += 0.5;
+    this.position.y += 0.8;
     super.update();
   }
 }

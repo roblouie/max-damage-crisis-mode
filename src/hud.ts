@@ -1,6 +1,7 @@
 import {assetEngine} from "./core/asset-engine-instance";
+import { comboEngine } from "./combo-engine";
 
-export class Hud {
+class Hud {
   private score = 0;
   private height = 45;
   private meterTop: number;
@@ -14,13 +15,28 @@ export class Hud {
     this.meterTop = screenHeight - this.height;
   }
 
-  update(score: number) {
-    this.score = score;
+  update() {
     this.draw();
   }
 
-  takeHit() {
-    this.healthPercent -= 5;
+  resetHealth() {
+    this.healthPercent = 100;
+  }
+
+  resetScore() {
+    this.score = 0;
+  }
+
+  takeHit(toDecreaseBy = 5) {
+    this.healthPercent -= toDecreaseBy;
+  }
+
+  updateForEnemyKilled() {
+    this.score += (10 * comboEngine.getComboMultiplier());
+  }
+
+  updateScore(scoreToAdd: number) {
+    this.score += scoreToAdd;
   }
 
   draw() {
@@ -35,4 +51,9 @@ export class Hud {
     assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 30, 'white', 691, this.meterTop + 25);
     context.restore();
   }
+}
+
+export let hud: Hud;
+export function initializeHud() {
+  hud = new Hud();
 }

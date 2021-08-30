@@ -5,8 +5,8 @@ export class WaveEnemy extends Enemy {
   momentum = 0;
   isMovingLeft = false;
 
-  constructor(x: number, y: number, color: string, isMovingLeft?: boolean) {
-    super(x, y, 16, color);
+  constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
+    super(gridPosition, 16, colorNum);
     if (isMovingLeft) {
       this.isMovingLeft = isMovingLeft;
     }
@@ -36,7 +36,7 @@ export class WaveEnemy extends Enemy {
     }
 
     this.position.x += this.momentum;
-    this.position.y += 0.5;
+    this.position.y += 0.8;
     super.update();
   }
 }
