@@ -286,39 +286,11 @@ function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): Unpack
         const [position, colorNum, typeNum] = splitByte(dataView.getUint16(bytePosition), 8, 12, 16);
         bytePosition += 2;
 
-        // try {
-        //   const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
-        //   wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
-        // } catch(e) {
-        //   console.log(typeNum);
-        // }
-        switch (typeNum) {
-          case 0:
-            wave.enemies.push(new StraightEnemy(position, colorNum));
-            break;
-          case 1:
-            wave.enemies.push(new PauseEnemy(position, colorNum));
-            break;
-          case 2:
-            wave.enemies.push(new WaveEnemy(position, colorNum, true));
-            break;
-          case 3:
-            wave.enemies.push(new WaveEnemy(position, colorNum, false));
-            break;
-          case 4:
-            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, true));
-            break;
-          case 5:
-            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, false));
-            break;
-          case 6:
-            wave.enemies.push(new SwoopEnemy(position, colorNum, true));
-            break;
-          case 7:
-            wave.enemies.push(new SwoopEnemy(position, colorNum, false));
-            break;
-        }
-        if (typeNum > 7) {
+        //TODO: Remove try catch after finding where bad data in level editor is coming from
+        try {
+          const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
+          wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
+        } catch(e) {
           console.log(typeNum);
         }
       }
