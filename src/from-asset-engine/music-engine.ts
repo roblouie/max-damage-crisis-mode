@@ -23,13 +23,13 @@ export class MusicEngine {
     // We need a master gain with sound fx too though first
     if (!this.isCtxStarted) {
       this.createContext();
-      this.createOscillators(this.songs[songIndex]);
       this.isCtxStarted = true;
     }
     if (this.isSongPlaying) {
       this.stopSong();
     }
     this.isSongPlaying = true;
+    this.createOscillators(this.songs[songIndex]);
     this.currentTempo = this.songs[songIndex].tempo;
     this.masterGain!.gain.value = .2;
     this.songs[songIndex].tracks.forEach((track, index) => this.scheduleTrackNotes(track, index));
@@ -49,7 +49,6 @@ export class MusicEngine {
     if (isRepeat) {
       this.repeatTimer = setTimeout(() => this.startSong(songIndex), songEndInSeconds * 1000);
     }
-
   }
 
   stopSong() {
@@ -61,10 +60,12 @@ export class MusicEngine {
     this.masterGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
     this.oscillators.forEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
+    this.oscillators.splice(0, this.oscillators.length);
     this.gainNodes.forEach(gain => {
       gain.gain.cancelScheduledValues(this.ctx.currentTime);
       gain.gain.value = 0;
     });
+    this.gainNodes.splice(0, this.gainNodes.length);
   }
 
 
