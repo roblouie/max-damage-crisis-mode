@@ -80,7 +80,7 @@ export class DrawingEngine {
         alpha = 0;
       }
 
-      const [blue, green, red] = split24Bit(color, 16, 8);
+      const [blue, green, red] = split24Bit(color, 8, 16, 24);
       imageData.data[imageDataIndex] = red;
       imageData.data[imageDataIndex + 1] = green;
       imageData.data[imageDataIndex + 2] = blue;
