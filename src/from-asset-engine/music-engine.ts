@@ -60,12 +60,12 @@ export class MusicEngine {
     this.masterGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
     this.oscillators.forEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
-    this.oscillators.splice(0, this.oscillators.length);
+    this.oscillators = [];
     this.gainNodes.forEach(gain => {
       gain.gain.cancelScheduledValues(this.ctx.currentTime);
       gain.gain.value = 0;
     });
-    this.gainNodes.splice(0, this.gainNodes.length);
+    this.gainNodes = [];
   }
 
 
