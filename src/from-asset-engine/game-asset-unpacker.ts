@@ -89,10 +89,9 @@ function bytesToSprites(arrayBuffer: ArrayBuffer, startingOffset: number): Unpac
 
   while (spritesParsed < numberOfSprites) {
     // @ts-ignore
-    const sprite = new Sprite(...splitByte(dataView.getUint8(bytePosition++), 2));
-
+    const sprite = new Sprite(...splitByte(dataView.getUint8(bytePosition++), 6));
     for (let i = 0; i < sprite.spriteTiles.length; i++) {
-      const [paletteNumber, flippedXBit, flippedYBit] = splitByte(dataView.getUint8(bytePosition++), 2, 1);
+      const [paletteNumber, flippedXBit, flippedYBit] = splitByte(dataView.getUint8(bytePosition++), 6, 7);
       sprite.spriteTiles[i] = new SpriteTile(!!flippedXBit, !!flippedYBit, paletteNumber);
     }
 
@@ -116,10 +115,9 @@ function bytesToBackgrounds(arrayBuffer: ArrayBuffer, startingOffset: number): U
   const backgroundLayers: BackgroundLayer[] = [];
 
   while (backgroundsParsed < numberOfBackgroundLayers) {
-    const numberOfSpritesInBackground = dataView.getUint8(bytePosition++);
-
-    // @ts-ignore
-    const backgroundLayer = new BackgroundLayer(dataView.getUint8(bytePosition++));
+    const [numberOfSpritesInBackground, semiTransparent] = split16Bit(dataView.getUint16(bytePosition, true), 8);
+    bytePosition += 2;
+    const backgroundLayer = new BackgroundLayer(semiTransparent);
 
     for (let i = 0; i < numberOfSpritesInBackground; i++) {
       const [spriteIndex, position] = split16Bit(dataView.getUint16(bytePosition), 8);
@@ -229,11 +227,12 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
     let gainInstructionsParsed = 0;
     const gainInstructions = [];
     while (gainInstructionsParsed < numberOfGainInstructions) {
-      const gainInstruction = dataView.getUint8(bytePosition++);
-      const gain = (gainInstruction >> 6) / 3;
-      const isWhiteNoise = ((gainInstruction >> 5) & 0b1) === 1;
-      const timeFromLastInstruction = (gainInstruction & 0b11111) / 20;
-      gainInstructions.push({ gain, isWhiteNoise, timeFromLastInstruction });
+      const [timeFromLastInstruction, whiteNoiseBit, gain] = splitByte(dataView.getUint8(bytePosition++), 5, 6);
+      gainInstructions.push({
+        gain: gain / 3,
+        isWhiteNoise: !!whiteNoiseBit,
+        timeFromLastInstruction: timeFromLastInstruction / 20
+      });
       gainInstructionsParsed++;
     }
 
@@ -242,16 +241,14 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
     const pitchInstructions = [];
 
     while (otherInstructionsParsed < numberOfOtherInstructions) {
-      const [pitchBytes, otherInstruction] = split16Bit(dataView.getUint16(bytePosition++), 8);
-
-      const isWidth = otherInstruction >> 7 === 1;
-      if (isWidth) {
-        const timeFromLastInstruction = (otherInstruction & 0b11111) / 20;
-        widthInstructions.push({ timeFromLastInstruction, isWidth });
+      const [pitchBytes, duration, linearRampBit, _, widthBit] = split16Bit(dataView.getUint16(bytePosition++), 8, 13, 14, 15);
+      if (!!widthBit) {
+        const timeFromLastInstruction = duration / 20;
+        widthInstructions.push({ timeFromLastInstruction });
       } else {
         bytePosition++;
-        const isLinearRampTo = ((otherInstruction >> 5) & 0b1) === 1;
-        const durationInSeconds = (otherInstruction & 0b11111) / 20;
+        const isLinearRampTo = !!linearRampBit;
+        const durationInSeconds = duration / 20;
 
         const pitch = (pitchBytes * 70) + 1;
         pitchInstructions.push({ pitch, durationInSeconds, isLinearRampTo });
@@ -279,51 +276,18 @@ function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): Unpack
   for (let i = 0; i < numberOfLevels; i++) {
     const level = new Level([]);
 
-    const numberOfWaves = dataView.getUint8(bytePosition);
-    bytePosition++;
+    const numberOfWaves = dataView.getUint8(bytePosition++);
 
     for (let j = 0; j < numberOfWaves; j++) {
       const wave = new EnemyWave([]);
-
-      const numberOfEnemies = dataView.getUint8(bytePosition);
-      bytePosition++;
+      const numberOfEnemies = dataView.getUint8(bytePosition++);
 
       for (let k = 0; k < numberOfEnemies; k++) {
-        const combinedData = dataView.getUint8(bytePosition);
-        bytePosition++;
+        const [position, colorNum, typeNum] = splitByte(dataView.getUint16(bytePosition), 8, 12);
+        bytePosition += 2;
 
-        const colorNum = combinedData & 0b1111;
-        const typeNum = combinedData >> 4;
-
-        const position = dataView.getUint8(bytePosition);
-        bytePosition++;
-
-        switch (typeNum) {
-          case 0:
-            wave.enemies.push(new StraightEnemy(position, colorNum));
-            break;
-          case 1:
-            wave.enemies.push(new PauseEnemy(position, colorNum));
-            break;
-          case 2:
-            wave.enemies.push(new WaveEnemy(position, colorNum, true));
-            break;
-          case 3:
-            wave.enemies.push(new WaveEnemy(position, colorNum, false));
-            break;
-          case 4:
-            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, true));
-            break;
-          case 5:
-            wave.enemies.push(new ScreenEdgeBounceEnemy(position, colorNum, false));
-            break;
-          case 6:
-            wave.enemies.push(new SwoopEnemy(position, colorNum, true));
-            break;
-          case 7:
-            wave.enemies.push(new SwoopEnemy(position, colorNum, false));
-            break;
-        }
+        const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
+        wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
       }
 
       level.enemyWaves.push(wave);

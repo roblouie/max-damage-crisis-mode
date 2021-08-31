@@ -59,7 +59,7 @@ window.onload = async () => {
     }
   ]);
 
-  gameStateMachine.setState('menu', 0, 19000);
+  gameStateMachine.setState('start-screen', 0, 19000);
 
   requestAnimationFrame(update);
 }
