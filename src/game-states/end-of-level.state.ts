@@ -27,11 +27,6 @@ class EndOfLevelState implements State {
     drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
-    if (this.framesElapsed > 30) {
-      context.textAlign = 'center';
-      drawEngine.drawText('Level Complete!', 40, 'white', 480, 230);
-    }
-
     satellite.update();
 
     if (!player.isOnSatelite) {
@@ -40,19 +35,24 @@ class EndOfLevelState implements State {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
       context.save();
-      if (this.scoreEndFrame > 0 && this.framesElapsed - this.scoreEndFrame >= 60) {
+      if (this.scoreEndFrame > 0 && this.framesElapsed - this.scoreEndFrame >= 160) {
         //TODO: Use player jump frame sprite
         this.playerScale += this.scaleRate;
-        this.playerPosition.y -= this.playerScale * 0.5;
+        this.playerPosition.y -= this.playerScale * 2;
         this.playerPosition.x -= this.playerScale * 0.4;
         context.scale(this.playerScale, this.playerScale);
         this.scaleRate += 0.05;
       }
-      drawEngine.drawSprite(13, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
+      drawEngine.drawSprite(3, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
       context.restore();
     }
 
-    if (this.framesElapsed >= 30) {
+    if (this.framesElapsed > 30) {
+      context.textAlign = 'center';
+      drawEngine.drawText('Level Complete!', 40, 'white', 480, 230);
+    }
+
+    if (this.framesElapsed >= 60) {
       context.textAlign = 'left';
       drawEngine.drawText('Resistance Bonus', 40, 'white', 160, 380);
       context.textAlign = 'right';
@@ -84,20 +84,19 @@ class EndOfLevelState implements State {
   }
 
   onEnter(levelNumber: number, levelTime: number) {
-    //TODO: Play level won song
     this.framesElapsed = 0;
     this.scoreEndFrame = 0;
     this.playerScale = 1;
     this.scaleRate = 0.1;
     this.levelNumberEnded = levelNumber;
-    this.playerPosition = { x: player.startX, y: player.startY };
+    this.playerPosition = { x: player.startX, y: player.startY - 12 };
     const expectedTime = assetEngine.levels[levelNumber].enemyWaves.length * 10;
     const baseBonus = (expectedTime - Math.floor(levelTime / 1000)) * 10000;
     this.timeBonus = baseBonus > 0 ? baseBonus : 0;
     backgroundManager.updateBackgrounds();
     hud.update();
     comboEngine.update();
-    assetEngine.musicEngine.stopSong();
+    assetEngine.musicEngine.startSong(3);
   }
 
   onLeave() {}

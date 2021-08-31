@@ -5,11 +5,11 @@ import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
 
 class Player {
-  readonly startX = 112;
-  readonly startY = 262;
+  readonly startX = 120;
+  readonly startY = 260;
   position = { x: this.startX, y: this.startY };
   width = 16;
-  height = 16;
+  height = 20;
   isOnSatelite = true;
   isLeavingSatellite = true;
   isOnEnemy = false;
@@ -51,7 +51,7 @@ class Player {
   }
 
   getCenter() {
-    return { x: this.position.x + (this.width / 2), y: this.position.y + (this.height / 2)};
+    return { x: this.position.x + (this.width / 2), y: this.position.y + 12};
   }
 
   isJumping() {
@@ -102,8 +102,8 @@ class Player {
   onLandedUpdate() {
     this.drawAtAngle(this.angle);
     if (this.isOnEnemy && this.enemyAttachedTo) {
-      this.position.x = this.enemyAttachedTo?.position.x - this.getRadius();
-      this.position.y = this.enemyAttachedTo?.position.y - this.getRadius();
+      this.position.x = this.enemyAttachedTo?.getCenter().x - this.getRadius();
+      this.position.y = this.enemyAttachedTo?.getCenter().y - this.getRadius();
     }
 
     if (controls.isAnalogStickPressed) {
@@ -179,8 +179,18 @@ class Player {
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * this.respawnScale, 1/4 * this.respawnScale);
-    assetEngine.drawEngine.drawSprite(13, -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(3, -this.width / 2, -22);
     context.restore();
+
+    // DEBUG
+    // context.save();
+    // context.fillStyle = 'blue';
+    // context.beginPath();
+    // context.scale(4, 4);
+    // context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
+    // context.stroke();
+    // context.fill();
+    // context.restore();
   }
 }
 

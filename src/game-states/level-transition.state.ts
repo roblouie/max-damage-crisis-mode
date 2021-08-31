@@ -1,7 +1,6 @@
 import { State } from "../core/state";
 import { assetEngine } from "../core/asset-engine-instance";
 import { gameStateMachine } from "../game-state-machine";
-import { comboEngine } from "../combo-engine";
 
 class LevelTransitionState implements State {
   levelNumber = 0;
