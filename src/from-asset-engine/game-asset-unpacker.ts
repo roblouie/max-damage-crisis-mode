@@ -250,7 +250,7 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
         const isLinearRampTo = !!linearRampBit;
         const durationInSeconds = duration / 20;
 
-        const pitch = (pitchBytes * 70) + 1;
+        const pitch = Math.pow((pitchBytes + 9), 1.7);
         pitchInstructions.push({ pitch, durationInSeconds, isLinearRampTo });
       }
       otherInstructionsParsed++;
