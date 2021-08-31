@@ -1,8 +1,9 @@
 import { unpackGameAssets } from "../from-asset-engine/game-asset-unpacker";
 import { DrawingEngine } from "../from-asset-engine/drawing-engine";
 import { MusicEngine } from "../from-asset-engine/music-engine";
+import {EffectEngine} from "../from-asset-engine/effect-engine.model";
 
-export let assetEngine: { drawEngine: DrawingEngine, musicEngine: MusicEngine };
+export let assetEngine: { drawEngine: DrawingEngine, musicEngine: MusicEngine, effectEngine: EffectEngine };
 
 export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
   const assetFile = await getFileFromServer('./a');
@@ -16,7 +17,8 @@ export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
       assets.backgroundAsset.data,
       canvas
     ),
-    musicEngine: new MusicEngine(assets.songsAsset.data)
+    musicEngine: new MusicEngine(assets.songsAsset.data),
+    effectEngine: new EffectEngine()
   };
 }
 

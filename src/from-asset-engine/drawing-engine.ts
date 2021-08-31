@@ -4,6 +4,7 @@ import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
 
 export class DrawingEngine {
+  sprites: Sprite[];
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
   private readonly width = 960;
@@ -15,10 +16,11 @@ export class DrawingEngine {
   constructor(
     private palettes: string[][],
     private tiles: number[][],
-    private sprites: Sprite[],
+    sprites: Sprite[],
     public backgrounds: BackgroundLayer[][],
     private canvas: HTMLCanvasElement,
   ) {
+    this.sprites = sprites;
     this.canvasContext = canvas.getContext('2d')!;
     this.canvasContext.imageSmoothingEnabled = false;
 
