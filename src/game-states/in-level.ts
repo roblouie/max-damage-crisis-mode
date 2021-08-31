@@ -37,6 +37,7 @@ export class InLevel implements State {
     }
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
+    assetEngine.effectEngine.update();
 
     this.currentLevel.update();
 
