@@ -115,12 +115,12 @@ function bytesToBackgrounds(arrayBuffer: ArrayBuffer, startingOffset: number): U
   const backgroundLayers: BackgroundLayer[] = [];
 
   while (backgroundsParsed < numberOfBackgroundLayers) {
-    const [numberOfSpritesInBackground, semiTransparent] = split16Bit(dataView.getUint16(bytePosition, true), 8, 16);
+    const [numberOfSpritesInBackground, semiTransparent] = split16Bit(dataView.getUint16(bytePosition, true), 8);
     bytePosition += 2;
     const backgroundLayer = new BackgroundLayer(semiTransparent);
 
     for (let i = 0; i < numberOfSpritesInBackground; i++) {
-      const [spriteIndex, position] = split16Bit(dataView.getUint16(bytePosition), 8, 16);
+      const [spriteIndex, position] = split16Bit(dataView.getUint16(bytePosition), 8);
       bytePosition += 2;
       backgroundLayer.sprites.push({ position, spriteIndex });
     }
@@ -161,7 +161,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
   const songs: Song[] = [];
 
   while (songsParsed < numberOfSongs) {
-    const [numberOfTracks, tempo] = split16Bit(dataView.getUint16(bytePosition), 8, 16);
+    const [numberOfTracks, tempo] = split16Bit(dataView.getUint16(bytePosition), 8);
     bytePosition += 2;
 
     const tracks: Track[] = [];
@@ -241,7 +241,7 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
     const pitchInstructions = [];
 
     while (otherInstructionsParsed < numberOfOtherInstructions) {
-      const [pitchBytes, duration, linearRampBit, _, widthBit] = split16Bit(dataView.getUint16(bytePosition++), 8, 13, 14, 15, 16);
+      const [pitchBytes, duration, linearRampBit, _, widthBit] = split16Bit(dataView.getUint16(bytePosition++), 8, 13, 14, 15);
       if (!!widthBit) {
         const timeFromLastInstruction = duration / 20;
         widthInstructions.push({ timeFromLastInstruction });
