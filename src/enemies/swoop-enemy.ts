@@ -4,7 +4,7 @@ export class SwoopEnemy extends Enemy {
   isMovingLeft = false;
 
   constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
-    super(gridPosition, 16, colorNum);
+    super(gridPosition, 16, colorNum ,[12]);
     if (isMovingLeft) {
       this.isMovingLeft = isMovingLeft;
     }
