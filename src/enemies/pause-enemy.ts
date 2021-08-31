@@ -5,7 +5,7 @@ export class PauseEnemy extends Enemy {
   startingY?: number;
 
   constructor(gridPosition: number, colorNum: number) {
-    super(gridPosition, 16, colorNum);
+    super(gridPosition, 16, colorNum, [12]);
   }
 
   update() {

@@ -45,13 +45,14 @@ export class InLevel implements State {
 
       if (player.enemyAttachedTo) {
         comboEngine.updateOnKill(player.enemyAttachedTo);
+        assetEngine.sfxEngine.playEffect(0);
         player.enemyAttachedTo.isDead = true;
         player.enemyAttachedTo = undefined;
         hud.updateForEnemyKilled();
       }
 
       this.currentLevel.activeEnemies.forEach(enemy => {
-        if (enemy !== player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.position, player.getCenter()) <= player.getRadius() + enemy.size) {
+        if (enemy !== player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.getRadius() + enemy.getRadius()) {
           player.landOnEnemy(enemy);
           comboEngine.updateOnLand(enemy);
         }
