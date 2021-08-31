@@ -145,6 +145,7 @@ class Player {
   }
 
   onRespawningEnter() {
+    assetEngine.effectEngine.addEffect({x: 200, y: 200}, )
     this.position = { x: this.startX, y: this.startY + 40}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
