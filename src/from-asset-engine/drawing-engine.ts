@@ -5,6 +5,7 @@ import { BackgroundLayer } from "./background-layer";
 import { split24Bit } from "../core/binary-helperts";
 
 export class DrawingEngine {
+  sprites: Sprite[];
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
   private readonly width = 960;
@@ -16,10 +17,11 @@ export class DrawingEngine {
   constructor(
     private palettes: number[][],
     private tiles: number[][],
-    private sprites: Sprite[],
+    sprites: Sprite[],
     public backgrounds: BackgroundLayer[][],
     private canvas: HTMLCanvasElement,
   ) {
+    this.sprites = sprites;
     this.canvasContext = canvas.getContext('2d')!;
     this.canvasContext.imageSmoothingEnabled = false;
 
