@@ -14,7 +14,7 @@ function splitData(value: number, numberOfBytes: 1 | 2 | 3, positions: number[])
   const maskBase = (1 << (numberOfBytes * 8)) - 1;
   const numberOfBits = numberOfBytes * 8;
 
-  return positions.map((position, index) => {
+  return [...positions, numberOfBits].map((position, index) => {
     const positionDifference = position - (positions[index - 1] ?? 0);
     const mask = maskBase >> (numberOfBits - positionDifference);
     return (value >> positions[index - 1]) & mask;

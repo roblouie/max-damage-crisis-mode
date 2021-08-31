@@ -68,7 +68,7 @@ function bytesToTiles(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
   const rawTileValues: number[] = [];
 
   for (let byteOffset = 1; byteOffset < totalTilesByteSize; byteOffset++) {
-    rawTileValues.push(...splitByte(dataView.getUint8(byteOffset), 4, 8));
+    rawTileValues.push(...splitByte(dataView.getUint8(byteOffset), 4));
   }
 
   const tileData = chunkArrayInGroups(rawTileValues, 256);
@@ -89,9 +89,9 @@ function bytesToSprites(arrayBuffer: ArrayBuffer, startingOffset: number): Unpac
 
   while (spritesParsed < numberOfSprites) {
     // @ts-ignore
-    const sprite = new Sprite(...splitByte(dataView.getUint8(bytePosition++), 6, 8));
+    const sprite = new Sprite(...splitByte(dataView.getUint8(bytePosition++), 6));
     for (let i = 0; i < sprite.spriteTiles.length; i++) {
-      const [paletteNumber, flippedXBit, flippedYBit] = splitByte(dataView.getUint8(bytePosition++), 6, 7, 8);
+      const [paletteNumber, flippedXBit, flippedYBit] = splitByte(dataView.getUint8(bytePosition++), 6, 7);
       sprite.spriteTiles[i] = new SpriteTile(!!flippedXBit, !!flippedYBit, paletteNumber);
     }
 
@@ -167,7 +167,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
     const tracks: Track[] = [];
     let tracksParsed = 0;
     while (tracksParsed < numberOfTracks) {
-      const [numberOfPitches, waveformIndex] = splitByte(dataView.getUint8(bytePosition++), 4, 8);
+      const [numberOfPitches, waveformIndex] = splitByte(dataView.getUint8(bytePosition++), 4);
 
       const waveform = waves.find((wave: any, index: number) => index === waveformIndex);
 
@@ -185,7 +185,7 @@ function bytesToSongs(arrayBuffer: ArrayBuffer, startingOffset: number): Unpacke
       const notes: NotePosition[] = [];
       let startPosition = 0;
       while (notesParsed < numberOfNotes) {
-        const [noteLength, pitchIndex] = splitByte(dataView.getUint8(bytePosition++), 4, 8);
+        const [noteLength, pitchIndex] = splitByte(dataView.getUint8(bytePosition++), 4);
 
         if (pitchIndex !== 0) {
           const frequency = pitches[pitchIndex];
@@ -222,12 +222,12 @@ function bytesToSoundEffects(arrayBuffer: ArrayBuffer, startingOffset: number): 
   const soundEffects: SoundEffect[] = [];
 
   while (soundEffectsParsed < numberOfSoundEffects) {
-    const [numberOfOtherInstructions, numberOfGainInstructions] = splitByte(dataView.getUint8(bytePosition++), 4, 8);
+    const [numberOfOtherInstructions, numberOfGainInstructions] = splitByte(dataView.getUint8(bytePosition++), 4);
 
     let gainInstructionsParsed = 0;
     const gainInstructions = [];
     while (gainInstructionsParsed < numberOfGainInstructions) {
-      const [timeFromLastInstruction, whiteNoiseBit, gain] = splitByte(dataView.getUint8(bytePosition++), 5, 6, 8);
+      const [timeFromLastInstruction, whiteNoiseBit, gain] = splitByte(dataView.getUint8(bytePosition++), 5, 6);
       gainInstructions.push({
         gain: gain / 3,
         isWhiteNoise: !!whiteNoiseBit,
@@ -283,16 +283,11 @@ function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): Unpack
       const numberOfEnemies = dataView.getUint8(bytePosition++);
 
       for (let k = 0; k < numberOfEnemies; k++) {
-        const [position, colorNum, typeNum] = splitByte(dataView.getUint16(bytePosition), 8, 12, 16);
+        const [position, colorNum, typeNum] = splitByte(dataView.getUint16(bytePosition), 8, 12);
         bytePosition += 2;
 
-        //TODO: Remove try catch after finding where bad data in level editor is coming from
-        try {
-          const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
-          wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
-        } catch(e) {
-          console.log(typeNum);
-        }
+        const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
+        wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
       }
 
       level.enemyWaves.push(wave);
