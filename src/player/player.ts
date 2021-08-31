@@ -4,9 +4,9 @@ import { controls } from "../core/controls";
 import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
 
-export class Player {
-  private startX = 112;
-  private startY = 262;
+class Player {
+  readonly startX = 112;
+  readonly startY = 262;
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 16;
@@ -36,8 +36,10 @@ export class Player {
         stateName: 'respawning',
         onEnter: () => this.onRespawningEnter(),
         onUpdate: () => this.onRespawningUpdate(),
+        onLeave: () => this.onRespawningLeave(),
       }
-    ], 'landed');
+    ]);
+    this.stateMachine.setState('landed');
   }
 
   update() {
@@ -86,6 +88,7 @@ export class Player {
   }
 
   onLandedEnter() {
+    assetEngine.sfxEngine.playEffect(3);
     controls.onClick(position => {
       this.jumpAngle = Point.AngleBetweenTwo(this.getCenter(), position);
       this.stateMachine.setState('jumping');
@@ -124,6 +127,7 @@ export class Player {
 
 
   onJumpingEnter() {
+    assetEngine.sfxEngine.playEffect(2);
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
     this.isOnEnemy = false;
@@ -162,6 +166,11 @@ export class Player {
     }
   }
 
+  onRespawningLeave() {
+    this.isOnSatelite = true;
+    this.isLeavingSatellite = true;
+  }
+
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
     context.save();
@@ -170,7 +179,12 @@ export class Player {
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * this.respawnScale, 1/4 * this.respawnScale);
-    assetEngine.drawEngine.drawSprite(12, -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(13, -this.width / 2, -this.height / 2);
     context.restore();
   }
+}
+
+export let player: Player;
+export function initializePlayer() {
+  player = new Player();
 }

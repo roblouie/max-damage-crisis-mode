@@ -2,16 +2,15 @@ export class StateMachine {
   private currentState: { stateName: string, onEnter?: Function, onUpdate: Function, onLeave?: Function };
   private states: { stateName: string, onEnter?: Function, onUpdate: Function, onLeave?: Function }[];
 
-  constructor(states: { stateName: string, onEnter?: Function, onUpdate: Function, onLeave?: Function }[], initalState: string) {
+  constructor(states: { stateName: string, onEnter?: Function, onUpdate: Function, onLeave?: Function }[]) {
     this.states = states;
-    this.currentState = states.find(state => state.stateName === initalState)!;
-    this.currentState.onEnter ? this.currentState.onEnter() : null;
+    this.currentState = states[0];
   }
 
-  setState(newState: string, enterArgs?: any) {
+  setState(newState: string, ...enterArgs: any) {
     this.currentState.onLeave ? this.currentState.onLeave() : null;
     this.currentState = this.states.find(state => state.stateName === newState)!;
-    this.currentState.onEnter ? this.currentState.onEnter(enterArgs) : null;
+    this.currentState.onEnter ? this.currentState.onEnter(...enterArgs) : null;
   }
 
   getState() {

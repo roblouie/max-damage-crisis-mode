@@ -19,6 +19,8 @@ export class MusicEngine {
   }
 
   startSong(songIndex: number, isRepeat = true): void {
+    //TODO: Clean this up to remove the creat context thing since it exists already.
+    // We need a master gain with sound fx too though first
     if (!this.isCtxStarted) {
       this.createContext();
       this.createOscillators(this.songs[songIndex]);
@@ -51,6 +53,10 @@ export class MusicEngine {
   }
 
   stopSong() {
+    if (!this.isSongPlaying) {
+      return;
+    }
+
     this.isSongPlaying = false;
     this.masterGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
@@ -63,10 +69,9 @@ export class MusicEngine {
 
 
   private createContext() {
-    this.ctx = new AudioContext();
-    this.masterGain = this.ctx.createGain();
+    this.masterGain = audioContext.createGain();
     this.masterGain.gain.value = .2;
-    this.masterGain.connect(this.ctx.destination);
+    this.masterGain.connect(audioContext.destination);
   }
 
   private createOscillators(song: Song) {

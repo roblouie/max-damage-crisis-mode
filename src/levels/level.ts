@@ -2,31 +2,36 @@ import { EnemyWave } from "./enemy-wave";
 import { Enemy } from "../enemies/enemy";
 
 export class Level {
-  backgroundIndex: number;
-  songIndex: number;
-  currentTimeIntoLevel = 0;
+  backgroundIndex?: number;
+  songIndex?: number;
   enemyWaves: EnemyWave[];
   mostRecentWaveIndex = -1;
   activeEnemies: Enemy[] = [];
+  isOver = false;
 
-  constructor(backgroundIndex: number, songIndex: number, enemyWaves: EnemyWave[]) {
-    this.backgroundIndex = backgroundIndex;
-    this.songIndex = songIndex;
+  constructor(enemyWaves: EnemyWave[]) {
     this.enemyWaves = enemyWaves;
+  }
+
+  reset() {
+    this.mostRecentWaveIndex = -1;
   }
 
   update() {
     this.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.mostRecentWaveIndex === this.enemyWaves.length - 1) {
+      if (this.activeEnemies.length === 0) {
+        this.isOver = true;
+      }
       return;
     }
 
     const nextWave = this.enemyWaves[this.mostRecentWaveIndex + 1];
-    this.currentTimeIntoLevel+= 16.7;
-    if (this.currentTimeIntoLevel / 1000 >= nextWave.getStartTimeInSeconds()) {
+    if (this.activeEnemies.length <= 1) {
       this.mostRecentWaveIndex++;
-      this.activeEnemies.push(...nextWave.getEnemies())
+      nextWave.enemies.forEach(enemy => enemy.position.y -= 576);
+      this.activeEnemies.push(...nextWave.enemies)
     }
   }
 }
