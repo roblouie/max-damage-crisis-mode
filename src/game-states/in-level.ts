@@ -45,6 +45,7 @@ export class InLevel implements State {
 
       if (player.enemyAttachedTo) {
         comboEngine.updateOnKill(player.enemyAttachedTo);
+        assetEngine.effectEngine.addEffect(player.enemyAttachedTo.position, [22, 23, 24, 25, 26], 5, 25, 0.8, new Point(0, player.enemyAttachedTo.speed), 3, 0.01)
         assetEngine.sfxEngine.playEffect(0);
         player.enemyAttachedTo.isDead = true;
         player.enemyAttachedTo = undefined;

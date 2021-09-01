@@ -2,14 +2,15 @@ import { Enemy } from "./enemy";
 import { assetEngine } from "../core/asset-engine-instance";
 
 export class StraightEnemy extends Enemy {
+  speed = 0.8;
+
   constructor(gridPosition: number, colorNum: number) {
-    const colorFrames = [
+    super(gridPosition, 32, colorNum, [
       [7, 8, 9],
       [10, 11, 12],
       [13, 14, 15],
       [16, 17, 18],
-    ];
-    super(gridPosition, 32, colorNum, colorFrames[colorNum]);
+    ][colorNum]);
   }
 
   update() {

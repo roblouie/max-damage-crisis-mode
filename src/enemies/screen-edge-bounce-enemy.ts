@@ -3,6 +3,7 @@ import { Enemy } from "./enemy";
 export class ScreenEdgeBounceEnemy extends Enemy {
   momentum = 0;
   isMovingLeft = false;
+  speed = 0.8;
 
   constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
     super(gridPosition, 16, colorNum, [12]);

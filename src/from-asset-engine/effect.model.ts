@@ -1,14 +1,12 @@
 import {Point} from "../core/point";
 import {assetEngine} from "../core/asset-engine-instance";
-import {Sprite} from "./sprite.model";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Effect {
-  private animationFrameIndex = 0;
   private currentFrame = 0;
   private position: Point;
   private animationFrames: number[];
-  private animationRate: number;
-  private framesDuration: number;
+  private duration: number;
   private opacity: number;
   private translationRate: Point;
   private currentRotation = 0;
@@ -17,29 +15,27 @@ export class Effect {
   private scaleRate: number;
   private width: number;
   private height: number;
+  private frameSequencer: Generator<number>
 
-  constructor(startPosition: Point, animationFrames: number[], animationRate: number, framesDuration: number, opacity: number, translationRate: Point, rotationRate: number, scaleRate: number) {
+  constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, opacity: number, translationRate: Point, rotationRate: number, scaleRate: number) {
     this.position = startPosition;
     this.animationFrames = animationFrames;
-    this.animationRate = animationRate;
-    this.framesDuration = framesDuration;
+    this.duration = durationInFrames;
     this.opacity = opacity;
     this.translationRate = translationRate;
     this.rotationRate = rotationRate;
     this.scaleRate = scaleRate;
     const startSprite = assetEngine.drawEngine.sprites[this.animationFrames[0]];
-    this.height = startSprite.height;
-    this.width = startSprite.width;
+    this.height = startSprite.height * 16;
+    this.width = startSprite.width * 16;
+    this.frameSequencer = animationFrameSequencer(animationFrames, animationRate);
   }
 
   update() {
     this.position.x += this.translationRate.x;
     this.position.y += this.translationRate.y;
-    this.currentScale *= this.scaleRate;
+    this.currentScale += this.scaleRate;
     this.currentRotation += this.rotationRate;
-    if (this.currentFrame % this.animationRate === 0) {
-      this.animationFrameIndex += 1;
-    }
     this.drawAtAngle(this.currentRotation);
     this.currentFrame += 1;
   }
@@ -49,7 +45,7 @@ export class Effect {
   }
 
   getIsDone() {
-    return this.currentFrame >= this.framesDuration;
+    return this.currentFrame >= this.duration;
   }
 
   drawAtAngle(angle: number) {
@@ -60,7 +56,7 @@ export class Effect {
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * this.currentScale, 1/4 * this.currentScale);
-    assetEngine.drawEngine.drawSprite(this.animationFrames[this.animationFrameIndex], -this.width / 2, -this.height / 2);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, -this.width / 2, -this.height / 2);
     context.restore();
   }
 }
