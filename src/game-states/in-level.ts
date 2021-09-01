@@ -9,10 +9,13 @@ import {gameStateMachine} from "../game-state-machine";
 import { comboEngine } from "../combo-engine";
 import { satellite } from "../npcs/satellite";
 import { controls } from "../core/controls";
+import { debounce } from "../core/debounce";
+import { Enemy } from "../enemies/enemy";
 
 export class InLevel implements State {
   currentLevel = new Level([]);
   levelNumber = 0;
+  lastColor = '#ffffff';
 
   onEnter(levelNumber: number) {
     comboEngine.reset();
@@ -42,19 +45,15 @@ export class InLevel implements State {
     this.currentLevel.update();
 
     if (player.isJumping()) {
+      this.currentLevel.activeEnemies.forEach((enemy, index, enemies) => {
+        // See if we should land on the enemy
+        if (enemy !== player.enemyAttachedTo && enemy !== player.enemyJumpingFrom && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.getRadius() + enemy.getRadius()) {
+          this.killMinedEnemies(enemy.color, enemies);
 
-      if (player.enemyAttachedTo) {
-        comboEngine.updateOnKill(player.enemyAttachedTo);
-        assetEngine.effectEngine.addEffect(player.enemyAttachedTo.position, [22, 23, 24, 25, 26], 5, 25, 0.8, new Point(0, player.enemyAttachedTo.speed), 3, 0.01)
-        assetEngine.sfxEngine.playEffect(0);
-        player.enemyAttachedTo.isDead = true;
-        player.enemyAttachedTo = undefined;
-        hud.updateForEnemyKilled();
-      }
-
-      this.currentLevel.activeEnemies.forEach(enemy => {
-        if (enemy !== player.enemyAttachedTo && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.getRadius() + enemy.getRadius()) {
+          // After marking other enemies as dead, we can land on this enemy and place a mine on it
           player.landOnEnemy(enemy);
+          this.lastColor = enemy.color;
+          enemy.isMineAttached = true;
           comboEngine.updateOnLand(enemy);
         }
       });
@@ -66,11 +65,13 @@ export class InLevel implements State {
     if (!player.isLeavingSatellite && player.isJumping()) {
       if (Point.DistanceBetweenTwo(player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + player.getRadius()) {
         player.landOnSatellite();
+        this.killMinedEnemies('', this.currentLevel.activeEnemies);
       }
     }
 
     if (player.isRespawning()) {
       comboEngine.reset();
+      this.currentLevel.activeEnemies.forEach(enemy => enemy.isMineAttached = false);
     }
 
     this.currentLevel.activeEnemies.forEach(enemy => {
@@ -78,7 +79,7 @@ export class InLevel implements State {
         enemy.isDead = true;
         hud.takeHit();
       }
-    })
+    });
 
     this.currentLevel.activeEnemies = this.currentLevel.activeEnemies.filter(enemy => !enemy.isDead);
 
@@ -90,6 +91,26 @@ export class InLevel implements State {
     player.update();
     hud.update();
     comboEngine.update();
+  }
+
+  private killMinedEnemies(color: string, enemies: Enemy[]) {
+    let minedEnemyCount = enemies.filter(enemy => enemy.isMineAttached).length;
+    // If the landed on enemy is a different color, detonate any enemies with mines on them
+    if (color !== this.lastColor) {
+      enemies.forEach(enemy => {
+        if (enemy.isMineAttached) {
+          if (minedEnemyCount > 2) {
+            enemy.isDead = true;
+            assetEngine.effectEngine.addEffect(enemy.position, [22, 23, 24, 25, 26], 5, 25, 0.8, new Point(0, enemy.speed), 3, 0.01)
+            debounce(() => assetEngine.sfxEngine.playEffect(0), 1);
+            hud.updateForEnemyKilled();
+            comboEngine.updateOnKill(enemy);
+          } else {
+            enemies.forEach(enemy => enemy.isMineAttached = false);
+          }
+        }
+      })
+    }
   }
 }
 

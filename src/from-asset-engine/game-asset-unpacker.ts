@@ -91,8 +91,10 @@ function bytesToSprites(arrayBuffer: ArrayBuffer, startingOffset: number): Unpac
     // @ts-ignore
     const sprite = new Sprite(...splitByte(dataView.getUint8(bytePosition++), 6));
     for (let i = 0; i < sprite.spriteTiles.length; i++) {
-      const [paletteNumber, flippedXBit, flippedYBit] = splitByte(dataView.getUint8(bytePosition++), 6, 7);
-      sprite.spriteTiles[i] = new SpriteTile(!!flippedXBit, !!flippedYBit, paletteNumber);
+      const value = dataView.getUint16(bytePosition);
+      bytePosition += 2;
+      const [flippedYBit, flippedXBit, _, tileNumber] = split16Bit(value, 1, 2, 8);
+      sprite.spriteTiles[i] = new SpriteTile(!!flippedXBit, !!flippedYBit, tileNumber);
     }
 
     sprites.push(sprite);
@@ -283,7 +285,8 @@ function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): Unpack
       const numberOfEnemies = dataView.getUint8(bytePosition++);
 
       for (let k = 0; k < numberOfEnemies; k++) {
-        const [position, colorNum, typeNum] = splitByte(dataView.getUint16(bytePosition), 8, 12);
+        const data = dataView.getUint16(bytePosition);
+        const [position, colorNum, typeNum] = split16Bit(data, 8, 12);
         bytePosition += 2;
 
         const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
