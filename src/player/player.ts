@@ -6,7 +6,7 @@ import { Enemy } from "../enemies/enemy";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Player {
-  readonly startX = 120;
+  readonly startX = 112;
   readonly startY = 260;
   position = { x: this.startX, y: this.startY };
   width = 16;
@@ -15,6 +15,7 @@ class Player {
   isLeavingSatellite = true;
   isOnEnemy = false;
   enemyAttachedTo?: Enemy;
+  enemyJumpingFrom?: Enemy;
   angle = 90;
   stateMachine: StateMachine;
   speed = 3.7;
@@ -46,7 +47,7 @@ class Player {
         onLeave: () => this.onRespawningLeave(),
       }
     ]);
-    this.stateMachine.setState('landed');
+    this.stateMachine.setState('respawning');
   }
 
   update() {
@@ -107,13 +108,14 @@ class Player {
     });
 
     if (this.isOnSatelite) {
-      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 10);
+      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 8);
     } else if (this.isOnEnemy) {
       this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.plantFrame, this.crouchFrame], 7);
     }
   }
 
   onLandedUpdate() {
+    this.enemyJumpingFrom = undefined;
     this.currentFrame = this.frameSequencer?.next().value;
     this.drawAtAngle(this.angle);
     if (this.isOnEnemy && this.enemyAttachedTo) {
@@ -148,6 +150,7 @@ class Player {
     controls.onClick(undefined);
     this.isOnEnemy = false;
     this.isOnSatelite = false;
+    this.enemyJumpingFrom = this.enemyAttachedTo;
   }
 
   onJumpingUpdate() {
@@ -171,8 +174,8 @@ class Player {
 
   onRespawningUpdate() {
     if (this.position.y > this.startY) {
-      this.position.y -= 0.6;
-      this.respawnScale += 0.015;
+      this.position.y -= 0.9;
+      this.respawnScale += 0.025;
       this.angle = 90;
       this.drawAtAngle(this.angle);
     } else {

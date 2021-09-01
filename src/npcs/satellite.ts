@@ -1,7 +1,7 @@
 import {assetEngine} from "../core/asset-engine-instance";
 
 class Satellite {
-  private startX = 112;
+  private startX = 104;
   private startY = 260;
   private size = 32;
 

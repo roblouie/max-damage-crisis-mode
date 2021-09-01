@@ -34,7 +34,9 @@ export class ComboEngine {
         this.comboChain = 0;
       }
 
-      this.comboCount = 0;
+      this.comboCount = 1;
+    } else {
+      this.comboCount++;
     }
 
     this.lastColor = enemy.color;
