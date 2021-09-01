@@ -199,8 +199,6 @@ class Player {
     assetEngine.drawEngine.drawSprite(this.currentFrame, -this.width / 2, -22);
     context.restore();
 
-    assetEngine.drawEngine.drawText(this.currentFrame.toString(10), 40, 'white', 40, 40)
-
     // DEBUG
     // context.save();
     // context.fillStyle = 'blue';
