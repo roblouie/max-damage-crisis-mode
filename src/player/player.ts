@@ -3,6 +3,7 @@ import { StateMachine } from "../core/state-machine";
 import { controls } from "../core/controls";
 import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Player {
   readonly startX = 120;
@@ -19,6 +20,12 @@ class Player {
   speed = 3.7;
   jumpAngle = 0;
   respawnScale = 1;
+  standingFrame = 2;
+  jumpingFrame = 3;
+  plantFrame = 5;
+  crouchFrame = 1;
+  currentFrame = this.standingFrame;
+  frameSequencer?: Generator<number>;
 
   constructor() {
     this.stateMachine = new StateMachine([
@@ -84,6 +91,7 @@ class Player {
   landOnSatellite() {
     this.isOnSatelite = true;
     this.isLeavingSatellite = true;
+    this.currentFrame = this.standingFrame;
     this.stateMachine.setState('landed');
   }
 
@@ -97,9 +105,16 @@ class Player {
     controls.onMouseMove(position => {
       this.angle = Point.AngleBetweenTwo(this.getCenter(), position);
     });
+
+    if (this.isOnSatelite) {
+      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 10);
+    } else if (this.isOnEnemy) {
+      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.plantFrame, this.crouchFrame], 7);
+    }
   }
 
   onLandedUpdate() {
+    this.currentFrame = this.frameSequencer?.next().value;
     this.drawAtAngle(this.angle);
     if (this.isOnEnemy && this.enemyAttachedTo) {
       this.position.x = this.enemyAttachedTo?.getCenter().x - this.getRadius();
@@ -127,6 +142,7 @@ class Player {
 
 
   onJumpingEnter() {
+    this.currentFrame = this.jumpingFrame;
     assetEngine.sfxEngine.playEffect(2);
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
@@ -178,8 +194,9 @@ class Player {
     context.scale(4, 4);
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
-    context.scale(1/4 * this.respawnScale, 1/4 * this.respawnScale);
-    assetEngine.drawEngine.drawSprite(3, -this.width / 2, -22);
+    const flip = (this.angle > -90 && this.angle < 90) ? -1 : 1;
+    context.scale(1/4 * this.respawnScale * flip, 1/4 * this.respawnScale);
+    assetEngine.drawEngine.drawSprite(this.currentFrame, -this.width / 2, -22);
     context.restore();
 
     // DEBUG

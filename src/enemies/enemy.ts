@@ -1,11 +1,13 @@
 import { assetEngine } from "../core/asset-engine-instance";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export abstract class Enemy {
   position = { x: 0, y: 0 };
   size: number;
   color = '#000000';
   isDead = false;
-  spriteFrames: number[] = [];
+  abstract speed: number;
+  private frameSequencer: Generator<number>;
 
   getCenter() {
     return { x: this.position.x + (this.size / 2), y: this.position.y + (this.size / 2) }
@@ -27,22 +29,11 @@ export abstract class Enemy {
     this.position.y = Math.floor(gridPosition / 7) * 32;
     this.size = size;
     this.color = Enemy.Colors[colorNum];
-    this.spriteFrames = spriteFrames;
+    this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
   }
 
-  framesElapsed = 0;
-  currentFrame = 0;
-
   update() {
-    this.framesElapsed++;
-    if (this.framesElapsed > 7) {
-      this.framesElapsed = 0;
-      this.currentFrame++;
-      if (this.currentFrame >= this.spriteFrames.length) {
-        this.currentFrame = 0;
-      }
-    }
-    assetEngine.drawEngine.drawSprite(this.spriteFrames[this.currentFrame], this.position.x, this.position.y);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.position.x, this.position.y);
   }
 
   isOffScreen() {
