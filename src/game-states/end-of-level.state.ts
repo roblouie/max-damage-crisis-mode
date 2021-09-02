@@ -57,10 +57,10 @@ class EndOfLevelState implements State {
       drawEngine.drawText('Resistance Bonus', 40, 'white', 160, 380);
       context.textAlign = 'right';
       drawEngine.drawText(this.resistanceBonus.toString(), 40, 'white', 800, 380);
-      if (hud.healthPercent >= 1) {
-        hud.takeHit(1);
-        hud.updateScore(1000);
-        this.resistanceBonus += 1000;
+      if (hud.healthPercent >= 0.5) {
+        hud.takeHit(0.5);
+        hud.updateScore(500);
+        this.resistanceBonus += 500;
       } else {
         context.textAlign = 'left';
         drawEngine.drawText('Time Bonus', 40, 'white', 160, 580);

@@ -9,7 +9,7 @@ export let assetEngine: { drawEngine: DrawingEngine, musicEngine: MusicEngine, s
 let assetFile: ArrayBuffer;
 
 export async function initializeAssetEngine(canvas: HTMLCanvasElement) {
-  assetFile = await getFileFromServer('./a');
+  assetFile = await getFileFromServer('./a.assets');
   const assets = unpackGameAssets(assetFile);
 
   assetEngine = {
