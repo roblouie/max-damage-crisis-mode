@@ -12,7 +12,7 @@ class MenuState implements State {
     assetEngine.drawEngine.drawText(`High Score: ${hud.getHighScore()}`, 30, 400, 400)
     assetEngine.drawEngine.drawText(masterGainNode.gain.value === 0 ? '🔈' : '🔊', 60, 850, 1150);
     if (masterGainNode.gain.value === 0) {
-      assetEngine.drawEngine.drawText('\\', 80, 860, 1153, 'gray');
+      assetEngine.drawEngine.drawText('\\', 80, 860, 1160, 'gray');
       assetEngine.drawEngine.drawText('muted', 20, 855, 1183);
     }
   }
