@@ -3,13 +3,13 @@ import { assetEngine } from "../core/asset-engine-instance";
 import { controls } from "../core/controls";
 import { gameStateMachine } from "../game-state-machine";
 import {Point} from "../core/point";
-import {audioContext} from "../from-asset-engine/audio-initializer";
+import {audioContext, masterGainNode, toggleMute} from "../from-asset-engine/audio-initializer";
 
 class MenuState implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.drawText('Main Menu', 40, 'white', 100, 100);
-    assetEngine.drawEngine.drawText(assetEngine.musicEngine.isMuted ? '🔈' : '🔊', 60, 'white', 900, 1150);
+    assetEngine.drawEngine.drawText(masterGainNode.gain.value === 0 ? '🔈' : '🔊', 60, 'white', 850, 1150);
   }
 
   onEnter() {
@@ -18,8 +18,7 @@ class MenuState implements State {
       // source of truth for whole game
       if (position.y > 250 && position.y < 320 && position.x > 200 && position.x < 240) {
         audioContext.resume();
-        assetEngine.sfxEngine.toggleMute();
-        assetEngine.musicEngine.toggleMute();
+        toggleMute()
         assetEngine.musicEngine.startSong(0);
         return;
       }

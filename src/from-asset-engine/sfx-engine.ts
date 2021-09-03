@@ -1,18 +1,17 @@
 import {SoundEffect} from "./sound-effect.model";
-import {audioContext} from "./audio-initializer";
+import {audioContext, masterGainNode} from "./audio-initializer";
 import {SfxPitchInstruction} from "./sfx-pitch-instruction.model";
 import {SfxGainInstruction} from "./sfx-gain-instruction.model";
 import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
-  private masterGain= audioContext.createGain();
-  isMuted = true;
+  private sfxGain = audioContext.createGain();
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
-    this.masterGain.connect(audioContext.destination);
-    this.masterGain.gain.value = 0;
+    this.sfxGain.connect(masterGainNode);
+    this.sfxGain.gain.value = 0;
   }
 
   async playEffect(effectIndex: number) {
@@ -27,13 +26,13 @@ export class SfxEngine {
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('counterWidth')!;
     whiteNoiseGainNode
       .connect(whiteNoiseGain)
-      .connect(this.masterGain);
+      .connect(this.sfxGain);
 
     const oscillator = new OscillatorNode(audioContext, { type: 'square' });
     const oscillatorGain = new GainNode(audioContext);
     oscillator
       .connect(oscillatorGain)
-      .connect(this.masterGain);
+      .connect(this.sfxGain);
     oscillatorGain.gain.value = 1;
 
     let pitchDurationInSeconds = 0;
@@ -79,16 +78,6 @@ export class SfxEngine {
 
     gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
     oscillator.start();
-  }
-
-  toggleMute() {
-    if (this.isMuted) {
-      this.masterGain.gain.value = .5;
-      this.isMuted = false;
-    } else {
-      this.masterGain.gain.value = 0;
-      this.isMuted = true;
-    }
   }
 }
 

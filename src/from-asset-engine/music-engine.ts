@@ -1,13 +1,11 @@
 import {Song} from "./song.model";
 import {Track} from "./track.model";
-import {audioContext} from "./audio-initializer";
+import {audioContext, masterGainNode} from "./audio-initializer";
 
 export class MusicEngine {
   private currentTempo = 0;
   private ctx = audioContext;
-  private masterGain = audioContext.createGain();
-  isMuted = true;
-
+  private musicGain = audioContext.createGain();
   private isSongPlaying = false;
 
   private oscillators: OscillatorNode[] = [];
@@ -15,15 +13,15 @@ export class MusicEngine {
   private repeatTimer?: any;
 
   constructor(private songs: Song[]) {
-    this.masterGain.gain.value = 0;
-    this.masterGain.connect(audioContext.destination);
+    this.musicGain.gain.value = 0;
+    this.musicGain.connect(masterGainNode);
   }
 
   startSong(songIndex: number, isRepeat = true): void {
     if (this.isSongPlaying) {
       this.stopSong();
     }
-    this.masterGain.gain.value = this.isMuted ? 0 : .2;
+    this.musicGain.gain.value = .2;
     this.isSongPlaying = true;
     this.createOscillators(this.songs[songIndex]);
     this.currentTempo = this.songs[songIndex].tempo;
@@ -52,7 +50,7 @@ export class MusicEngine {
     }
 
     this.isSongPlaying = false;
-    this.masterGain!.gain.value = 0;
+    this.musicGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
     this.oscillators.forEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
     this.oscillators = [];
@@ -69,7 +67,7 @@ export class MusicEngine {
       this.gainNodes.push(this.ctx.createGain());
       this.oscillators[index]
         .connect(this.gainNodes[index])
-        .connect(this.masterGain);
+        .connect(this.musicGain);
       this.gainNodes[index].gain.value = 0;
       this.oscillators[index].start();
     })
@@ -88,15 +86,5 @@ export class MusicEngine {
   private getDurationInSeconds(numberOfSixteenths: number): number {
     const timePerSixteenth = 60 / this.currentTempo / 4;
     return numberOfSixteenths * timePerSixteenth;
-  }
-
-  toggleMute() {
-    if (this.isMuted) {
-      this.masterGain.gain.value = .2
-      this.isMuted = false;
-    } else {
-      this.masterGain.gain.value = 0;
-      this.isMuted = true;
-    }
   }
 }
