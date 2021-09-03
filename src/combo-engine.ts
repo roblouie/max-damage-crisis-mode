@@ -56,13 +56,13 @@ export class ComboEngine {
 
 
     if (this.comboCount > -1) {
-      assetEngine.drawEngine.drawText(this.comboCount + 'x', 56 * this.comboCountSizeMultiplier, this.lastColor, 870, 1200);
-      assetEngine.drawEngine.drawText('COMBO', 24 * this.comboCountSizeMultiplier, this.lastColor, 864, 1222);
+      assetEngine.drawEngine.drawText(this.comboCount + 'x', 56 * this.comboCountSizeMultiplier, 870, 1200, this.lastColor);
+      assetEngine.drawEngine.drawText('COMBO', 24 * this.comboCountSizeMultiplier, 864, 1222, this.lastColor);
     }
 
     if (this.comboChain > -1) {
-      assetEngine.drawEngine.drawText(this.comboChain + 'x', 56 * this.comboChainSizeMultiplier, 'white', 770, 1200);
-      assetEngine.drawEngine.drawText('CHAIN', 24 * this.comboChainSizeMultiplier, 'white', 769, 1222);
+      assetEngine.drawEngine.drawText(this.comboChain + 'x', 56 * this.comboChainSizeMultiplier, 770, 1200);
+      assetEngine.drawEngine.drawText('CHAIN', 24 * this.comboChainSizeMultiplier, 769, 1222);
     }
 
     context.restore();
