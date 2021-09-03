@@ -19,8 +19,6 @@ class GameOverState implements State {
       gameStateMachine.setState('in-level', 0);
     });
   }
-
-  onLeave() {}
 }
 
 export const gameOver = new GameOverState();

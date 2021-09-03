@@ -7,6 +7,7 @@ import { satellite } from "../npcs/satellite";
 import { player } from "../player/player";
 import { gameStateMachine } from "../game-state-machine";
 import { comboEngine } from "../combo-engine";
+import { debounce, runOnce } from "../core/timing-helpers";
 
 class EndOfLevelState implements State {
   framesElapsed = 0;
@@ -17,6 +18,7 @@ class EndOfLevelState implements State {
   playerPosition = {x: 0, y: 0};
   scaleRate = 0.1;
   levelNumberEnded = 0;
+  playJumpSound?: Function;
 
   onUpdate() {
     this.framesElapsed++;
@@ -35,7 +37,8 @@ class EndOfLevelState implements State {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
       context.save();
-      if (this.scoreEndFrame > 0 && this.framesElapsed - this.scoreEndFrame >= 160) {
+      if (this.scoreEndFrame > 0 && this.framesElapsed - this.scoreEndFrame >= 90) {
+        this.playJumpSound!();
         //TODO: Use player jump frame sprite
         this.playerScale += this.scaleRate;
         this.playerPosition.y -= this.playerScale * 2;
@@ -83,23 +86,19 @@ class EndOfLevelState implements State {
     }
   }
 
-  onEnter(levelNumber: number, levelTime: number) {
+  onEnter(levelNumber: number) {
     this.framesElapsed = 0;
     this.scoreEndFrame = 0;
     this.playerScale = 1;
     this.scaleRate = 0.1;
     this.levelNumberEnded = levelNumber;
     this.playerPosition = { x: player.startX, y: player.startY - 12 };
-    const expectedTime = assetEngine.levels[levelNumber].enemyWaves.length * 10;
-    const baseBonus = (expectedTime - Math.floor(levelTime / 1000)) * 10000;
-    this.timeBonus = baseBonus > 0 ? baseBonus : 0;
+    this.playJumpSound = runOnce(() => assetEngine.sfxEngine.playEffect(2));
     backgroundManager.updateBackgrounds();
     hud.update();
     comboEngine.update();
-    assetEngine.musicEngine.startSong(3);
+    assetEngine.musicEngine.startSong(3, false);
   }
-
-  onLeave() {}
 }
 
 export const endOfLevel = new EndOfLevelState();

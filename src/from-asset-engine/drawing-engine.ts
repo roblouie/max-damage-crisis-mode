@@ -3,6 +3,7 @@ import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
 import { split24Bit } from "../core/binary-helperts";
+import { doTimes } from "../core/timing-helpers";
 
 export class DrawingEngine {
   sprites: Sprite[];
@@ -93,8 +94,8 @@ export class DrawingEngine {
   }
 
   loadSpritesToSpriteCanvas() {
-    this.sprites.forEach((sprite, index) => {
-      this.drawSpriteToCanvas(index, index * 32, 0, 3);
+    doTimes(this.sprites.length, (i: number) => {
+      this.drawSpriteToCanvas(i, i * 32, 0, 3);
     });
   }
 
@@ -143,16 +144,16 @@ export class DrawingEngine {
   }
 
   drawBackgroundLayerToBackgroundCanvases(backgroundIndex: number) {
-    for (let i = 0; i < 3; i++) {
-      this.offscreenContexts[i].clearRect(0, 0, 256, 320);
+    doTimes(3, (i: number) => {
+      this.offscreenContexts[i].clearRect(0, 0, 128, 256);
       const backgroundLayer = this.backgrounds[backgroundIndex][i];
 
       backgroundLayer.sprites.forEach(sprite => {
-        const gridX = sprite.position % 8;
-        const gridY = Math.floor(sprite.position / 8);
-        this.drawSpriteToCanvas(sprite.spriteIndex, gridX * 32, gridY * 32, i);
+        const gridX = sprite.position % 4;
+        const gridY = Math.floor(sprite.position / 4);
+        this.drawSpriteToCanvas(backgroundLayer.spriteStartOffset + sprite.spriteIndex, gridX * 32, gridY * 32, i);
       });
-    }
+    });
   }
 
   getBackgroundLayerCanvas(backgroundIndex: number) {

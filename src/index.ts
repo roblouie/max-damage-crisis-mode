@@ -41,20 +41,17 @@ window.onload = async () => {
     },
     {
       stateName: 'end-of-level',
-      onEnter: (levelNumber: number, levelTime: number) => endOfLevel.onEnter(levelNumber, levelTime),
-      onLeave: () => endOfLevel.onLeave(),
+      onEnter: (levelNumber: number) => endOfLevel.onEnter(levelNumber),
       onUpdate: () => endOfLevel.onUpdate(),
     },
     {
       stateName: 'game-over',
       onEnter: () => gameOver.onEnter(),
-      onLeave: () => gameOver.onLeave(),
       onUpdate: () => gameOver.onUpdate(),
     },
     {
       stateName: 'level-transition',
       onEnter: (levelNumber: number) => levelTransition.onEnter(levelNumber),
-      onLeave: () => levelTransition.onLeave(),
       onUpdate: () => levelTransition.onUpdate(),
     }
   ]);

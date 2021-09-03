@@ -11,8 +11,6 @@ class LevelTransitionState implements State {
     this.levelNumber = levelNumber;
   }
 
-  onLeave() {}
-
   onUpdate(): void {
     assetEngine.musicEngine.stopSong();
     this.framesElapsed++;

@@ -18,9 +18,9 @@ export class SfxEngine {
     }
     const gainNode = new GainNode(audioContext);
     gainNode.gain.value = 1;
-    const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'white-noise-gain-processor');
-    const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('changesPerSecond')!;
-    const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('counterWidth')!;
+    const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'wn');
+    const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('freq')!;
+    const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('width')!;
     whiteNoiseGainNode
       .connect(gainNode)
       .connect(audioContext.destination);
@@ -37,25 +37,26 @@ export class SfxEngine {
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
     const gainNodes = [oscillatorGain, gainNode];
 
-    frequencies.forEach(freq => {
+    frequencies.forEach((freq, frequencyIndex) => {
+      const pitchDivider = frequencyIndex === 0 ? 1 : .3;
       pitchDurationInSeconds = 0;
       soundEffect.pitchInstructions.forEach((instruction: SfxPitchInstruction, index: number) => {
         pitchDurationInSeconds += instruction.durationInSeconds;
         if (index === 0){
-          freq.setValueAtTime(instruction.pitch, audioContext.currentTime);
-          freq.setValueAtTime(instruction.pitch, audioContext.currentTime + pitchDurationInSeconds);
+          freq.setValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime);
+          freq.setValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
           return;
         }
         if (instruction.isLinearRampTo) {
-          freq.linearRampToValueAtTime(instruction.pitch, audioContext.currentTime + pitchDurationInSeconds);
+          freq.linearRampToValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
         } else {
-          freq.exponentialRampToValueAtTime(instruction.pitch, audioContext.currentTime + pitchDurationInSeconds);
+          freq.exponentialRampToValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
         }
       });
     });
 
     let totalGainTimePerChanel = [0, 0];
-    let isSeven = true;
+    let isSeven = false;
 
     soundEffect.gainInstructions.forEach((instruction: SfxGainInstruction) => {
       const index = instruction.isWhiteNoise ? 1 : 0;
@@ -69,13 +70,9 @@ export class SfxEngine {
       secondsSinceWidthChange += instruction.timeFromLastInstruction;
       whiteNoiseCounterWidth.setValueAtTime(isSeven ? 15 : 7,audioContext.currentTime + secondsSinceWidthChange);
       isSeven = !isSeven;
-      return;
     });
 
     gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
     oscillator.start();
   }
 }
-
-
-
