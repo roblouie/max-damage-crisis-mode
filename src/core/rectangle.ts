@@ -17,7 +17,7 @@ export class Rectangle {
     return { x, y }
   }
 
-  isPointInRectangle(point: Point): boolean {
+  containsPoint(point: Point): boolean {
     const isInX = point.x >= this.position.x && point.x <= this.position.x + this.width;
     const isInY = point.y >= this.position.y && point.y <= this.position.y + this.height;
     return isInX && isInY
