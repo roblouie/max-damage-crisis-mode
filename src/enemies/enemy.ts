@@ -31,7 +31,7 @@ export abstract class Enemy {
     const column = (gridPosition % 7);
     const row = Math.floor(gridPosition / 7);
     this.position.x = xPositions[column];
-    this.position.y = row * 38;
+    this.position.y = row * 35;
     this.size = size;
     this.color = Enemy.Colors[colorNum];
     this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);

@@ -29,7 +29,7 @@ export class Level {
     const nextWave = this.enemyWaves[this.mostRecentWaveIndex + 1];
     if (this.activeEnemies.filter(enemy => enemy.isMineAttached && enemy.position.y > enemy.size).length === this.activeEnemies.length) {
       this.mostRecentWaveIndex++;
-      nextWave.enemies.forEach(enemy => enemy.position.y -= 760);
+      nextWave.enemies.forEach(enemy => enemy.position.y -= 700);
       this.activeEnemies.push(...nextWave.enemies)
     }
   }

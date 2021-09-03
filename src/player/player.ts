@@ -18,7 +18,7 @@ class Player {
   enemyJumpingFrom?: Enemy;
   angle = 90;
   stateMachine: StateMachine;
-  speed = 3.7;
+  speed = 3.9;
   jumpAngle = 0;
   respawnScale = 1;
   standingFrame = 2;

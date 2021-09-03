@@ -1,4 +1,5 @@
 import { assetEngine } from "./core/asset-engine-instance";
+import { doTimes } from "./core/timing-helpers";
 
 interface BackgroundPosition {
   top: number;
@@ -8,13 +9,20 @@ interface BackgroundPosition {
 
 class BackgroundManager {
   positions: { left: BackgroundPosition, right: BackgroundPosition }[] = [];
-  backgroundNumber = 0;
+  backgroundNumber = 2;
 
   resetPositions() {
     const startingPosition = {
-      top: -320,
-      middle: 0,
-      bottom: 320,
+      left: {
+        top: -256,
+        middle: 0,
+        bottom: 256,
+      },
+      right: {
+        top: -128,
+        middle: 128,
+        bottom: 384,
+      }
     }
     this.positions[0] = JSON.parse(JSON.stringify(startingPosition));
     this.positions[1] = JSON.parse(JSON.stringify(startingPosition));
@@ -35,32 +43,34 @@ class BackgroundManager {
     this.tempBackgroundLocations[1] += 1;
     this.tempBackgroundLocations[2] += 2;
 
-    for (let i = 0; i < 3; i++) {
+    doTimes(3, (i: number) => {
       const position = this.positions[i];
 
+      for (const horizontalPosition in position) {
         // @ts-ignore
-        for (const verticalPosition in position) {
+        for (const verticalPosition in position[horizontalPosition]) {
           // @ts-ignore
-          this.updateGameCanvas(i, position[verticalPosition]);
+          this.updateGameCanvas(i, position[horizontalPosition][verticalPosition], horizontalPosition === 'right');
 
           if (Number.isInteger(this.tempBackgroundLocations[i])) {
             // @ts-ignore
-            position[verticalPosition] = position[verticalPosition] + this.tempBackgroundLocations[i];
+            position[horizontalPosition][verticalPosition] = position[horizontalPosition][verticalPosition] + this.tempBackgroundLocations[i];
           }
 
 
           // @ts-ignore
-          if (position[verticalPosition] === 640) {
+          if (position[horizontalPosition][verticalPosition] === 512) {
             // @ts-ignore
-            position[verticalPosition] = -320;
+            position[horizontalPosition][verticalPosition] = -256;
           }
         }
 
+      }
 
       if (Number.isInteger(this.tempBackgroundLocations[i])) {
         this.tempBackgroundLocations[i] = 0;
       }
-    }
+    });
   }
 
   private updateGameCanvas(layerNumber: number, yPos: number, isRightSide = false) {
@@ -71,7 +81,12 @@ class BackgroundManager {
     if (assetEngine.drawEngine.backgrounds[this.backgroundNumber][layerNumber].isSemiTransparent) {
       context.globalAlpha = 0.65;
     }
-    context.drawImage(layerCanvas, -8, yPos, 256, 320);
+    if (isRightSide) {
+      context.scale(-1, 1);
+      context.drawImage(layerCanvas, -248, yPos, 128, 256);
+    } else {
+      context.drawImage(layerCanvas, -8, yPos, 128, 256);
+    }
     context.restore();
   }
 }

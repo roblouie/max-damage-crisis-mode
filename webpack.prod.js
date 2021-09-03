@@ -13,7 +13,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: './src/from-asset-engine/a',
+          from: './src/from-asset-engine/a.assets',
           to: './',
         },
       ],
