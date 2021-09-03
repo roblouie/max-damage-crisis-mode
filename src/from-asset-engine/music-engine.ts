@@ -5,33 +5,28 @@ import {audioContext} from "./audio-initializer";
 export class MusicEngine {
   private currentTempo = 0;
   private ctx = audioContext;
-  private masterGain?: GainNode;
+  private masterGain = audioContext.createGain();
+  isMuted = true;
 
-// will be regular variable
   private isSongPlaying = false;
-  private isCtxStarted = false;
 
   private oscillators: OscillatorNode[] = [];
   private gainNodes: GainNode[] = [];
   private repeatTimer?: any;
 
   constructor(private songs: Song[]) {
+    this.masterGain.gain.value = 0;
+    this.masterGain.connect(audioContext.destination);
   }
 
   startSong(songIndex: number, isRepeat = true): void {
-    //TODO: Clean this up to remove the creat context thing since it exists already.
-    // We need a master gain with sound fx too though first
-    if (!this.isCtxStarted) {
-      this.createContext();
-      this.isCtxStarted = true;
-    }
     if (this.isSongPlaying) {
       this.stopSong();
     }
+    this.masterGain.gain.value = this.isMuted ? 0 : .2;
     this.isSongPlaying = true;
     this.createOscillators(this.songs[songIndex]);
     this.currentTempo = this.songs[songIndex].tempo;
-    this.masterGain!.gain.value = .2;
     this.songs[songIndex].tracks.forEach((track, index) => this.scheduleTrackNotes(track, index));
     let totalNotePositionsUsed = 0;
     this.songs[songIndex].tracks.forEach(track => {
@@ -68,20 +63,14 @@ export class MusicEngine {
     this.gainNodes = [];
   }
 
-
-  private createContext() {
-    this.masterGain = audioContext.createGain();
-    this.masterGain.gain.value = .2;
-    this.masterGain.connect(audioContext.destination);
-  }
-
   private createOscillators(song: Song) {
     song.tracks.forEach((track, index) => {
       this.oscillators[index] = new OscillatorNode(this.ctx, { type: track.wave });
       this.gainNodes.push(this.ctx.createGain());
-      this.oscillators[index].connect(this.gainNodes[index]);
+      this.oscillators[index]
+        .connect(this.gainNodes[index])
+        .connect(this.masterGain);
       this.gainNodes[index].gain.value = 0;
-      this.gainNodes[index].connect(this.masterGain!)
       this.oscillators[index].start();
     })
   }
@@ -99,5 +88,15 @@ export class MusicEngine {
   private getDurationInSeconds(numberOfSixteenths: number): number {
     const timePerSixteenth = 60 / this.currentTempo / 4;
     return numberOfSixteenths * timePerSixteenth;
+  }
+
+  toggleMute() {
+    if (this.isMuted) {
+      this.masterGain.gain.value = .2
+      this.isMuted = false;
+    } else {
+      this.masterGain.gain.value = 0;
+      this.isMuted = true;
+    }
   }
 }

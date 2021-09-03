@@ -6,9 +6,13 @@ import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
+  private masterGain= audioContext.createGain();
+  isMuted = true;
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
+    this.masterGain.connect(audioContext.destination);
+    this.masterGain.gain.value = 0;
   }
 
   async playEffect(effectIndex: number) {
@@ -16,26 +20,27 @@ export class SfxEngine {
     if (!soundEffect || !audioContext) {
       return;
     }
-    const gainNode = new GainNode(audioContext);
-    gainNode.gain.value = 1;
+    const whiteNoiseGain = new GainNode(audioContext);
+    whiteNoiseGain.gain.value = 1;
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'white-noise-gain-processor');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('changesPerSecond')!;
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('counterWidth')!;
     whiteNoiseGainNode
-      .connect(gainNode)
-      .connect(audioContext.destination);
+      .connect(whiteNoiseGain)
+      .connect(this.masterGain);
 
     const oscillator = new OscillatorNode(audioContext, { type: 'square' });
     const oscillatorGain = new GainNode(audioContext);
-    oscillator.connect(oscillatorGain);
-    oscillatorGain.connect(audioContext.destination);
+    oscillator
+      .connect(oscillatorGain)
+      .connect(this.masterGain);
     oscillatorGain.gain.value = 1;
 
     let pitchDurationInSeconds = 0;
 
 
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
-    const gainNodes = [oscillatorGain, gainNode];
+    const gainNodes = [oscillatorGain, whiteNoiseGain];
 
     frequencies.forEach(freq => {
       pitchDurationInSeconds = 0;
@@ -74,6 +79,16 @@ export class SfxEngine {
 
     gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
     oscillator.start();
+  }
+
+  toggleMute() {
+    if (this.isMuted) {
+      this.masterGain.gain.value = .5;
+      this.isMuted = false;
+    } else {
+      this.masterGain.gain.value = 0;
+      this.isMuted = true;
+    }
   }
 }
 
