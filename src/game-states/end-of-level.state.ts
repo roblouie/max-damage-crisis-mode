@@ -49,23 +49,23 @@ class EndOfLevelState implements State {
 
     if (this.framesElapsed > 30) {
       context.textAlign = 'center';
-      drawEngine.drawText('Level Complete!', 40, 'white', 480, 230);
+      drawEngine.drawText('Level Complete!', 40, 480, 230);
     }
 
     if (this.framesElapsed >= 60) {
       context.textAlign = 'left';
-      drawEngine.drawText('Resistance Bonus', 40, 'white', 160, 380);
+      drawEngine.drawText('Resistance Bonus', 40, 160, 380);
       context.textAlign = 'right';
-      drawEngine.drawText(this.resistanceBonus.toString(), 40, 'white', 800, 380);
+      drawEngine.drawText(this.resistanceBonus.toString(), 40, 800, 380);
       if (hud.healthPercent >= 1) {
         hud.takeHit(1);
         hud.updateScore(1000);
         this.resistanceBonus += 1000;
       } else {
         context.textAlign = 'left';
-        drawEngine.drawText('Time Bonus', 40, 'white', 160, 580);
+        drawEngine.drawText('Time Bonus', 40, 160, 580);
         context.textAlign = 'right';
-        drawEngine.drawText(this.timeBonus.toString(), 40, 'white', 800, 580);
+        drawEngine.drawText(this.timeBonus.toString(), 40, 800, 580);
         hud.updateScore(this.timeBonus);
         if (this.scoreEndFrame === 0) {
           this.scoreEndFrame = this.framesElapsed;
