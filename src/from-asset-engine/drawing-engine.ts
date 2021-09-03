@@ -114,6 +114,7 @@ export class DrawingEngine {
       const palette = this.palettes[sprite.paletteNumber];
 
       let imageData = this.tileToImageData(tile, palette);
+      //TODO: See if this can be replaced with canvas flipping, as I could then remove flipImageData methods
       if (spriteTile.isFlippedX) {
         imageData = this.flipImageDataHorizontally(imageData);
       }

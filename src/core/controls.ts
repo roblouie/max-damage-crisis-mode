@@ -11,32 +11,27 @@ class Controls {
 
   constructor() {
     const canvas = assetEngine.drawEngine.getCanvas();
-    //TODO: cleanup duplicate logic
-    canvas.onclick = event => {
+    const getScaledPosition = (x: number, y: number) => {
       const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
-      const posX = event.offsetX / zoom;
-      const posY = event.offsetY / zoom;
+      return new Point(x/zoom, y/zoom);
+    }
+
+    canvas.onclick = event => {
       if (this._onClick) {
-        this._onClick({ x: posX, y: posY });
+        this._onClick(getScaledPosition(event.offsetX, event.offsetY));
       }
     }
 
     canvas.ontouchstart = event => {
-      const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
-      const posX = (event.touches[0].clientX - canvas.offsetLeft) / zoom;
-      const posY = (event.touches[0].clientY - canvas.offsetTop) / zoom;
       if (this._onClick) {
-        this._onClick({ x: posX, y: posY });
+        this._onClick(getScaledPosition(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop));
       }
       event.preventDefault();
     }
 
     canvas.onmousemove = event => {
-      const zoom = (canvas.offsetWidth / canvas.width) * assetEngine.drawEngine.getRenderMultiplier();
-      const posX = event.offsetX / zoom;
-      const posY = event.offsetY / zoom;
       if (this._onHover) {
-        this._onHover({ x: posX, y: posY });
+        this._onHover(getScaledPosition(event.offsetX, event.offsetY));
       }
     }
   }
@@ -64,7 +59,6 @@ class Controls {
 
     const { buttons } = gamepad;
     this.isJumpPressed = buttons[0].pressed || buttons[1].pressed || buttons[2].pressed || buttons[3].pressed;
-
   }
 }
 
