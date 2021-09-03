@@ -37,7 +37,7 @@ class EndOfLevelState implements State {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
       context.save();
-      if (this.scoreEndFrame > 0 && this.framesElapsed - this.scoreEndFrame >= 90) {
+      if (this.framesElapsed >= 340) {
         this.playJumpSound!();
         //TODO: Use player jump frame sprite
         this.playerScale += this.scaleRate;
@@ -52,27 +52,17 @@ class EndOfLevelState implements State {
 
     if (this.framesElapsed > 30) {
       context.textAlign = 'center';
-      drawEngine.drawText('Level Complete!', 40, 480, 230);
+      drawEngine.drawText('Level Complete!', 40, 120, 100);
     }
 
     if (this.framesElapsed >= 60) {
-      context.textAlign = 'left';
-      drawEngine.drawText('Resistance Bonus', 40, 160, 380);
+      drawEngine.drawText('Resistance Bonus', 40, 40, 125, 'white', 'left');
       context.textAlign = 'right';
-      drawEngine.drawText(this.resistanceBonus.toString(), 40, 800, 380);
+      drawEngine.drawText(this.resistanceBonus.toString(), 40, 180, 125);
       if (hud.healthPercent >= 0.5) {
         hud.takeHit(0.5);
         hud.updateScore(500);
         this.resistanceBonus += 500;
-      } else {
-        context.textAlign = 'left';
-        drawEngine.drawText('Time Bonus', 40, 160, 580);
-        context.textAlign = 'right';
-        drawEngine.drawText(this.timeBonus.toString(), 40, 800, 580);
-        hud.updateScore(this.timeBonus);
-        if (this.scoreEndFrame === 0) {
-          this.scoreEndFrame = this.framesElapsed;
-        }
       }
     }
 
