@@ -9,7 +9,7 @@ import {gameStateMachine} from "../game-state-machine";
 import { comboEngine } from "../combo-engine";
 import { satellite } from "../npcs/satellite";
 import { controls } from "../core/controls";
-import { debounce } from "../core/debounce";
+import { debounce } from "../core/timing-helpers";
 import { Enemy } from "../enemies/enemy";
 
 export class InLevel implements State {
@@ -19,7 +19,7 @@ export class InLevel implements State {
 
   onEnter(levelNumber: number) {
     comboEngine.reset();
-    backgroundManager.loadBackgrounds(0);
+    backgroundManager.loadBackgrounds(1);
     assetEngine.musicEngine.startSong(1);
     hud.resetHealth();
     initializePlayer();

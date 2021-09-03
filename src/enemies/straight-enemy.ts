@@ -2,7 +2,7 @@ import { Enemy } from "./enemy";
 import { assetEngine } from "../core/asset-engine-instance";
 
 export class StraightEnemy extends Enemy {
-  speed = 0.8;
+  speed = 0.9;
 
   constructor(gridPosition: number, colorNum: number) {
     super(gridPosition, 32, colorNum, [
