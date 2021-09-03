@@ -17,7 +17,9 @@ class LevelTransitionState implements State {
     }
   }
 
-  onLeave() {}
+  onLeave() {
+    this.isOnLastLevel = false;
+  }
 
   onUpdate(): void {
     assetEngine.musicEngine.stopSong();
