@@ -4,11 +4,13 @@ import { controls } from "../core/controls";
 import { gameStateMachine } from "../game-state-machine";
 import {Point} from "../core/point";
 import {audioContext, masterGainNode, toggleMute} from "../from-asset-engine/audio-initializer";
+import {hud} from "../hud";
 
 class MenuState implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.drawText('Main Menu', 40, 'white', 100, 100);
+    assetEngine.drawEngine.drawText(`High Score: ${hud.getHighScore()}`, 30, 'white', 400, 400)
     assetEngine.drawEngine.drawText(masterGainNode.gain.value === 0 ? '🔈' : '🔊', 60, 'white', 850, 1150);
   }
 
