@@ -2,7 +2,6 @@ import { assetEngine, initializeAssetEngine } from "./core/asset-engine-instance
 import { controls, initializeControls } from "./core/controls";
 import { createGameStateMachine, gameStateMachine } from "./game-state-machine";
 import { inLevel } from "./game-states/in-level";
-import { startScreen } from "./game-states/start-screen.state";
 import { menu } from "./game-states/menu.state";
 import { gameOver } from "./game-states/game-over.state";
 import { whiteNoiseLoading } from "./from-asset-engine/audio-initializer";
@@ -21,12 +20,6 @@ window.onload = async () => {
   initializePlayer();
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();
   createGameStateMachine([
-    {
-      stateName: 'start-screen',
-      onEnter: () => startScreen.onEnter(),
-      onLeave: () => startScreen.onLeave(),
-      onUpdate: () => startScreen.onUpdate(),
-    },
     {
       stateName: 'menu',
       onEnter: () => menu.onEnter(),
@@ -56,7 +49,7 @@ window.onload = async () => {
     }
   ]);
 
-  gameStateMachine.setState('start-screen', 0, 19000);
+  gameStateMachine.setState('menu', 0, 19000);
 
   requestAnimationFrame(update);
 }

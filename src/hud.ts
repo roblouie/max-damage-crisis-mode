@@ -39,6 +39,16 @@ class Hud {
     this.score += scoreToAdd;
   }
 
+  getHighScore() {
+    return parseInt(window.localStorage.getItem('sjm2594') || '', 10) || 0;
+  }
+
+  saveHighScore() {
+    if (this.score > this.getHighScore()) {
+      window.localStorage.setItem('sjm2594', this.score.toString());
+    }
+  }
+
   draw() {
     const context = assetEngine.drawEngine.getContext();
 
@@ -47,8 +57,8 @@ class Hud {
     context.fillRect(this.meterLeft, this.meterTop, this.meterWidth * (this.healthPercent * .01), this.meterHeight);
     context.strokeStyle = 'white';
     context.strokeRect(this.meterLeft, this.meterTop, this.meterWidth, this.meterHeight);
-    assetEngine.drawEngine.drawText('Earth Resistance Forces', 30, 'white', this.meterLeft, this.meterTop - 4);
-    assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 30, 'white', 691, this.meterTop + 25);
+    assetEngine.drawEngine.drawText('Earth Resistance Forces', 30, this.meterLeft, this.meterTop - 4);
+    assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 30,691, this.meterTop + 25);
     context.restore();
   }
 }

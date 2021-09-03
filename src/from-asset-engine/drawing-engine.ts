@@ -58,7 +58,7 @@ export class DrawingEngine {
     this.canvasContext.clearRect(0, 0, this.width, this.height);
   }
 
-  drawText(text: string, fontSize: number, color: string, x: number, y: number) {
+  drawText(text: string, fontSize: number, x: number, y: number, color = 'white') {
     const context = this.canvasContext;
     context.save();
     context.font = `${fontSize}px Impact, sans-serif-black`;
