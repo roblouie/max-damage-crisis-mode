@@ -11,7 +11,7 @@ export class SfxEngine {
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
     this.sfxGain.connect(masterGainNode);
-    this.sfxGain.gain.value = 0;
+    this.sfxGain.gain.value = 0.8;
   }
 
   async playEffect(effectIndex: number) {
