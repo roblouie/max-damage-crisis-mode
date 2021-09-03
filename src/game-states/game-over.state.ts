@@ -12,6 +12,7 @@ class GameOverState implements State {
   }
 
   onEnter() {
+    hud.saveHighScore();
     hud.resetScore();
     assetEngine.musicEngine.startSong(2, false);
     assetEngine.drawEngine.clearContext();

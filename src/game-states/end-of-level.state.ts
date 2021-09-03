@@ -99,9 +99,7 @@ class EndOfLevelState implements State {
     assetEngine.musicEngine.startSong(3);
   }
 
-  onLeave() {
-    hud.saveHighScore();
-  }
+  onLeave() {}
 }
 
 export const endOfLevel = new EndOfLevelState();
