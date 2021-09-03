@@ -1,14 +1,17 @@
 import {SoundEffect} from "./sound-effect.model";
-import {audioContext} from "./audio-initializer";
+import {audioContext, masterGainNode} from "./audio-initializer";
 import {SfxPitchInstruction} from "./sfx-pitch-instruction.model";
 import {SfxGainInstruction} from "./sfx-gain-instruction.model";
 import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
+  private sfxGain = audioContext.createGain();
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
+    this.sfxGain.connect(masterGainNode);
+    this.sfxGain.gain.value = 0;
   }
 
   async playEffect(effectIndex: number) {
@@ -16,26 +19,27 @@ export class SfxEngine {
     if (!soundEffect || !audioContext) {
       return;
     }
-    const gainNode = new GainNode(audioContext);
-    gainNode.gain.value = 1;
+    const whiteNoiseGain = new GainNode(audioContext);
+    whiteNoiseGain.gain.value = 1;
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'white-noise-gain-processor');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('changesPerSecond')!;
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('counterWidth')!;
     whiteNoiseGainNode
-      .connect(gainNode)
-      .connect(audioContext.destination);
+      .connect(whiteNoiseGain)
+      .connect(this.sfxGain);
 
     const oscillator = new OscillatorNode(audioContext, { type: 'square' });
     const oscillatorGain = new GainNode(audioContext);
-    oscillator.connect(oscillatorGain);
-    oscillatorGain.connect(audioContext.destination);
+    oscillator
+      .connect(oscillatorGain)
+      .connect(this.sfxGain);
     oscillatorGain.gain.value = 1;
 
     let pitchDurationInSeconds = 0;
 
 
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
-    const gainNodes = [oscillatorGain, gainNode];
+    const gainNodes = [oscillatorGain, whiteNoiseGain];
 
     frequencies.forEach(freq => {
       pitchDurationInSeconds = 0;
