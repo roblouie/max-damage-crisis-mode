@@ -4,6 +4,7 @@ import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
 import { split24Bit } from "../core/binary-helperts";
 import { doTimes } from "../core/timing-helpers";
+import { assetEngine } from "../core/asset-engine-instance";
 
 export class DrawingEngine {
   sprites: Sprite[];
@@ -58,15 +59,17 @@ export class DrawingEngine {
     this.canvasContext.clearRect(0, 0, this.width, this.height);
   }
 
-  drawText(text: string, fontSize: number, x: number, y: number, color = 'white') {
+  drawText(text: string, fontSize: number, x: number, y: number, color = 'white', textAlign: 'center' | 'left' | 'right' = 'center') {
     const context = this.canvasContext;
     context.save();
+    const scale = assetEngine.drawEngine.getRenderMultiplier();
     context.font = `${fontSize}px Impact, sans-serif-black`;
+    context.textAlign = textAlign;
     context.strokeStyle = 'black';
     context.lineWidth = 4;
-    context.strokeText(text, x, y);
+    context.strokeText(text, x * scale, y * scale);
     context.fillStyle = color;
-    context.fillText(text, x, y);
+    context.fillText(text, x * scale, y * scale);
     context.restore();
   }
 

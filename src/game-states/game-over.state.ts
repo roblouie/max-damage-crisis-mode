@@ -8,7 +8,7 @@ class GameOverState implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.getContext().fillStyle = 'white';
-    assetEngine.drawEngine.drawText('Game Over', 50, 100, 100);
+    assetEngine.drawEngine.drawText('Game Over', 50, 120, 100);
   }
 
   onEnter() {
