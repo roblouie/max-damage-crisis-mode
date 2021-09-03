@@ -39,6 +39,16 @@ class Hud {
     this.score += scoreToAdd;
   }
 
+  getHighScore() {
+    return parseInt(window.localStorage.getItem('sjm2594') || '', 10) || 0;
+  }
+
+  saveHighScore() {
+    if (this.score > this.getHighScore()) {
+      window.localStorage.setItem('sjm2594', this.score.toString());
+    }
+  }
+
   draw() {
     const context = assetEngine.drawEngine.getContext();
 
