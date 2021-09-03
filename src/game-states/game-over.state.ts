@@ -8,10 +8,11 @@ class GameOverState implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.getContext().fillStyle = 'white';
-    assetEngine.drawEngine.getContext().fillText('Game Over', 100, 100);
+    assetEngine.drawEngine.drawText('Game Over', 50, 100, 100);
   }
 
   onEnter() {
+    hud.saveHighScore();
     hud.resetScore();
     assetEngine.musicEngine.startSong(2, false);
     assetEngine.drawEngine.clearContext();
