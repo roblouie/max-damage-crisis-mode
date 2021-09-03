@@ -71,10 +71,10 @@ class Player {
   }
 
   private isOffScreen() {
-    const pixelBuffer = this.getRadius() + 100;
+    const pixelBuffer = this.getRadius() + 80;
     const center = this.getCenter();
     const renderMultiplier = assetEngine.drawEngine.getRenderMultiplier();
-    const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
+    const isOffVertical = center.y - 40 > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
       || center.y + this.height + pixelBuffer < 0;
     const isOffHorizontal = center.x - pixelBuffer > (assetEngine.drawEngine.getScreenWidth() / renderMultiplier)
       || center.x + this.width + pixelBuffer < 0;
