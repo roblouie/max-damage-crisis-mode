@@ -16,10 +16,6 @@ export class Level {
     this.gameOverDeleay = animationFrameSequencer([false, true], 40);
   }
 
-  reset() {
-    this.mostRecentWaveIndex = -1;
-  }
-
   update() {
     this.activeEnemies.forEach(enemy => enemy.update());
 
