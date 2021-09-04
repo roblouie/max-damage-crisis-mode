@@ -34,14 +34,8 @@ function getFileFromServer(url: string): Promise<ArrayBuffer> {
   let xhr = new XMLHttpRequest();
   xhr.open("GET", url);
   xhr.responseType = "arraybuffer";
-  return new Promise((resolve, reject) => {
-    xhr.onload = function () {
-      if (this.status === 200) {
-        resolve(xhr.response)
-      } else {
-        reject(xhr.response);
-      }
-    };
+  return new Promise(resolve => {
+    xhr.onload = () => resolve(xhr.response);
     xhr.send();
   });
 }

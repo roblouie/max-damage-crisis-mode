@@ -40,12 +40,14 @@ class Hud {
   }
 
   getHighScore() {
-    return parseInt(window.localStorage.getItem('sjm2594') || '', 10) || 0;
+    // @ts-ignore
+    return +window.localStorage.getItem('sjm2594') || 0;
   }
 
   saveHighScore() {
     if (this.score > this.getHighScore()) {
-      window.localStorage.setItem('sjm2594', this.score.toString());
+      // @ts-ignore
+      window.localStorage.setItem('sjm2594', this.score);
     }
   }
 
@@ -58,7 +60,8 @@ class Hud {
     context.strokeStyle = 'white';
     context.strokeRect(this.meterLeft, this.meterTop, this.meterWidth, this.meterHeight);
     assetEngine.drawEngine.drawText('Earth Resistance Forces', 30, 39, 307);
-    assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 30,200, 315);
+    // @ts-ignore
+    assetEngine.drawEngine.drawText((''+this.score).padStart(15, '0'), 30,200, 315);
     context.restore();
   }
 }
