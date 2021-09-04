@@ -15,9 +15,7 @@ export class SfxEngine {
 
   async playEffect(effectIndex: number) {
     const soundEffect = this.soundEffects[effectIndex];
-    if (!soundEffect || !audioContext) {
-      return;
-    }
+
     const whiteNoiseGain = new GainNode(audioContext, { gain: 1 });
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'wn');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('freq')!;

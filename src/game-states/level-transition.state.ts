@@ -10,10 +10,10 @@ class LevelTransitionState implements State {
   onEnter(levelNumber: number) {
     this.framesElapsed = 0;
     this.levelNumber = levelNumber;
+    assetEngine.musicEngine.stopSong();
   }
 
   onUpdate(): void {
-    assetEngine.musicEngine.stopSong();
     this.framesElapsed++;
     const context = assetEngine.drawEngine.getContext();
     context.save();
@@ -23,6 +23,10 @@ class LevelTransitionState implements State {
     const text = isOnLastLevel ? 'You Win!' : `Level  ${this.levelNumber + 1}`;
     assetEngine.drawEngine.drawText(text, 40, 120, 100);
     context.restore();
+    // if we preserved last level state this could happen on enter where it would make more sense
+    if (this.framesElapsed === 1 && isOnLastLevel) {
+      assetEngine.musicEngine.startSong(4);
+    }
 
     if (this.framesElapsed >= 120) {
       if (isOnLastLevel) {
