@@ -6,21 +6,19 @@ import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
-  private sfxGain = audioContext.createGain();
+  private sfxGain = new GainNode(audioContext, { gain: 0.8 })
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
     this.sfxGain.connect(masterGainNode);
-    this.sfxGain.gain.value = 0.8;
   }
 
   async playEffect(effectIndex: number) {
-    const soundEffect = this.soundEffects.find((effect, index) => index === effectIndex);
+    const soundEffect = this.soundEffects[effectIndex];
     if (!soundEffect || !audioContext) {
       return;
     }
-    const whiteNoiseGain = new GainNode(audioContext);
-    whiteNoiseGain.gain.value = 1;
+    const whiteNoiseGain = new GainNode(audioContext, { gain: 1 });
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'wn');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('freq')!;
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('width')!;
@@ -29,11 +27,10 @@ export class SfxEngine {
       .connect(this.sfxGain);
 
     const oscillator = new OscillatorNode(audioContext, { type: 'square' });
-    const oscillatorGain = new GainNode(audioContext);
+    const oscillatorGain = new GainNode(audioContext, { gain: 1 });
     oscillator
       .connect(oscillatorGain)
       .connect(this.sfxGain);
-    oscillatorGain.gain.value = 1;
 
     let pitchDurationInSeconds = 0;
 
