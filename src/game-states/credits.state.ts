@@ -23,6 +23,10 @@ class CreditsState implements State {
     credits.forEach((text, index) => {
       assetEngine.drawEngine.drawText(text, 40,  120, (index * 25) + 400 - animationOffset);
     })
+    assetEngine.drawEngine.drawText('Thanks for Playing!', 60, 120, 800 - animationOffset);
+    if (this.framesElapsed > 3500) {
+      gameStateMachine.setState('menu');
+    }
   }
 
   onLeave() {
