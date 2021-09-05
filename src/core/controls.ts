@@ -16,20 +16,20 @@ class Controls {
       return new Point(x/zoom, y/zoom);
     }
 
-    canvas.onclick = event => {
+    canvas.onclick = (event: any) => {
       if (this._onClick) {
         this._onClick(getScaledPosition(event.offsetX, event.offsetY));
       }
     }
 
-    canvas.ontouchstart = event => {
+    canvas.ontouchstart = (event: any) => {
       if (this._onClick) {
         this._onClick(getScaledPosition(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop));
       }
       event.preventDefault();
     }
 
-    canvas.onmousemove = event => {
+    canvas.onmousemove = (event: any) => {
       if (this._onHover) {
         this._onHover(getScaledPosition(event.offsetX, event.offsetY));
       }
@@ -54,7 +54,6 @@ class Controls {
     if (Math.abs(gamepad.axes[0]) >= 0.1 || Math.abs(gamepad.axes[1]) >= 0.1) {
       this.isAnalogStickPressed = true;
       this.analogStickAngle = Point.AngleBetweenTwo({x: 0, y: 0}, {x: gamepad.axes[0], y: gamepad.axes[1]});
-      console.log(this.analogStickAngle);
     }
 
     const { buttons } = gamepad;

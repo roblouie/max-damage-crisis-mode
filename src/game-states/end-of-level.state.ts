@@ -25,7 +25,7 @@ class EndOfLevelState implements State {
 
     const { drawEngine } = assetEngine;
     const context = drawEngine.getContext();
-    context.save();
+    context.cSave();
     drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
@@ -36,7 +36,7 @@ class EndOfLevelState implements State {
     } else {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
-      context.save();
+      context.cSave();
       if (this.framesElapsed >= 340) {
         this.playJumpSound!();
         //TODO: Use player jump frame sprite
@@ -47,7 +47,7 @@ class EndOfLevelState implements State {
         this.scaleRate += 0.05;
       }
       drawEngine.drawSprite(3, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
-      context.restore();
+      context.cRestore();
     }
 
     if (this.framesElapsed > 30) {
@@ -66,7 +66,7 @@ class EndOfLevelState implements State {
       }
     }
 
-    context.restore();
+    context.cRestore();
 
     comboEngine.update();
     hud.update();

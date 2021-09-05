@@ -50,13 +50,13 @@ export class Effect {
 
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
-    context.save();
+    context.cSave();
     const center = this.getCenter();
     context.scale(4, 4);
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * this.currentScale, 1/4 * this.currentScale);
     assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, -this.width / 2, -this.height / 2);
-    context.restore();
+    context.cRestore();
   }
 }

@@ -17,14 +17,14 @@ class Satellite {
     assetEngine.drawEngine.drawSprite(14, this.startX, this.startY);
     // DEBUG
     const context = assetEngine.drawEngine.getContext();
-    context.save();
+    context.cSave();
     context.fillStyle = 'white';
     context.beginPath();
     context.scale(4, 4);
     context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
     context.stroke();
     context.fill();
-    context.restore();
+    context.cRestore();
   }
 }
 

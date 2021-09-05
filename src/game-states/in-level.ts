@@ -45,7 +45,7 @@ export class InLevel implements State {
     this.currentLevel.update();
 
     if (player.isJumping()) {
-      this.currentLevel.activeEnemies.forEach((enemy, index, enemies) => {
+      this.currentLevel.activeEnemies.aForEach((enemy, index, enemies) => {
         // See if we should land on the enemy
         if (enemy !== player.enemyAttachedTo && enemy !== player.enemyJumpingFrom && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.getRadius() + enemy.getRadius()) {
           this.killMinedEnemies(enemy.color, enemies);
@@ -71,10 +71,10 @@ export class InLevel implements State {
 
     if (player.isRespawning()) {
       comboEngine.reset();
-      this.currentLevel.activeEnemies.forEach(enemy => enemy.isMineAttached = false);
+      this.currentLevel.activeEnemies.aForEach(enemy => enemy.isMineAttached = false);
     }
 
-    this.currentLevel.activeEnemies.forEach(enemy => {
+    this.currentLevel.activeEnemies.aForEach(enemy => {
       if (enemy.isOffScreen()) {
         enemy.isDead = true;
         hud.takeHit();
@@ -97,7 +97,7 @@ export class InLevel implements State {
     let minedEnemyCount = enemies.filter(enemy => enemy.isMineAttached).length;
     // If the landed on enemy is a different color, detonate any enemies with mines on them
     if (color !== this.lastColor) {
-      enemies.forEach(enemy => {
+      enemies.aForEach(enemy => {
         if (enemy.isMineAttached) {
           if (minedEnemyCount > 2) {
             enemy.isDead = true;
@@ -106,7 +106,7 @@ export class InLevel implements State {
             hud.updateForEnemyKilled();
             comboEngine.updateOnKill(enemy);
           } else {
-            enemies.forEach(enemy => enemy.isMineAttached = false);
+            enemies.aForEach(enemy => enemy.isMineAttached = false);
           }
         }
       })

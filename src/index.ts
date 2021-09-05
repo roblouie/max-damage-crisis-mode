@@ -10,6 +10,18 @@ import { initializeHud } from "./hud";
 import { initializePlayer } from "./player/player";
 import { levelTransition } from "./game-states/level-transition.state";
 
+// @ts-ignore
+let p='prototype',toReplace = [['forEach', 'map', 'find'], ['save', 'restore', 'drawImage', 'clearRect', 'putImageData'], ['getUint8', 'getUint16']];
+// @ts-ignore
+[Object.getPrototypeOf([]),CanvasRenderingContext2D[p],DataView[p]].map((proto, protoIndex)=>{
+  toReplace[protoIndex].map((prop,i)=>{
+      // @ts-ignore
+      proto[String.fromCharCode(i+65+6*(i>25))]=proto[prop];
+      // @ts-ignore
+      console.log(`${String.fromCharCode(i+65+6*(i>25))} = ${proto[prop]}`);
+  });
+});
+
 
 window.onload = async () => {
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;

@@ -40,11 +40,10 @@ export class SfxEngine {
 
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
     const gainNodes = [oscillatorGain, whiteNoiseGain];
-
-    frequencies.forEach((freq, frequencyIndex) => {
+    frequencies.aForEach((freq, frequencyIndex) => {
       const pitchDivider = frequencyIndex === 0 ? 1 : .3;
       pitchDurationInSeconds = 0;
-      soundEffect.pitchInstructions.forEach((instruction: SfxPitchInstruction, index: number) => {
+      soundEffect.pitchInstructions.aForEach((instruction: SfxPitchInstruction, index: number) => {
         pitchDurationInSeconds += instruction.durationInSeconds;
         if (index === 0){
           freq.setValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime);
@@ -62,7 +61,7 @@ export class SfxEngine {
     let totalGainTimePerChanel = [0, 0];
     let isSeven = false;
 
-    soundEffect.gainInstructions.forEach((instruction: SfxGainInstruction) => {
+    soundEffect.gainInstructions.aForEach((instruction: SfxGainInstruction) => {
       const index = instruction.isWhiteNoise ? 1 : 0;
       gainNodes[index].gain.linearRampToValueAtTime(instruction.gain, audioContext.currentTime + totalGainTimePerChanel[index] + instruction.timeFromLastInstruction);
       totalGainTimePerChanel[index] += instruction.timeFromLastInstruction;
@@ -70,13 +69,13 @@ export class SfxEngine {
 
     let secondsSinceWidthChange = 0;
 
-    soundEffect.widthInstructions.forEach((instruction: SfxWidthInstruction) => {
+    soundEffect.widthInstructions.aForEach((instruction: SfxWidthInstruction) => {
       secondsSinceWidthChange += instruction.timeFromLastInstruction;
       whiteNoiseCounterWidth.setValueAtTime(isSeven ? 15 : 7,audioContext.currentTime + secondsSinceWidthChange);
       isSeven = !isSeven;
     });
 
-    gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
+    gainNodes.aForEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
     oscillator.start();
   }
 }

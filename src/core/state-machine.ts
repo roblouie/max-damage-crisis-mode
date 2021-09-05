@@ -9,7 +9,7 @@ export class StateMachine {
 
   setState(newState: string, ...enterArgs: any) {
     this.currentState.onLeave ? this.currentState.onLeave() : null;
-    this.currentState = this.states.find(state => state.stateName === newState)!;
+    this.currentState = this.states.aFind(state => state.stateName === newState)!;
     this.currentState.onEnter ? this.currentState.onEnter(...enterArgs) : null;
   }
 

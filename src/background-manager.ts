@@ -76,18 +76,18 @@ class BackgroundManager {
   private updateGameCanvas(layerNumber: number, yPos: number, isRightSide = false) {
     const context = assetEngine.drawEngine.getContext();
     const layerCanvas = assetEngine.drawEngine.getBackgroundLayerCanvas(layerNumber);
-    context.save();
+    context.cSave();
     context.scale(4, 4);
     if (assetEngine.drawEngine.backgrounds[this.backgroundNumber][layerNumber].isSemiTransparent) {
       context.globalAlpha = 0.65;
     }
     if (isRightSide) {
       context.scale(-1, 1);
-      context.drawImage(layerCanvas, -248, yPos, 128, 256);
+      context.cDrawImage(layerCanvas, -248, yPos, 128, 256);
     } else {
-      context.drawImage(layerCanvas, -8, yPos, 128, 256);
+      context.cDrawImage(layerCanvas, -8, yPos, 128, 256);
     }
-    context.restore();
+    context.cRestore();
   }
 }
 

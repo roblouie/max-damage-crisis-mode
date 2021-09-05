@@ -25,9 +25,9 @@ export class MusicEngine {
     this.isSongPlaying = true;
     this.createOscillators(this.songs[songIndex]);
     this.currentTempo = this.songs[songIndex].tempo;
-    this.songs[songIndex].tracks.forEach((track, index) => this.scheduleTrackNotes(track, index));
+    this.songs[songIndex].tracks.aForEach((track, index) => this.scheduleTrackNotes(track, index));
     let totalNotePositionsUsed = 0;
-    this.songs[songIndex].tracks.forEach(track => {
+    this.songs[songIndex].tracks.aForEach(track => {
       const lastNote = track.notes[track.notes.length - 1] || null;
       if (!lastNote) {
         return;
@@ -52,9 +52,9 @@ export class MusicEngine {
     this.isSongPlaying = false;
     this.musicGain!.gain.value = 0;
     clearTimeout(this.repeatTimer);
-    this.oscillators.forEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
+    this.oscillators.aForEach(osc => osc.frequency.cancelScheduledValues(this.ctx.currentTime));
     this.oscillators = [];
-    this.gainNodes.forEach(gain => {
+    this.gainNodes.aForEach(gain => {
       gain.gain.cancelScheduledValues(this.ctx.currentTime);
       gain.gain.value = 0;
     });
@@ -62,7 +62,7 @@ export class MusicEngine {
   }
 
   private createOscillators(song: Song) {
-    song.tracks.forEach((track, index) => {
+    song.tracks.aForEach((track, index) => {
       this.oscillators[index] = new OscillatorNode(this.ctx, { type: track.wave });
       this.gainNodes.push(this.ctx.createGain());
       this.oscillators[index]
@@ -74,7 +74,7 @@ export class MusicEngine {
   }
 
   private scheduleTrackNotes(track: Track, index: number) {
-    track.notes.forEach((note) => {
+    track.notes.aForEach((note) => {
       const startTimeInSeconds = this.getDurationInSeconds(note.startPosition);
       const endTimeInSeconds = this.getDurationInSeconds(note.startPosition + note.duration);
       this.oscillators[index].frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds);

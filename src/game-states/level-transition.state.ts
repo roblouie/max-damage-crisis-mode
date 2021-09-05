@@ -16,13 +16,13 @@ class LevelTransitionState implements State {
     assetEngine.musicEngine.stopSong();
     this.framesElapsed++;
     const context = assetEngine.drawEngine.getContext();
-    context.save();
+    context.cSave();
     assetEngine.drawEngine.clearContext();
     context.textAlign = 'center';
     const isOnLastLevel = (this.levelNumber === assetEngine.levels.length);
     const text = isOnLastLevel ? 'You Win!' : `Level  ${this.levelNumber + 1}`;
     assetEngine.drawEngine.drawText(text, 40, 120, 100);
-    context.restore();
+    context.cRestore();
 
     if (this.framesElapsed >= 120) {
       if (isOnLastLevel) {

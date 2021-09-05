@@ -192,7 +192,7 @@ class Player {
 
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
-    context.save();
+    context.cSave();
     const center = this.getCenter();
     context.scale(4, 4);
     context.translate(center.x, center.y);
@@ -200,7 +200,7 @@ class Player {
     const flip = (this.angle > -90 && this.angle < 90) ? -1 : 1;
     context.scale(1/4 * this.respawnScale * flip, 1/4 * this.respawnScale);
     assetEngine.drawEngine.drawSprite(this.currentFrame, -this.width / 2, -22);
-    context.restore();
+    context.cRestore();
 
     // DEBUG
     // context.save();
