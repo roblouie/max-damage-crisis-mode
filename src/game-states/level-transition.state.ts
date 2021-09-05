@@ -10,28 +10,23 @@ class LevelTransitionState implements State {
   onEnter(levelNumber: number) {
     this.framesElapsed = 0;
     this.levelNumber = levelNumber;
+    assetEngine.musicEngine.stopSong();
+    if (this.levelNumber === assetEngine.levels.length) {
+      gameStateMachine.setState('credits');
+    }
   }
 
   onUpdate(): void {
-    assetEngine.musicEngine.stopSong();
     this.framesElapsed++;
     const context = assetEngine.drawEngine.getContext();
-    context.save();
     assetEngine.drawEngine.clearContext();
     context.textAlign = 'center';
-    const isOnLastLevel = (this.levelNumber === assetEngine.levels.length);
-    const text = isOnLastLevel ? 'You Win!' : `Level  ${this.levelNumber + 1}`;
-    assetEngine.drawEngine.drawText(text, 40, 120, 100);
-    context.restore();
 
-    if (this.framesElapsed >= 120) {
-      if (isOnLastLevel) {
-        hud.saveHighScore();
-        //TODO: Go to credits screen
-        gameStateMachine.setState('menu');
-      } else {
-        gameStateMachine.setState('in-level', this.levelNumber);
-      }
+    assetEngine.drawEngine.drawText(`Level  ${this.levelNumber + 1}`, 40, 120, 100);
+
+    if (this.framesElapsed >= 121) {
+      hud.saveHighScore();
+      gameStateMachine.setState('in-level', this.levelNumber);
     }
   }
 }

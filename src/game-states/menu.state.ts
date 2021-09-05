@@ -20,6 +20,10 @@ class MenuState implements State {
   }
 
   onEnter() {
+    if (masterGainNode.gain.value === 1){
+      assetEngine.musicEngine.startSong(0);
+    }
+
     controls.onMouseMove(position => {
       if (this.muteRectangle.containsPoint(position)) {
         assetEngine.drawEngine.getCanvas().style.cursor = 'pointer';
