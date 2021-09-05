@@ -6,54 +6,47 @@ import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
-  private sfxGain = audioContext.createGain();
+  private sfxGain = new GainNode(audioContext, { gain: 0.8 })
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
     this.sfxGain.connect(masterGainNode);
-    this.sfxGain.gain.value = 0.8;
   }
 
   async playEffect(effectIndex: number) {
-    const soundEffect = this.soundEffects.find((effect, index) => index === effectIndex);
-    if (!soundEffect || !audioContext) {
-      return;
-    }
-    const whiteNoiseGain = new GainNode(audioContext);
-    whiteNoiseGain.gain.value = 1;
+    const soundEffect = this.soundEffects[effectIndex];
+
+    const gainNodes = [new GainNode(audioContext, { gain: 1 }), new GainNode(audioContext, { gain: 1 }) ]
+
+    const oscillator = new OscillatorNode(audioContext, { type: 'square' });
+    oscillator
+      .connect(gainNodes[0])
+      .connect(this.sfxGain);
+
     const whiteNoiseGainNode = new AudioWorkletNode(audioContext, 'wn');
     const whiteNoiseFrequency = whiteNoiseGainNode.parameters.get('freq')!;
     const whiteNoiseCounterWidth = whiteNoiseGainNode.parameters.get('width')!;
     whiteNoiseGainNode
-      .connect(whiteNoiseGain)
+      .connect(gainNodes[1])
       .connect(this.sfxGain);
-
-    const oscillator = new OscillatorNode(audioContext, { type: 'square' });
-    const oscillatorGain = new GainNode(audioContext);
-    oscillator
-      .connect(oscillatorGain)
-      .connect(this.sfxGain);
-    oscillatorGain.gain.value = 1;
-
-    let pitchDurationInSeconds = 0;
-
 
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
-    const gainNodes = [oscillatorGain, whiteNoiseGain];
+    let pitchDurationInSeconds = 0;
+
     frequencies.aForEach((freq, frequencyIndex) => {
-      const pitchDivider = frequencyIndex === 0 ? 1 : .3;
       pitchDurationInSeconds = 0;
       soundEffect.pitchInstructions.aForEach((instruction: SfxPitchInstruction, index: number) => {
+        const pitch = frequencyIndex === 0 ? instruction.pitch : (instruction.pitch / .3)
         pitchDurationInSeconds += instruction.durationInSeconds;
         if (index === 0){
-          freq.setValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime);
-          freq.setValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
+          freq.setValueAtTime(pitch, audioContext.currentTime);
+          freq.setValueAtTime(pitch, audioContext.currentTime + pitchDurationInSeconds);
           return;
         }
         if (instruction.isLinearRampTo) {
-          freq.linearRampToValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
+          freq.linearRampToValueAtTime(pitch, audioContext.currentTime + pitchDurationInSeconds);
         } else {
-          freq.exponentialRampToValueAtTime(instruction.pitch / pitchDivider, audioContext.currentTime + pitchDurationInSeconds);
+          freq.exponentialRampToValueAtTime(pitch, audioContext.currentTime + pitchDurationInSeconds);
         }
       });
     });

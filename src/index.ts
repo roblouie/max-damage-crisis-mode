@@ -9,6 +9,7 @@ import { endOfLevel } from "./game-states/end-of-level.state";
 import { initializeHud } from "./hud";
 import { initializePlayer } from "./player/player";
 import { levelTransition } from "./game-states/level-transition.state";
+import {credits} from "./game-states/credits.state";
 
 // @ts-ignore
 let p='prototype',toReplace = [['forEach', 'map', 'find'], ['save', 'restore', 'drawImage', 'clearRect', 'putImageData'], ['getUint8', 'getUint16']];
@@ -58,6 +59,12 @@ window.onload = async () => {
       stateName: 'level-transition',
       onEnter: (levelNumber: number) => levelTransition.onEnter(levelNumber),
       onUpdate: () => levelTransition.onUpdate(),
+    },
+    {
+      stateName: 'credits',
+      onEnter: () => credits.onEnter(),
+      onUpdate: () => credits.onUpdate(),
+      onLeave: () => credits.onLeave(),
     }
   ]);
 
