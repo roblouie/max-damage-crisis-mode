@@ -12,10 +12,10 @@ export class SwoopEnemy extends Enemy {
   }
 
   update() {
-    if (this.position.y > 80 && this.position.x > 20 && this.position.x < 208) {
-      this.position.x += (this.isMovingLeft ? -0.5 : 0.5);
+    if (this.pos.y > 80 && this.pos.x > 20 && this.pos.x < 208) {
+      this.pos.x += (this.isMovingLeft ? -0.5 : 0.5);
     }
-    this.position.y += this.speed;
+    this.pos.y += this.speed;
     super.update();
   }
 }

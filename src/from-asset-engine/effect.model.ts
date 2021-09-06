@@ -4,59 +4,71 @@ import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Effect {
   private currentFrame = 0;
-  private position: Point;
+  // @ts-ignore
+  private pos: Point;
+  // @ts-ignore
   private animationFrames: number[];
+  // @ts-ignore
   private duration: number;
+  // @ts-ignore
   private opacity: number;
+  // @ts-ignore
   private translationRate: Point;
   private currentRotation = 0;
+  // @ts-ignore
   private rotationRate: number;
   private currentScale = 1;
+  // @ts-ignore
   private scaleRate: number;
+  // @ts-ignore
   private width: number;
+  // @ts-ignore
   private height: number;
+  // @ts-ignore
   private frameSequencer: Generator<number>
 
   constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, opacity: number, translationRate: Point, rotationRate: number, scaleRate: number) {
-    this.position = startPosition;
-    this.animationFrames = animationFrames;
-    this.duration = durationInFrames;
-    this.opacity = opacity;
-    this.translationRate = translationRate;
-    this.rotationRate = rotationRate;
-    this.scaleRate = scaleRate;
-    const startSprite = assetEngine.drawEngine.sprites[this.animationFrames[0]];
-    this.height = startSprite.height * 16;
-    this.width = startSprite.width * 16;
-    this.frameSequencer = animationFrameSequencer(animationFrames, animationRate);
+    const t = this;
+    t.pos = startPosition;
+    t.animationFrames = animationFrames;
+    t.duration = durationInFrames;
+    t.opacity = opacity;
+    t.translationRate = translationRate;
+    t.rotationRate = rotationRate;
+    t.scaleRate = scaleRate;
+    const startSprite = assetEngine.drawEngine.sprites[t.animationFrames[0]];
+    t.height = startSprite.height * 16;
+    t.width = startSprite.width * 16;
+    t.frameSequencer = animationFrameSequencer(animationFrames, animationRate);
   }
 
   update() {
-    this.position.x += this.translationRate.x;
-    this.position.y += this.translationRate.y;
-    this.currentScale += this.scaleRate;
-    this.currentRotation += this.rotationRate;
-    this.drawAtAngle(this.currentRotation);
-    this.currentFrame += 1;
+    const t = this;
+    t.pos.x += t.translationRate.x;
+    t.pos.y += t.translationRate.y;
+    t.currentScale += t.scaleRate;
+    t.currentRotation += t.rotationRate;
+    t.drawAtAngle(t.currentRotation);
+    t.currentFrame += 1;
   }
 
   getCenter() {
-    return { x: this.position.x + (this.width / 2), y: this.position.y + (this.height / 2)};
+    const t = this;
+    return { x: t.pos.x + (t.width / 2), y: t.pos.y + (t.height / 2)};
   }
 
-  getIsDone() {
-    return this.currentFrame >= this.duration;
-  }
+  getIsDone = () => this.currentFrame >= this.duration;
 
   drawAtAngle(angle: number) {
+    const t = this;
     const context = assetEngine.drawEngine.getContext();
-    context.cSave();
+    context.save();
     const center = this.getCenter();
     context.scale(4, 4);
     context.translate(center.x, center.y);
     context.rotate((angle - 90) * Math.PI / 180);
-    context.scale(1/4 * this.currentScale, 1/4 * this.currentScale);
-    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, -this.width / 2, -this.height / 2);
-    context.cRestore();
+    context.scale(1/4 * t.currentScale, 1/4 * t.currentScale);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, -t.width / 2, -t.height / 2);
+    context.restore();
   }
 }

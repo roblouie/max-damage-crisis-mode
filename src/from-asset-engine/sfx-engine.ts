@@ -33,9 +33,9 @@ export class SfxEngine {
     const frequencies = [oscillator.frequency, whiteNoiseFrequency];
     let pitchDurationInSeconds = 0;
 
-    frequencies.aForEach((freq, frequencyIndex) => {
+    frequencies.forEach((freq, frequencyIndex) => {
       pitchDurationInSeconds = 0;
-      soundEffect.pitchInstructions.aForEach((instruction: SfxPitchInstruction, index: number) => {
+      soundEffect.pitchInstructions.forEach((instruction: SfxPitchInstruction, index: number) => {
         const pitch = frequencyIndex === 0 ? instruction.pitch : (instruction.pitch / .3)
         pitchDurationInSeconds += instruction.durationInSeconds;
         if (index === 0){
@@ -54,7 +54,7 @@ export class SfxEngine {
     let totalGainTimePerChanel = [0, 0];
     let isSeven = false;
 
-    soundEffect.gainInstructions.aForEach((instruction: SfxGainInstruction) => {
+    soundEffect.gainInstructions.forEach((instruction: SfxGainInstruction) => {
       const index = instruction.isWhiteNoise ? 1 : 0;
       gainNodes[index].gain.linearRampToValueAtTime(instruction.gain, audioContext.currentTime + totalGainTimePerChanel[index] + instruction.timeFromLastInstruction);
       totalGainTimePerChanel[index] += instruction.timeFromLastInstruction;
@@ -62,13 +62,13 @@ export class SfxEngine {
 
     let secondsSinceWidthChange = 0;
 
-    soundEffect.widthInstructions.aForEach((instruction: SfxWidthInstruction) => {
+    soundEffect.widthInstructions.forEach((instruction: SfxWidthInstruction) => {
       secondsSinceWidthChange += instruction.timeFromLastInstruction;
       whiteNoiseCounterWidth.setValueAtTime(isSeven ? 15 : 7,audioContext.currentTime + secondsSinceWidthChange);
       isSeven = !isSeven;
     });
 
-    gainNodes.aForEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
+    gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
     oscillator.start();
   }
 }

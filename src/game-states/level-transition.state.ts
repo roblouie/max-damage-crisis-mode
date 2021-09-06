@@ -19,13 +19,13 @@ class LevelTransitionState implements State {
   onUpdate(): void {
     this.framesElapsed++;
     const context = assetEngine.drawEngine.getContext();
-    context.cSave();
+    context.save();
     assetEngine.drawEngine.clearContext();
     context.textAlign = 'center';
     const isOnLastLevel = (this.levelNumber === assetEngine.levels.length);
     const text = isOnLastLevel ? 'You Win!' : `Level  ${this.levelNumber + 1}`;
     assetEngine.drawEngine.drawText(text, 40, 120, 100);
-    context.cRestore();
+    context.restore();
 
     assetEngine.drawEngine.drawText(`Level  ${this.levelNumber + 1}`, 40, 120, 100);
 

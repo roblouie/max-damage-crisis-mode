@@ -2,8 +2,8 @@ import { assetEngine } from "./asset-engine-instance";
 import { Point } from "./point";
 
 class Controls {
-  _onClick?: (position: Point) => void;
-  _onHover?: (position: Point) => void;
+  _onClick?: (pos: Point) => void;
+  _onHover?: (pos: Point) => void;
 
   isAnalogStickPressed = false;
   analogStickAngle = 0;
@@ -36,11 +36,11 @@ class Controls {
     }
   }
 
-  onClick(clickCallback?: (position: Point) => void) {
+  onClick(clickCallback?: (pos: Point) => void) {
     this._onClick = clickCallback;
   }
 
-  onMouseMove(mouseOverCallback?: (position: Point) => void) {
+  onMouseMove(mouseOverCallback?: (pos: Point) => void) {
     this._onHover = mouseOverCallback;
   }
 

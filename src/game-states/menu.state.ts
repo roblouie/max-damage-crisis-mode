@@ -9,8 +9,12 @@ import { Rectangle } from "../core/rectangle";
 class MenuState implements State {
   muteRectangle = new Rectangle({ x: 210, y: 280 }, 40, 40);
   onUpdate() {
+    const context = assetEngine.drawEngine.getContext();
+    const canvas = assetEngine.drawEngine.getCanvas();
     assetEngine.drawEngine.clearContext();
+    context.scale(1/4, 1/4);
     assetEngine.drawEngine.drawText('Main Menu', 40,  120, 30);
+    context.scale(1/2, 1/2);
     assetEngine.drawEngine.drawText(`High Score: ${hud.getHighScore()}`, 30, 120, 150)
     assetEngine.drawEngine.drawText(masterGainNode.gain.value === 0 ? '🔈' : '🔊', 60, 222, 300);
     if (masterGainNode.gain.value === 0) {

@@ -17,7 +17,7 @@ export class Level {
   }
 
   update() {
-    this.activeEnemies.aForEach(enemy => enemy.update());
+    this.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.mostRecentWaveIndex === this.enemyWaves.length - 1) {
       if (this.activeEnemies.length === 0) {
@@ -27,9 +27,9 @@ export class Level {
     }
 
     const nextWave = this.enemyWaves[this.mostRecentWaveIndex + 1];
-    if (this.activeEnemies.filter(enemy => enemy.isMineAttached && enemy.position.y > enemy.size).length === this.activeEnemies.length) {
+    if (this.activeEnemies.filter(enemy => enemy.isMineAttached && enemy.pos.y > enemy.size).length === this.activeEnemies.length) {
       this.mostRecentWaveIndex++;
-      nextWave.enemies.aForEach(enemy => enemy.position.y -= 700);
+      nextWave.enemies.forEach(enemy => enemy.pos.y -= 700);
       this.activeEnemies.push(...nextWave.enemies)
     }
   }

@@ -11,17 +11,21 @@ import { initializePlayer } from "./player/player";
 import { levelTransition } from "./game-states/level-transition.state";
 import {credits} from "./game-states/credits.state";
 
-// @ts-ignore
-let p='prototype',toReplace = [['forEach', 'map', 'find'], ['save', 'restore', 'drawImage', 'clearRect', 'putImageData'], ['getUint8', 'getUint16']];
-// @ts-ignore
-[Object.getPrototypeOf([]),CanvasRenderingContext2D[p],DataView[p]].map((proto, protoIndex)=>{
-  toReplace[protoIndex].map((prop,i)=>{
-      // @ts-ignore
-      proto[String.fromCharCode(i+65+6*(i>25))]=proto[prop];
-      // @ts-ignore
-      console.log(`${String.fromCharCode(i+65+6*(i>25))} = ${proto[prop]}`);
-  });
-});
+// //TODO: Prepend this on build
+// let p='prototype',toReplace = [
+//   ['forEach', 'map', 'find', 'push'],
+//   ['save', 'restore', 'drawImage', 'clearRect', 'putImageData'],
+//   ['getUint8', 'getUint16'],
+//   ['setValueAtTime']
+// ];
+//
+// // @ts-ignore
+// [Object.getPrototypeOf([]),CanvasRenderingContext2D[p],DataView[p],AudioParam[p]].map((proto, protoIndex)=>{
+//   toReplace[protoIndex].map((prop,i)=>{
+//       // @ts-ignore
+//     proto[String.fromCharCode(i+65+6*(i>25))]=proto[prop];
+//   });
+// });
 
 
 window.onload = async () => {

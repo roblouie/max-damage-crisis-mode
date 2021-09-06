@@ -20,14 +20,14 @@ export class WaveEnemy extends Enemy {
 
   update() {
     if (this.startingX === undefined) {
-      this.startingX = this.position.x;
+      this.startingX = this.pos.x;
     }
 
-    if ((this.position.x <= (this.startingX - 5)) && this.isMovingLeft) {
+    if ((this.pos.x <= (this.startingX - 5)) && this.isMovingLeft) {
       this.isMovingLeft = false;
     }
 
-    if ((this.position.x >= (this.startingX + 5)) && !this.isMovingLeft) {
+    if ((this.pos.x >= (this.startingX + 5)) && !this.isMovingLeft) {
       this.isMovingLeft = true;
     }
 
@@ -41,8 +41,8 @@ export class WaveEnemy extends Enemy {
       this.momentum = -1.5;
     }
 
-    this.position.x += this.momentum;
-    this.position.y += this.speed;
+    this.pos.x += this.momentum;
+    this.pos.y += this.speed;
     super.update();
   }
 }

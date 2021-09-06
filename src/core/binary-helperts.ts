@@ -4,7 +4,7 @@ export const split16Bit = (twoByteValue: number, ...positions: number[]) => spli
 
 export const split24Bit = (threeByteValue: number, ...positions: number[]) => splitData(threeByteValue, 3, positions);
 
-function splitData(value: number, numberOfBytes: 1 | 2 | 3, positions: number[]) {
+const splitData = (value: number, numberOfBytes: 1 | 2 | 3, positions: number[]) => {
   const maskBase = (1 << (numberOfBytes * 8)) - 1;
   const numberOfBits = numberOfBytes * 8;
 

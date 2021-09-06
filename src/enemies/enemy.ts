@@ -2,7 +2,7 @@ import { assetEngine } from "../core/asset-engine-instance";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export abstract class Enemy {
-  position = { x: 0, y: 0 };
+  pos = { x: 0, y: 0 };
   size: number;
   color = '#000000';
   isDead = false;
@@ -12,7 +12,7 @@ export abstract class Enemy {
   private mineSequencer: Generator<number>
 
   getCenter() {
-    return { x: this.position.x + (this.size / 2), y: this.position.y + (this.size / 2) }
+    return { x: this.pos.x + (this.size / 2), y: this.pos.y + (this.size / 2) }
   }
 
   getRadius() {
@@ -30,8 +30,8 @@ export abstract class Enemy {
     const xPositions = [0, 35, 70, 104, 139, 174, 208];
     const column = (gridPosition % 7);
     const row = Math.floor(gridPosition / 7);
-    this.position.x = xPositions[column];
-    this.position.y = row * 35;
+    this.pos.x = xPositions[column];
+    this.pos.y = row * 35;
     this.size = size;
     this.color = Enemy.Colors[colorNum];
     this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
@@ -39,13 +39,13 @@ export abstract class Enemy {
   }
 
   update() {
-    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.position.x, this.position.y);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.pos.x, this.pos.y);
     if (this.isMineAttached) {
       assetEngine.drawEngine.drawSprite(this.mineSequencer.next().value, this.getCenter().x, this.getCenter().y);
     }
   }
 
   isOffScreen() {
-    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getScreenHeight() / assetEngine.drawEngine.getRenderMultiplier();
+    return (this.pos.y - this.size - 20) >= assetEngine.drawEngine.getScreenHeight() / assetEngine.drawEngine.getRenderMultiplier();
   }
 }

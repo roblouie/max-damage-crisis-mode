@@ -14,7 +14,7 @@ export class StraightEnemy extends Enemy {
   }
 
   update() {
-    this.position.y += this.speed;
+    this.pos.y += this.speed;
     // const context = assetEngine.drawEngine.getContext();
     // context.save();
     // context.fillStyle = this.color;

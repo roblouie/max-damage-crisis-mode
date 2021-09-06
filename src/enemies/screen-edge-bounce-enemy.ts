@@ -13,11 +13,11 @@ export class ScreenEdgeBounceEnemy extends Enemy {
   }
 
   update() {
-    if ((this.position.x <= 16) && this.isMovingLeft) {
+    if ((this.pos.x <= 16) && this.isMovingLeft) {
       this.isMovingLeft = false;
     }
 
-    if (this.position.x >= 220 && !this.isMovingLeft) {
+    if (this.pos.x >= 220 && !this.isMovingLeft) {
       this.isMovingLeft = true;
     }
 
@@ -31,9 +31,9 @@ export class ScreenEdgeBounceEnemy extends Enemy {
       this.momentum = -0.5;
     }
 
-    this.position.x += this.momentum;
+    this.pos.x += this.momentum;
 
-    this.position.y += 0.8;
+    this.pos.y += 0.8;
     super.update();
   }
 }

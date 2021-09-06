@@ -8,7 +8,7 @@ import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 class Player {
   readonly startX = 112;
   readonly startY = 260;
-  position = { x: this.startX, y: this.startY };
+  pos = { x: this.startX, y: this.startY };
   width = 16;
   height = 20;
   isOnSatelite = true;
@@ -59,7 +59,7 @@ class Player {
   }
 
   getCenter() {
-    return { x: this.position.x + (this.width / 2), y: this.position.y + 12};
+    return { x: this.pos.x + (this.width / 2), y: this.pos.y + 12};
   }
 
   isJumping() {
@@ -119,8 +119,8 @@ class Player {
     this.currentFrame = this.frameSequencer?.next().value;
     this.drawAtAngle(this.angle);
     if (this.isOnEnemy && this.enemyAttachedTo) {
-      this.position.x = this.enemyAttachedTo?.getCenter().x - this.getRadius();
-      this.position.y = this.enemyAttachedTo?.getCenter().y - this.getRadius();
+      this.pos.x = this.enemyAttachedTo?.getCenter().x - this.getRadius();
+      this.pos.y = this.enemyAttachedTo?.getCenter().y - this.getRadius();
     }
 
     if (controls.isAnalogStickPressed) {
@@ -133,8 +133,8 @@ class Player {
     }
 
     if (this.isOnSatelite) {
-      this.position.x = this.startX;
-      this.position.y = this.startY;
+      this.pos.x = this.startX;
+      this.pos.y = this.startY;
     }
 
     if (this.isOffScreen()) {
@@ -156,15 +156,15 @@ class Player {
   onJumpingUpdate() {
     this.drawAtAngle(this.jumpAngle);
 
-    this.position.x -= this.speed * Math.cos((this.jumpAngle) * Math.PI / 180);
-    this.position.y -= this.speed * Math.sin((this.jumpAngle) * Math.PI / 180);
+    this.pos.x -= this.speed * Math.cos((this.jumpAngle) * Math.PI / 180);
+    this.pos.y -= this.speed * Math.sin((this.jumpAngle) * Math.PI / 180);
     if (this.isOffScreen()) {
       this.stateMachine.setState('respawning');
     }
   }
 
   onRespawningEnter() {
-    this.position = { x: this.startX, y: this.startY + 40}
+    this.pos = { x: this.startX, y: this.startY + 40}
     this.isOnEnemy = false;
     this.enemyAttachedTo = undefined;
     this.respawnScale = 0;
@@ -173,8 +173,8 @@ class Player {
   }
 
   onRespawningUpdate() {
-    if (this.position.y > this.startY) {
-      this.position.y -= 0.9;
+    if (this.pos.y > this.startY) {
+      this.pos.y -= 0.9;
       this.respawnScale += 0.025;
       this.angle = 90;
       this.drawAtAngle(this.angle);
@@ -192,7 +192,7 @@ class Player {
 
   drawAtAngle(angle: number) {
     const context = assetEngine.drawEngine.getContext();
-    context.cSave();
+    context.save();
     const center = this.getCenter();
     context.scale(4, 4);
     context.translate(center.x, center.y);
@@ -200,7 +200,7 @@ class Player {
     const flip = (this.angle > -90 && this.angle < 90) ? -1 : 1;
     context.scale(1/4 * this.respawnScale * flip, 1/4 * this.respawnScale);
     assetEngine.drawEngine.drawSprite(this.currentFrame, -this.width / 2, -22);
-    context.cRestore();
+    context.restore();
 
     // DEBUG
     // context.save();

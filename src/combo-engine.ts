@@ -44,7 +44,7 @@ export class ComboEngine {
 
   update() {
     const context = assetEngine.drawEngine.getContext();
-    context.cSave();
+    context.save();
 
     if (this.comboCountSizeMultiplier >= 1.0) {
       this.comboCountSizeMultiplier -= 0.05;
@@ -65,7 +65,7 @@ export class ComboEngine {
       assetEngine.drawEngine.drawText('CHAIN', 24 * this.comboChainSizeMultiplier, 200, 307);
     }
 
-    context.cRestore();
+    context.restore();
   }
 }
 

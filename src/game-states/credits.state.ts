@@ -2,14 +2,13 @@ import { State } from "../core/state";
 import { assetEngine } from "../core/asset-engine-instance";
 import {controls} from "../core/controls";
 import {gameStateMachine} from "../game-state-machine";
-import {doTimes} from "../core/timing-helpers";
 
 
 class CreditsState implements State {
   framesElapsed = 0
 
   onEnter() {
-    assetEngine.musicEngine.startSong(4)
+    assetEngine.musicEngine.startSong(4, false)
     controls.onClick(() => gameStateMachine.setState('menu'))
   }
 

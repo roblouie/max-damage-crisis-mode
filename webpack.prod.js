@@ -1,7 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
-const replacements = require('./golfin/built-in-replacer');
 
 module.exports = {
   entry: './src/index.ts',
@@ -24,15 +23,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'string-replace-loader',
-            options: {
-              multiple: replacements
-            }
-          },
-          { loader: 'ts-loader'},
-        ],
+        use: 'ts-loader',
         exclude: [/node_modules/, /.spec.ts/],
       },
     ],

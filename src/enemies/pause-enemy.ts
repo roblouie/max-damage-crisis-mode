@@ -17,13 +17,13 @@ export class PauseEnemy extends Enemy {
 
   update() {
     if (this.startingY === undefined) {
-      this.startingY = this.position.y;
+      this.startingY = this.pos.y;
     }
 
-    if (this.position.y >= this.startingY + 320 && this.pausedFor < 10) {
+    if (this.pos.y >= this.startingY + 320 && this.pausedFor < 10) {
       this.pausedFor += 0.0167;
     } else {
-      this.position.y += this.speed;
+      this.pos.y += this.speed;
     }
     // const context = assetEngine.drawEngine.getContext();
     // context.save();

@@ -8,7 +8,7 @@ export class EffectEngine {
   }
 
   update() {
-    this.currentEffects.aForEach(effect => effect.update())
+    this.currentEffects.forEach(effect => effect.update())
     this.currentEffects = this.currentEffects.filter(effect => !effect.getIsDone());
   }
 

@@ -54,7 +54,7 @@ class Hud {
   draw() {
     const context = assetEngine.drawEngine.getContext();
 
-    context.cSave();
+    context.save();
     context.fillStyle = 'red';
     context.fillRect(this.meterLeft, this.meterTop, this.meterWidth * (this.healthPercent * .01), this.meterHeight);
     context.strokeStyle = 'white';
@@ -62,7 +62,7 @@ class Hud {
     assetEngine.drawEngine.drawText('Earth Resistance Forces', 30, 39, 307);
     // @ts-ignore
     assetEngine.drawEngine.drawText((''+this.score).padStart(15, '0'), 30,200, 315);
-    context.cRestore();
+    context.restore();
   }
 }
 
