@@ -11,7 +11,6 @@ class MenuState implements State {
     assetEngine.drawEngine.drawText('Main Menu', 40,  120, 30);
     const audioText = masterGainNode.gain.value === 0 ? '🔈 Unmute' : '🔊 Mute'
     assetEngine.drawEngine.drawMenu(100, ['New Game', 'Music Player', 'Sfx Player', audioText, '', `High Score: ${hud.getHighScore()}`], (returnIndex) => {
-      console.log(returnIndex)
       if (returnIndex === 0) {
         gameStateMachine.setState('level-transition', 0)
       }
