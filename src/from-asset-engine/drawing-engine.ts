@@ -79,7 +79,7 @@ export class DrawingEngine {
       this.drawText(option, 40,120,startPositionY + (index * 25))
     })
 
-    controls.onClick((position) => callback(Math.floor((position.y - startPositionY) / 25) + 1))
+    controls.onClick((position) => callback(Math.ceil((position.y - startPositionY) / 25)))
   }
 
   tileToImageData(tile: number[], palette: number[]): ImageData {
