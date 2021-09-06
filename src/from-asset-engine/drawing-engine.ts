@@ -3,8 +3,9 @@ import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
 import { split24Bit } from "../core/binary-helperts";
-import { doTimes } from "../core/timing-helpers";
+import {doTimes, runOnce} from "../core/timing-helpers";
 import { assetEngine } from "../core/asset-engine-instance";
+import {controls} from "../core/controls";
 
 export class DrawingEngine {
   sprites: Sprite[];
@@ -71,6 +72,14 @@ export class DrawingEngine {
     context.fillStyle = color;
     context.fillText(text, x * scale, y * scale);
     context.restore();
+  }
+
+  drawMenu(startPositionY: number, options: string[], callback: (arg0: number) => void) {
+    options.forEach((option, index) => {
+      this.drawText(option, 40,120,startPositionY + (index * 25))
+    })
+
+    controls.onClick((position) => callback(Math.floor((position.y - startPositionY) / 25) + 1))
   }
 
   tileToImageData(tile: number[], palette: number[]): ImageData {

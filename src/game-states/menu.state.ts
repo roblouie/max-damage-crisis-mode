@@ -4,45 +4,29 @@ import { controls } from "../core/controls";
 import { gameStateMachine } from "../game-state-machine";
 import {audioContext, masterGainNode, toggleMute} from "../from-asset-engine/audio-initializer";
 import {hud} from "../hud";
-import { Rectangle } from "../core/rectangle";
 
 class MenuState implements State {
-  muteRectangle = new Rectangle({ x: 210, y: 280 }, 40, 40);
   onUpdate() {
     assetEngine.drawEngine.clearContext();
     assetEngine.drawEngine.drawText('Main Menu', 40,  120, 30);
-    assetEngine.drawEngine.drawText(`High Score: ${hud.getHighScore()}`, 30, 120, 150)
-    assetEngine.drawEngine.drawText(masterGainNode.gain.value === 0 ? '🔈' : '🔊', 60, 222, 300);
-    if (masterGainNode.gain.value === 0) {
-      assetEngine.drawEngine.drawText('\\', 80, 222, 300, 'gray');
-      assetEngine.drawEngine.drawText('muted', 20, 222, 308);
-    }
+    const audioText = masterGainNode.gain.value === 0 ? '🔈 Unmute' : '🔊 Mute'
+    assetEngine.drawEngine.drawMenu(100, ['New Game', 'Music Player', 'Sfx Player', audioText, '', `High Score: ${hud.getHighScore()}`], (returnIndex) => {
+      console.log(returnIndex)
+      if (returnIndex === 0) {
+        gameStateMachine.setState('level-transition', 0)
+      }
+      if (returnIndex === 3) {
+        audioContext.resume();
+        toggleMute();
+        assetEngine.musicEngine.startSong(0);
+      }
+    })
   }
 
   onEnter() {
     if (masterGainNode.gain.value === 1){
       assetEngine.musicEngine.startSong(0);
     }
-
-    controls.onMouseMove(position => {
-      if (this.muteRectangle.containsPoint(position)) {
-        assetEngine.drawEngine.getCanvas().style.cursor = 'pointer';
-      } else {
-        assetEngine.drawEngine.getCanvas().style.cursor = 'default';
-      }
-    });
-
-    controls.onClick((position) => {
-      // TODO: update values to eval y position against if switching to real render resolution as
-      // source of truth for whole game
-      if (this.muteRectangle.containsPoint(position)) {
-        audioContext.resume();
-        toggleMute()
-        assetEngine.musicEngine.startSong(0);
-        return;
-      }
-      gameStateMachine.setState('level-transition', 0);
-    });
   }
 
   onLeave() {
