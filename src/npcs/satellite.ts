@@ -1,9 +1,11 @@
 import {assetEngine} from "../core/asset-engine-instance";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Satellite {
   private startX = 104;
-  private startY = 260;
+  private startY = 280;
   private size = 32;
+  private frameSequencer = animationFrameSequencer([86, 87, 88], 10, true);
 
   getRadius() {
     return this.size / 2;
@@ -14,17 +16,17 @@ class Satellite {
   }
 
   update() {
-    assetEngine.drawEngine.drawSprite(14, this.startX, this.startY);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.startX, this.startY);
     // DEBUG
-    const context = assetEngine.drawEngine.getContext();
-    context.save();
-    context.fillStyle = 'white';
-    context.beginPath();
-    context.scale(4, 4);
-    context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
+    // const context = assetEngine.drawEngine.getContext();
+    // context.save();
+    // context.fillStyle = 'white';
+    // context.beginPath();
+    // context.scale(4, 4);
+    // context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
+    // context.stroke();
+    // context.fill();
+    // context.restore();
   }
 }
 

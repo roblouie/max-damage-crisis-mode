@@ -19,7 +19,7 @@ export class InLevel implements State {
 
   onEnter(levelNumber: number) {
     comboEngine.reset();
-    backgroundManager.loadBackgrounds(1);
+    backgroundManager.loadBackgrounds(Math.floor(levelNumber / 3));
     assetEngine.musicEngine.startSong(1);
     hud.resetHealth();
     initializePlayer();

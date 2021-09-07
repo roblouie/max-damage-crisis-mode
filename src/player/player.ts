@@ -7,7 +7,7 @@ import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Player {
   readonly startX = 112;
-  readonly startY = 260;
+  readonly startY = 272;
   position = { x: this.startX, y: this.startY };
   width = 16;
   height = 20;

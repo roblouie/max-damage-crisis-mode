@@ -12,13 +12,13 @@ import { debounce, runOnce } from "../core/timing-helpers";
 class EndOfLevelState implements State {
   framesElapsed = 0;
   resistanceBonus = 0;
-  timeBonus = 0;
   scoreEndFrame = 0;
   playerScale = 1;
   playerPosition = {x: 0, y: 0};
   scaleRate = 0.1;
   levelNumberEnded = 0;
   playJumpSound?: Function;
+  playerFrame = 2;
 
   onUpdate() {
     this.framesElapsed++;
@@ -39,14 +39,14 @@ class EndOfLevelState implements State {
       context.save();
       if (this.framesElapsed >= 340) {
         this.playJumpSound!();
-        //TODO: Use player jump frame sprite
+        this.playerFrame = 3;
         this.playerScale += this.scaleRate;
         this.playerPosition.y -= this.playerScale * 2;
         this.playerPosition.x -= this.playerScale * 0.4;
         context.scale(this.playerScale, this.playerScale);
         this.scaleRate += 0.05;
       }
-      drawEngine.drawSprite(3, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
+      drawEngine.drawSprite(this.playerFrame, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
       context.restore();
     }
 

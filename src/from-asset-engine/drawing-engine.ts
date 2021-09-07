@@ -89,9 +89,7 @@ export class DrawingEngine {
       const imageDataIndex = index * 4;
       const color = palette[pixelValue];
       let alpha = 255;
-      if (pixelValue === 15 && color === 0) {
-        alpha = 140;
-      } else if (pixelValue === 0 && color === 0) {
+      if (pixelValue === 0 && color === 0) {
         alpha = 0;
       }
 
