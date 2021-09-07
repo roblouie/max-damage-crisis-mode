@@ -4,13 +4,15 @@ import { controls } from "../core/controls";
 import { gameStateMachine } from "../game-state-machine";
 import {audioContext, masterGainNode, toggleMute} from "../from-asset-engine/audio-initializer";
 import {hud} from "../hud";
+import { backgroundManager } from "../background-manager";
 
 class MenuState implements State {
   onUpdate() {
     assetEngine.drawEngine.clearContext();
+    backgroundManager.updateBackgrounds();
     assetEngine.drawEngine.drawText('Main Menu', 40,  120, 30);
     const audioText = masterGainNode.gain.value === 0 ? '🔈 Unmute' : '🔊 Mute'
-    assetEngine.drawEngine.drawMenu(100, ['New Game', 'Music Player', 'Sfx Player', audioText, '', `High Score: ${hud.getHighScore()}`], (returnIndex) => {
+    assetEngine.drawEngine.drawMenu(150, ['New Game', 'Music Player', 'Sfx Player', audioText, '', '', `High Score: ${hud.getHighScore()}`], (returnIndex) => {
       if (returnIndex === 0) {
         gameStateMachine.setState('level-transition', 0)
       }
@@ -23,6 +25,7 @@ class MenuState implements State {
   }
 
   onEnter() {
+    backgroundManager.loadBackgrounds(1)
     if (masterGainNode.gain.value === 1){
       assetEngine.musicEngine.startSong(0);
     }

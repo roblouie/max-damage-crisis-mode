@@ -17,7 +17,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack serve --mode=development --host=0.0.0.0",
-    "build": "webpack --config webpack.prod.js",
+    "build": "webpack --config webpack.prod.js && npm run super-minify",
     "super-minify": "google-closure-compiler --js dist/bundle.js --js_output_file dist/bundle.out.js --language_in ECMASCRIPT_2020 --language_out ECMASCRIPT_2020 --compilation_level ADVANCED"
   },
   "author": "",

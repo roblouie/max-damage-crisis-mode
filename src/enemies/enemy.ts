@@ -41,7 +41,7 @@ export abstract class Enemy {
   update() {
     assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.position.x, this.position.y);
     if (this.isMineAttached) {
-      assetEngine.drawEngine.drawSprite(this.mineSequencer.next().value, this.getCenter().x, this.getCenter().y);
+      assetEngine.drawEngine.drawSprite(this.mineSequencer.next().value, this.getCenter().x - 8, this.getCenter().y - 8);
     }
   }
 
