@@ -6,18 +6,13 @@ import { hud } from "../hud";
 import { satellite } from "../npcs/satellite";
 import { player } from "../player/player";
 import { gameStateMachine } from "../game-state-machine";
-import { runOnce } from "../core/timing-helpers";
+import { Point } from "../core/point";
 
 class EndOfLevelState implements State {
   framesElapsed = 0;
   resistanceBonus = 0;
   scoreEndFrame = 0;
-  playerScale = 1;
-  playerPosition = {x: 0, y: 0};
-  scaleRate = 0.1;
   levelNumberEnded = 0;
-  playJumpSound?: Function;
-  playerFrame = 2;
 
   onUpdate() {
     this.framesElapsed++;
@@ -36,16 +31,12 @@ class EndOfLevelState implements State {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
       context.save();
-      if (this.framesElapsed >= 340) {
-        this.playJumpSound!();
-        this.playerFrame = 3;
-        this.playerScale += this.scaleRate;
-        this.playerPosition.y -= this.playerScale * 8;
-        this.playerPosition.x += this.scaleRate * 5;
-        this.scaleRate += 0.02;
-        this.framesElapsed === 340 && assetEngine.sfxEngine.playEffect(6);
+      if (this.framesElapsed === 340) {
+        assetEngine.effectEngine.addEffect({x: 120, y: 282}, [3], 999, 30, new Point(0, -5), 0, 1.07, 90)
+        assetEngine.sfxEngine.playEffect(2);
+        assetEngine.sfxEngine.playEffect(6);
       }
-      this.framesElapsed < 370 && drawEngine.drawSpriteBetter(this.playerFrame, this.playerPosition, this.playerScale);
+      this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 282});
       context.restore();
     }
 
@@ -64,9 +55,10 @@ class EndOfLevelState implements State {
     }
 
     context.restore();
+    assetEngine.effectEngine.update();
     hud.update();
 
-    if (this.playerScale >= 80) {
+    if (this.framesElapsed >= 370) {
       gameStateMachine.setState('level-transition', this.levelNumberEnded + 1);
     }
   }
@@ -74,11 +66,7 @@ class EndOfLevelState implements State {
   onEnter(levelNumber: number) {
     this.framesElapsed = 0;
     this.scoreEndFrame = 0;
-    this.playerScale = 1;
-    this.scaleRate = 0.1;
     this.levelNumberEnded = levelNumber;
-    this.playerPosition = { x: player.startX, y: player.startY - 12 };
-    this.playJumpSound = runOnce(() => assetEngine.sfxEngine.playEffect(2));
     backgroundManager.updateBackgrounds();
     hud.update();
     assetEngine.musicEngine.startSong(3, false);

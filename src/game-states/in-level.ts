@@ -105,13 +105,13 @@ export class InLevel implements State {
         if (enemy.isMineAttached) {
           if (minedEnemyCount > 2) {
             enemy.isDead = true;
-            assetEngine.effectEngine.addEffect(enemy.position, [84, 85, 86, 87, 88], 5, 25, new Point(0, enemy.speed), 3, 0.01)
+            assetEngine.effectEngine.addEffect(enemy.position, [84, 85, 86, 87, 88], 5, 25, new Point(0, enemy.speed), 3, 1.01)
             debounce(() => assetEngine.sfxEngine.playEffect(0), 1);
             hud.updateForEnemyKilled();
             hud.updateOnKill(enemy);
           } else {
             enemies.forEach(enemy => enemy.isMineAttached = false);
-            assetEngine.effectEngine.addEffect({ x: enemy.position.x + 8, y: enemy.position.y + 8 }, [94, 95], 5, 25, new Point(0, enemy.speed), -2, 0.01);
+            assetEngine.effectEngine.addEffect({ x: enemy.position.x + 8, y: enemy.position.y + 8 }, [94, 95], 5, 25, new Point(0, enemy.speed), -2, 1.01);
             debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
           }
         }

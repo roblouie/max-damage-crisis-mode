@@ -1,6 +1,6 @@
 import {Point} from "../core/point";
 import {assetEngine} from "../core/asset-engine-instance";
-import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { multiIntervalFrameSequencer, singleIntervalFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Effect {
   private currentFrame = 0;
@@ -14,9 +14,10 @@ export class Effect {
   private scaleRate: number;
   private width: number;
   private height: number;
-  private frameSequencer: Generator<number>
+  private frameSequencer: Generator<number>;
+  private initialAngle = 0;
 
-  constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, translationRate: Point, rotationRate: number, scaleRate: number) {
+  constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, translationRate: Point, rotationRate: number, scaleRate: number, initialAngle = 0) {
     this.position = startPosition;
     this.animationFrames = animationFrames;
     this.duration = durationInFrames;
@@ -26,15 +27,16 @@ export class Effect {
     const startSprite = assetEngine.drawEngine.sprites[this.animationFrames[0]];
     this.height = startSprite.height * 16;
     this.width = startSprite.width * 16;
-    this.frameSequencer = animationFrameSequencer(animationFrames, [animationRate]);
+    this.frameSequencer = singleIntervalFrameSequencer(animationFrames, animationRate);
+    this.initialAngle = initialAngle;
   }
 
   update() {
     this.position.x += this.translationRate.x;
     this.position.y += this.translationRate.y;
-    this.currentScale += this.scaleRate;
+    this.currentScale *= this.scaleRate;
     this.currentRotation += this.rotationRate;
-    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter(), this.currentScale, this.currentRotation);
+    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter(), this.currentScale, this.initialAngle + this.currentRotation);
     this.currentFrame += 1;
   }
 

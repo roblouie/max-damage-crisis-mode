@@ -12,7 +12,7 @@ export class EffectEngine {
     this.currentEffects = this.currentEffects.filter(effect => !effect.getIsDone());
   }
 
-  addEffect(startPosition: Point, animationFrames: number[], animationRate: number, framesDuration: number, translationRate: Point, rotationRate: number, scaleRate: number) {
-    this.currentEffects.push(new Effect(startPosition, animationFrames, animationRate, framesDuration, translationRate, rotationRate, scaleRate))
+  addEffect(startPosition: Point, animationFrames: number[], animationRate: number, framesDuration: number, translationRate: Point, rotationRate: number, scaleRate: number, initialAngle = 0) {
+    this.currentEffects.push(new Effect(startPosition, animationFrames, animationRate, framesDuration, translationRate, rotationRate, scaleRate, initialAngle))
   }
 }
