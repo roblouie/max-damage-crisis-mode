@@ -61,25 +61,29 @@ export class DrawingEngine {
   }
 
   drawText(text: string, fontSize: number, x: number, y: number, color = 'white', textAlign: 'center' | 'left' | 'right' = 'center') {
-    const context = this.canvasContext;
-    context.save();
-    const scale = assetEngine.drawEngine.getRenderMultiplier();
-    context.font = `${fontSize}px Impact, sans-serif-black`;
+    const context = this.offscreenContexts[4];
+
+    const scale = assetEngine.drawEngine.getRenderMultiplier() / 2;
+    context.font = `${fontSize * scale}px Impact, sans-serif-black`;
     context.textAlign = textAlign;
     context.strokeStyle = 'black';
     context.lineWidth = 4;
     context.strokeText(text, x * scale, y * scale);
     context.fillStyle = color;
     context.fillText(text, x * scale, y * scale);
-    context.restore();
+    this.canvasContext.drawImage(this.offscreenCanvases[4], 0, 0, 960, 1280);
+    context.clearRect(0, 0, 480, 640)
+
   }
 
   drawMenu(startPositionY: number, options: string[], callback: (arg0: number) => void) {
     options.forEach((option, index) => {
-      this.drawText(option, 40,120,startPositionY + (index * 25))
+      this.drawText(option, 10,120,startPositionY + (index * 25))
     })
 
-    controls.onClick((position) => callback(Math.ceil((position.y - startPositionY) / 25)))
+    controls.onClick((position) => {
+      callback(Math.ceil((position.y - startPositionY) / 25))
+    })
   }
 
   tileToImageData(tile: number[], palette: number[]): ImageData {

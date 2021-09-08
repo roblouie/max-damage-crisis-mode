@@ -22,7 +22,7 @@ class LevelTransitionState implements State {
     assetEngine.drawEngine.clearContext();
     context.textAlign = 'center';
 
-    assetEngine.drawEngine.drawText(`Level  ${this.levelNumber + 1}`, 40, 120, 100);
+    assetEngine.drawEngine.drawText(`Level  ${this.levelNumber + 1}`, 10, 120, 100);
 
     if (this.framesElapsed >= 121) {
       hud.saveHighScore();

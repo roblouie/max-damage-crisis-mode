@@ -16,12 +16,12 @@ class CreditsState implements State {
     assetEngine.drawEngine.clearContext();
 
     const animationOffset = this.framesElapsed > 120 ? (this.framesElapsed - 120) / 4 : 0;
-    assetEngine.drawEngine.drawText('You Win!', 60, 120, 100 - animationOffset);
+    assetEngine.drawEngine.drawText('You Win!', 15, 120, 100 - animationOffset);
     const credits = ['Robert Louison', 'James Schroederson', 'Jordan Louison', 'Nicole Witowskerson', 'Hendricks Henderson']
     credits.forEach((text, index) => {
-      assetEngine.drawEngine.drawText(text, 40,  120, (index * 25) + 400 - animationOffset);
+      assetEngine.drawEngine.drawText(text, 10,  120, (index * 25) + 400 - animationOffset);
     })
-    assetEngine.drawEngine.drawText('Thanks for Playing!', 60, 120, 800 - animationOffset);
+    assetEngine.drawEngine.drawText('Thanks for Playing!', 15, 120, 800 - animationOffset);
     if (this.framesElapsed > 3500) {
       gameStateMachine.setState('menu');
     }
