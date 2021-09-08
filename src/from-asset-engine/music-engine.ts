@@ -4,7 +4,6 @@ import {audioContext, masterGainNode} from "./audio-initializer";
 
 export class MusicEngine {
   private currentTempo = 0;
-  private ctx = audioContext;
   private musicGain = new GainNode(audioContext, { gain: .2 });
   private isSongPlaying = false;
 
@@ -52,8 +51,8 @@ export class MusicEngine {
 
   private createOscillators(song: Song) {
     song.tracks.forEach((track, index) => {
-      this.oscillators[index] = new OscillatorNode(this.ctx, { type: track.wave });
-      this.gainNodes.push(this.ctx.createGain());
+      this.oscillators[index] = new OscillatorNode(audioContext, { type: track.wave });
+      this.gainNodes.push(audioContext.createGain());
       this.oscillators[index]
         .connect(this.gainNodes[index])
         .connect(this.musicGain);
@@ -66,9 +65,9 @@ export class MusicEngine {
     track.notes.forEach((note) => {
       const startTimeInSeconds = this.getDurationInSeconds(note.startPosition);
       const endTimeInSeconds = this.getDurationInSeconds(note.startPosition + note.duration);
-      this.oscillators[index].frequency.setValueAtTime(note.frequency, this.ctx.currentTime + startTimeInSeconds);
-      this.gainNodes[index].gain.setValueAtTime(track.wave === 'sine' ? .5 : 1, this.ctx.currentTime + startTimeInSeconds);
-      this.gainNodes[index].gain.setValueAtTime(0, this.ctx.currentTime + endTimeInSeconds);
+      this.oscillators[index].frequency.setValueAtTime(note.frequency, audioContext.currentTime + startTimeInSeconds);
+      this.gainNodes[index].gain.setValueAtTime(track.wave === 'sine' ? .5 : 1, audioContext.currentTime + startTimeInSeconds);
+      this.gainNodes[index].gain.setValueAtTime(0, audioContext.currentTime + endTimeInSeconds);
     });
   }
 

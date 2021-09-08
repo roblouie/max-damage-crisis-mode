@@ -3,8 +3,6 @@ import { Enemy } from "../enemies/enemy";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Level {
-  backgroundIndex?: number;
-  songIndex?: number;
   enemyWaves: EnemyWave[];
   mostRecentWaveIndex = -1;
   activeEnemies: Enemy[] = [];
@@ -13,7 +11,7 @@ export class Level {
 
   constructor(enemyWaves: EnemyWave[]) {
     this.enemyWaves = enemyWaves;
-    this.gameOverDeleay = animationFrameSequencer([false, true], 40);
+    this.gameOverDeleay = animationFrameSequencer([false, true], [40]);
   }
 
   update() {

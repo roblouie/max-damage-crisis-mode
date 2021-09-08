@@ -5,7 +5,7 @@ export class StraightEnemy extends Enemy {
   speed = 0.9;
 
   constructor(gridPosition: number, colorNum: number) {
-    super(gridPosition, 32, colorNum, [
+    super(gridPosition, colorNum, [
       [7, 8, 9],
       [10, 11, 12],
       [13, 14, 15],

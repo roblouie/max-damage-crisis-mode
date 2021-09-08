@@ -5,7 +5,7 @@ class Satellite {
   private startX = 104;
   private startY = 280;
   private size = 32;
-  private frameSequencer = animationFrameSequencer([86, 87, 88], 10, true);
+  private frameSequencer = animationFrameSequencer([86, 87, 88], [10], true);
 
   getRadius() {
     return this.size / 2;
@@ -16,7 +16,7 @@ class Satellite {
   }
 
   update() {
-    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.startX, this.startY);
+    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter());
     // DEBUG
     // const context = assetEngine.drawEngine.getContext();
     // context.save();

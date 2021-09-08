@@ -11,22 +11,19 @@ class LevelTransitionState implements State {
     this.framesElapsed = 0;
     this.levelNumber = levelNumber;
     assetEngine.musicEngine.stopSong();
-    if (this.levelNumber === assetEngine.levels.length) {
-      gameStateMachine.setState('credits');
-    }
   }
 
   onUpdate(): void {
+    const isLastLevel = this.levelNumber === assetEngine.levels.length;
+    const text = isLastLevel ? 'You Win!' : `Level  ${this.levelNumber + 1}`;
+    isLastLevel && this.framesElapsed === 0 && assetEngine.musicEngine.startSong(4, false);
     this.framesElapsed++;
-    const context = assetEngine.drawEngine.getContext();
     assetEngine.drawEngine.clearContext();
-    context.textAlign = 'center';
+    assetEngine.drawEngine.drawText(text, 10, 120, 100);
 
-    assetEngine.drawEngine.drawText(`Level  ${this.levelNumber + 1}`, 10, 120, 100);
-
-    if (this.framesElapsed >= 121) {
+    if (this.framesElapsed >= (isLastLevel ? 600 : 121)) {
       hud.saveHighScore();
-      gameStateMachine.setState('in-level', this.levelNumber);
+      isLastLevel ? gameStateMachine.setState('menu') : gameStateMachine.setState('in-level', this.levelNumber);
     }
   }
 }

@@ -6,8 +6,7 @@ import { hud } from "../hud";
 import { satellite } from "../npcs/satellite";
 import { player } from "../player/player";
 import { gameStateMachine } from "../game-state-machine";
-import { comboEngine } from "../combo-engine";
-import { debounce, runOnce } from "../core/timing-helpers";
+import { runOnce } from "../core/timing-helpers";
 
 class EndOfLevelState implements State {
   framesElapsed = 0;
@@ -41,24 +40,22 @@ class EndOfLevelState implements State {
         this.playJumpSound!();
         this.playerFrame = 3;
         this.playerScale += this.scaleRate;
-        this.playerPosition.y -= this.playerScale * 2;
-        this.playerPosition.x -= this.playerScale * 0.4;
-        context.scale(this.playerScale, this.playerScale);
-        this.scaleRate += 0.05;
+        this.playerPosition.y -= this.playerScale * 8;
+        this.playerPosition.x += this.scaleRate * 5;
+        this.scaleRate += 0.02;
+        this.framesElapsed === 340 && assetEngine.sfxEngine.playEffect(6);
       }
-      drawEngine.drawSprite(this.playerFrame, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
+      this.framesElapsed < 370 && drawEngine.drawSpriteBetter(this.playerFrame, this.playerPosition, this.playerScale);
       context.restore();
     }
 
     if (this.framesElapsed > 30) {
-      context.textAlign = 'center';
       drawEngine.drawText('Level Complete!', 10, 120, 100);
     }
 
     if (this.framesElapsed >= 60) {
       drawEngine.drawText('Resistance Bonus', 10, 40, 125, 'white', 'left');
-      context.textAlign = 'right';
-      drawEngine.drawText(this.resistanceBonus.toString(), 10, 180, 125);
+      drawEngine.drawText(this.resistanceBonus.toString(), 10, 180, 125, 'white', 'right');
       if (hud.healthPercent >= 0.5) {
         hud.takeHit(0.5);
         hud.updateScore(500);
@@ -67,8 +64,6 @@ class EndOfLevelState implements State {
     }
 
     context.restore();
-
-    comboEngine.update();
     hud.update();
 
     if (this.playerScale >= 80) {
@@ -86,7 +81,6 @@ class EndOfLevelState implements State {
     this.playJumpSound = runOnce(() => assetEngine.sfxEngine.playEffect(2));
     backgroundManager.updateBackgrounds();
     hud.update();
-    comboEngine.update();
     assetEngine.musicEngine.startSong(3, false);
   }
 }
