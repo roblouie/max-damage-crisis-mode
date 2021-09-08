@@ -1,6 +1,6 @@
 import { EnemyWave } from "./enemy-wave";
 import { Enemy } from "../enemies/enemy";
-import { multiIntervalFrameSequencer, singleIntervalFrameSequencer } from "../core/animation-frame-sequencer";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Level {
   enemyWaves: EnemyWave[];
@@ -11,7 +11,7 @@ export class Level {
 
   constructor(enemyWaves: EnemyWave[]) {
     this.enemyWaves = enemyWaves;
-    this.gameOverDeleay = singleIntervalFrameSequencer([false, true], 40);
+    this.gameOverDeleay = animationFrameSequencer([false, true], 40);
   }
 
   update() {

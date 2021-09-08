@@ -3,7 +3,7 @@ import { StateMachine } from "../core/state-machine";
 import { controls } from "../core/controls";
 import { Point } from "../core/point";
 import { Enemy } from "../enemies/enemy";
-import { multiIntervalFrameSequencer, singleIntervalFrameSequencer } from "../core/animation-frame-sequencer";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Player {
   readonly startX = 112;
@@ -106,9 +106,9 @@ class Player {
     });
 
     if (this.isOnSatelite) {
-      this.frameSequencer = singleIntervalFrameSequencer([this.crouchFrame, this.standingFrame], 8);
+      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 8);
     } else if (this.isOnEnemy) {
-      this.frameSequencer = singleIntervalFrameSequencer([this.crouchFrame, this.plantFrame, this.crouchFrame], 7);
+      this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.plantFrame, this.crouchFrame], 7);
     }
   }
 

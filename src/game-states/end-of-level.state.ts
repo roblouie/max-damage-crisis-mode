@@ -32,11 +32,11 @@ class EndOfLevelState implements State {
       controls.onMouseMove(undefined);
       context.save();
       if (this.framesElapsed === 340) {
-        assetEngine.effectEngine.addEffect({x: 120, y: 282}, [3], 999, 30, new Point(0, -5), 0, 1.07, 90)
+        assetEngine.effectEngine.addEffect({x: 120, y: 278}, [3], 999, 31, new Point(0, -5), 0, 1.07, 90)
         assetEngine.sfxEngine.playEffect(2);
         assetEngine.sfxEngine.playEffect(6);
       }
-      this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 282});
+      this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 278});
       context.restore();
     }
 
