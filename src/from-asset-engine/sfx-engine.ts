@@ -68,6 +68,6 @@ export class SfxEngine {
       gainNodes.forEach(node => node.disconnect())
       oscillator.disconnect()
       whiteNoiseGainNode.disconnect()
-    }, 10000)
+    }, 222)
   }
 }
