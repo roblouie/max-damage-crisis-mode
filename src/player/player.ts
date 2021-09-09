@@ -90,7 +90,9 @@ class Player {
   onLandedEnter() {
     assetEngine.sfxEngine.playEffect(3);
     controls.onClick(position => {
-      this.jumpAngle = Point.AngleBetweenTwo(this.getCenter(), position);
+      const angle = Point.AngleBetweenTwo(this.getCenter(), position);
+      this.angle = angle
+      this.jumpAngle = angle;
       this.stateMachine.setState('jumping');
     });
 
