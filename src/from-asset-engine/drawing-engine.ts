@@ -12,8 +12,6 @@ export class DrawingEngine {
   sprites: Sprite[];
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
-  private readonly width = 960;
-  private readonly height = 1280;
   private readonly renderMultiplier = 4;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
@@ -45,12 +43,12 @@ export class DrawingEngine {
     return this.canvasContext;
   }
 
-  getScreenWidth(): number {
-    return this.width;
+  getRenderWidth(): number {
+    return 240;
   }
 
-  getScreenHeight(): number {
-    return this.height;
+  getRenderHeight(): number {
+    return 320;
   }
 
   getRenderMultiplier(): number {
@@ -58,7 +56,7 @@ export class DrawingEngine {
   }
 
   clearContext(): void {
-    this.canvasContext.clearRect(0, 0, this.width, this.height);
+    this.canvasContext.clearRect(0, 0, 960, 1280);
   }
 
   drawText(text: string, fontSize: number, x: number, y: number, color = 'white', textAlign: 'center' | 'left' | 'right' = 'center') {

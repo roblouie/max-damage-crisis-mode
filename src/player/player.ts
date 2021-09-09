@@ -24,7 +24,7 @@ class Player {
   respawnScale = 1;
   standingFrame = 2;
   jumpingFrame = 3;
-  plantFrame = 5;
+  plantFrame = 4;
   crouchFrame = 1;
   currentFrame = this.standingFrame;
   frameSequencer?: Generator<number>;
@@ -70,10 +70,9 @@ class Player {
   private isOffScreen() {
     const pixelBuffer = this.radius + 40;
     const center = this.getCenter();
-    const renderMultiplier = assetEngine.drawEngine.getRenderMultiplier();
-    const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
+    const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getRenderHeight())
       || center.y + this.height + pixelBuffer < 0;
-    const isOffHorizontal = center.x - pixelBuffer > (assetEngine.drawEngine.getScreenWidth() / renderMultiplier)
+    const isOffHorizontal = center.x - pixelBuffer > (assetEngine.drawEngine.getRenderWidth())
       || center.x + this.width + pixelBuffer < 0;
     return isOffVertical || isOffHorizontal;
   }

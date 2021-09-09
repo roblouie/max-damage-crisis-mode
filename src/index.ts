@@ -7,7 +7,6 @@ import { gameOver } from "./game-states/game-over.state";
 import { whiteNoiseLoading } from "./from-asset-engine/audio-initializer";
 import { endOfLevel } from "./game-states/end-of-level.state";
 import { initializeHud } from "./hud";
-import { initializePlayer } from "./player/player";
 import { levelTransition } from "./game-states/level-transition.state";
 
 
@@ -17,7 +16,6 @@ window.onload = async () => {
   await whiteNoiseLoading;
   initializeHud();
   initializeControls();
-  initializePlayer();
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();
   createGameStateMachine([
     {

@@ -32,17 +32,17 @@ export abstract class Enemy {
     this.position.y = row * 35;
     this.color = Enemy.Colors[colorNum];
     this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
-    this.minePlantedSequencer = animationFrameSequencer([[90, 91, 92, 93][colorNum], 89], 10, true);
+    this.minePlantedSequencer = animationFrameSequencer([[80, 81, 82, 83][colorNum], 79], 10, true);
   }
 
   update() {
     assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter());
     if (this.isMineAttached) {
-      assetEngine.drawEngine.drawSpriteBetter(this.isMineActivated ? this.minePlantedSequencer.next().value : 89, this.getCenter());
+      assetEngine.drawEngine.drawSpriteBetter(this.isMineActivated ? this.minePlantedSequencer.next().value : 79, this.getCenter());
     }
   }
 
   isOffScreen() {
-    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getScreenHeight() / assetEngine.drawEngine.getRenderMultiplier();
+    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getRenderHeight();
   }
 }

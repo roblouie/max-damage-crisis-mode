@@ -5,7 +5,7 @@ class Satellite {
   private startX = 104;
   private startY = 280;
   private size = 32;
-  private frameSequencer = animationFrameSequencer([86, 87, 88], 10, true);
+  private frameSequencer = animationFrameSequencer([45, 46, 47], 10, true);
 
   getRadius() {
     return this.size / 2;

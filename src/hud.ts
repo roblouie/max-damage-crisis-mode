@@ -3,17 +3,7 @@ import { Enemy } from "./enemies/enemy";
 
 class Hud {
   private score = 0;
-  private height = 45;
-  private meterTop: number;
-  private meterLeft = 10;
-  private meterHeight = 30;
-  private meterWidth = 294;
   healthPercent = 100;
-
-  constructor() {
-    const screenHeight = assetEngine.drawEngine.getScreenHeight();
-    this.meterTop = screenHeight - this.height;
-  }
 
   private lastColor = '#ffffff';
   private comboCount = 0;
@@ -94,9 +84,9 @@ class Hud {
 
     context.save();
     context.fillStyle = 'red';
-    context.fillRect(this.meterLeft, this.meterTop, this.meterWidth * (this.healthPercent * .01), this.meterHeight);
+    context.fillRect(10, 1235, 294 * (this.healthPercent * .01), 30);
     context.strokeStyle = 'white';
-    context.strokeRect(this.meterLeft, this.meterTop, this.meterWidth, this.meterHeight);
+    context.strokeRect(10, 1235, 294, 30);
     assetEngine.drawEngine.drawText('Earth Resistance Forces', 7, 39, 307);
     assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 7, 200, 315);
 
