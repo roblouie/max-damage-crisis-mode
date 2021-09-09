@@ -1,39 +1,21 @@
 import { assetEngine } from "./core/asset-engine-instance";
 import { doTimes } from "./core/timing-helpers";
 
-interface BackgroundPosition {
-  top: number;
-  middle: number;
-  bottom: number;
-}
-
 class BackgroundManager {
-  positions: { left: BackgroundPosition, right: BackgroundPosition }[] = [];
+  positions: any[] = [];
   backgroundNumber = 2;
 
   resetPositions() {
-    const startingPosition = {
-      left: {
-        top: -256,
-        middle: 0,
-        bottom: 256,
-      },
-      right: {
-        top: -128,
-        middle: 128,
-        bottom: 384,
-      }
-    }
-    this.positions[0] = JSON.parse(JSON.stringify(startingPosition));
-    this.positions[1] = JSON.parse(JSON.stringify(startingPosition));
-    this.positions[2] = JSON.parse(JSON.stringify(startingPosition));
+    this.positions[0] = [[-256, 0, 256], [-128, 128, 384]];
+    this.positions[1] = [[-256, 0, 256], [-128, 128, 384]];
+    this.positions[2] = [[-256, 0, 256], [-128, 128, 384]];
   }
 
 
   loadBackgrounds(backgroundNumber: number) {
     this.resetPositions();
     this.backgroundNumber = backgroundNumber;
-    assetEngine.drawEngine.drawBackgroundLayerToBackgroundCanvases(backgroundNumber);
+    assetEngine.drawEngine.drawBackgroundLayerToBackgroundCanvases(backgroundNumber, ['#9cd775', '#000', '#AF5F33'][backgroundNumber]);
   }
 
   private tempBackgroundLocations = [0, 0, 0];
@@ -46,11 +28,11 @@ class BackgroundManager {
     doTimes(3, (i: number) => {
       const position = this.positions[i];
 
-      for (const horizontalPosition in position) {
+      doTimes(2, (horizontalPosition: number) => {
         // @ts-ignore
-        for (const verticalPosition in position[horizontalPosition]) {
+        doTimes(3, (verticalPosition: number) => {
           // @ts-ignore
-          this.updateGameCanvas(i, position[horizontalPosition][verticalPosition], horizontalPosition === 'right');
+          this.updateGameCanvas(i, position[horizontalPosition][verticalPosition], horizontalPosition === 1);
 
           if (Number.isInteger(this.tempBackgroundLocations[i])) {
             // @ts-ignore
@@ -63,9 +45,8 @@ class BackgroundManager {
             // @ts-ignore
             position[horizontalPosition][verticalPosition] = -256;
           }
-        }
-
-      }
+        });
+      });
 
       if (Number.isInteger(this.tempBackgroundLocations[i])) {
         this.tempBackgroundLocations[i] = 0;

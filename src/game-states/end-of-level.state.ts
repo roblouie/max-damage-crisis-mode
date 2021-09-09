@@ -6,27 +6,19 @@ import { hud } from "../hud";
 import { satellite } from "../npcs/satellite";
 import { player } from "../player/player";
 import { gameStateMachine } from "../game-state-machine";
-import { comboEngine } from "../combo-engine";
-import { debounce, runOnce } from "../core/timing-helpers";
+import { Point } from "../core/point";
 
 class EndOfLevelState implements State {
   framesElapsed = 0;
   resistanceBonus = 0;
   scoreEndFrame = 0;
-  playerScale = 1;
-  playerPosition = {x: 0, y: 0};
-  scaleRate = 0.1;
   levelNumberEnded = 0;
-  playJumpSound?: Function;
-  playerFrame = 2;
 
   onUpdate() {
     this.framesElapsed++;
 
     const { drawEngine } = assetEngine;
-    const context = drawEngine.getContext();
-    context.save();
-    drawEngine.clearContext();
+    assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
     satellite.update();
@@ -36,29 +28,21 @@ class EndOfLevelState implements State {
     } else {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
-      context.save();
-      if (this.framesElapsed >= 340) {
-        this.playJumpSound!();
-        this.playerFrame = 3;
-        this.playerScale += this.scaleRate;
-        this.playerPosition.y -= this.playerScale * 2;
-        this.playerPosition.x -= this.playerScale * 0.4;
-        context.scale(this.playerScale, this.playerScale);
-        this.scaleRate += 0.05;
+      if (this.framesElapsed === 340) {
+        assetEngine.effectEngine.addEffect({x: 120, y: 278}, [3], 999, 31, new Point(0, -5), 0, 1.07, 90)
+        assetEngine.sfxEngine.playEffect(2);
+        assetEngine.sfxEngine.playEffect(6);
       }
-      drawEngine.drawSprite(this.playerFrame, this.playerPosition.x / this.playerScale, this.playerPosition.y / this.playerScale);
-      context.restore();
+      this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 278});
     }
 
     if (this.framesElapsed > 30) {
-      context.textAlign = 'center';
       drawEngine.drawText('Level Complete!', 10, 120, 100);
     }
 
     if (this.framesElapsed >= 60) {
       drawEngine.drawText('Resistance Bonus', 10, 40, 125, 'white', 'left');
-      context.textAlign = 'right';
-      drawEngine.drawText(this.resistanceBonus.toString(), 10, 180, 125);
+      drawEngine.drawText(this.resistanceBonus.toString(), 10, 180, 125, 'white', 'right');
       if (hud.healthPercent >= 0.5) {
         hud.takeHit(0.5);
         hud.updateScore(500);
@@ -66,12 +50,10 @@ class EndOfLevelState implements State {
       }
     }
 
-    context.restore();
-
-    comboEngine.update();
+    assetEngine.effectEngine.update();
     hud.update();
 
-    if (this.playerScale >= 80) {
+    if (this.framesElapsed >= 370) {
       gameStateMachine.setState('level-transition', this.levelNumberEnded + 1);
     }
   }
@@ -79,14 +61,9 @@ class EndOfLevelState implements State {
   onEnter(levelNumber: number) {
     this.framesElapsed = 0;
     this.scoreEndFrame = 0;
-    this.playerScale = 1;
-    this.scaleRate = 0.1;
     this.levelNumberEnded = levelNumber;
-    this.playerPosition = { x: player.startX, y: player.startY - 12 };
-    this.playJumpSound = runOnce(() => assetEngine.sfxEngine.playEffect(2));
     backgroundManager.updateBackgrounds();
     hud.update();
-    comboEngine.update();
     assetEngine.musicEngine.startSong(3, false);
   }
 }

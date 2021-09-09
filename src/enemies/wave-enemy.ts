@@ -7,11 +7,11 @@ export class WaveEnemy extends Enemy {
   speed = 0.8;
 
   constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
-    super(gridPosition, 32, colorNum, [
-      [7, 8, 9],
-      [10, 11, 12],
-      [13, 14, 15],
-      [16, 17, 18],
+    super(gridPosition, colorNum, [
+      [19, 20, 21],
+      [22, 23, 24],
+      [25, 26, 27],
+      [28, 29, 30],
     ][colorNum]);
     if (isMovingLeft) {
       this.isMovingLeft = isMovingLeft;

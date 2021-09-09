@@ -3,8 +3,6 @@ import { Enemy } from "../enemies/enemy";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 export class Level {
-  backgroundIndex?: number;
-  songIndex?: number;
   enemyWaves: EnemyWave[];
   mostRecentWaveIndex = -1;
   activeEnemies: Enemy[] = [];

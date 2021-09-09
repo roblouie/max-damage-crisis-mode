@@ -5,9 +5,7 @@ import { Song } from "./song.model";
 import { Track } from "./track.model";
 import { NotePosition } from "./note-position.model";
 import {SoundEffect} from "./sound-effect.model";
-import { split16Bit, splitByte } from "../core/binary-helperts";
-import { SwoopEnemy } from "../enemies/swoop-enemy";
-import { ScreenEdgeBounceEnemy } from "../enemies/screen-edge-bounce-enemy";
+import { split16Bit, split24Bit, splitByte } from "../core/binary-helperts";
 import { WaveEnemy } from "../enemies/wave-enemy";
 import { PauseEnemy } from "../enemies/pause-enemy";
 import { StraightEnemy } from "../enemies/straight-enemy";
@@ -43,17 +41,33 @@ export function unpackGameAssets(arrayBuffer: ArrayBuffer) {
 function bytesToPalettes(arrayBuffer: ArrayBuffer, startingOffset = 0): UnpackedAsset {
   const dataView = new DataView(arrayBuffer, startingOffset);
   const numberOfPalettes = dataView.getUint8(0);
-  const paletteSize = 16 * 3; // sixteen colors, three bytes per color
-  const totalPalettesByteSize = (numberOfPalettes * paletteSize) + 1;
+  const paletteSplitIndex = dataView.getUint8(1);
+  const sixteenColorPaletteSize = 16 * 3 * paletteSplitIndex; // sixteen colors, three bytes per color
+  const eightColorPaletteSize = 8 * 3 * (numberOfPalettes - paletteSplitIndex);
+  const totalPalettesByteSize = sixteenColorPaletteSize + eightColorPaletteSize + 2;
 
-  const palettes = [];
+  const sixteenBitPalettes = [];
+  let byteOffset = 2;
 
-  for (let byteOffset = 1; byteOffset < totalPalettesByteSize; byteOffset += 3) {
+  while (byteOffset < sixteenColorPaletteSize) {
     // @ts-ignore
-    palettes.push(parseInt(dataView.getUint32(byteOffset) / 256));
+    sixteenBitPalettes.push(parseInt(dataView.getUint32(byteOffset) / 256));
+    byteOffset += 3;
   }
 
-  const paletteData = chunkArrayInGroups(palettes, 16);
+  const paletteData = chunkArrayInGroups(sixteenBitPalettes, 16);
+
+  const eightBitPalettes = [];
+
+  while (byteOffset < totalPalettesByteSize) {
+    // @ts-ignore
+    eightBitPalettes.push(parseInt(dataView.getUint32(byteOffset) / 256));
+    byteOffset += 3;
+  }
+
+  const eightBitPaletteData = chunkArrayInGroups(eightBitPalettes, 8);
+
+  paletteData.push(...eightBitPaletteData);
 
   return {
     data: paletteData,
@@ -64,12 +78,25 @@ function bytesToPalettes(arrayBuffer: ArrayBuffer, startingOffset = 0): Unpacked
 function bytesToTiles(arrayBuffer: ArrayBuffer, startingOffset: number): UnpackedAsset {
   const dataView = new DataView(arrayBuffer, startingOffset);
   const numberOfTiles = dataView.getUint8(0);
-  const totalTilesByteSize = (numberOfTiles * 128) + 1;
+  const tileSplitIndex = dataView.getUint8(1);
+
+  const sixteenColorTileSize = 128 * tileSplitIndex; // 256 pixels with half a byte per color === 128
+  const eightColorTileSize = 96 * (numberOfTiles - tileSplitIndex);
+  const totalTilesByteSize = sixteenColorTileSize + eightColorTileSize + 2;
 
   const rawTileValues: number[] = [];
+  let byteOffset = 2;
 
-  for (let byteOffset = 1; byteOffset < totalTilesByteSize; byteOffset++) {
-    rawTileValues.push(...splitByte(dataView.getUint8(byteOffset), 4));
+  while (byteOffset < (sixteenColorTileSize + 2)) {
+    rawTileValues.push(...splitByte(dataView.getUint8(byteOffset++), 4));
+  }
+
+  while (byteOffset < totalTilesByteSize) {
+    const eightPixelData = dataView.getUint32(byteOffset, true) & 0xffffff;
+    const eightPixels = split24Bit(eightPixelData, 3, 6, 9, 12, 15, 18, 21);
+    byteOffset += 3;
+
+    rawTileValues.push(...eightPixels);
   }
 
   const tileData = chunkArrayInGroups(rawTileValues, 256);
@@ -277,7 +304,7 @@ function bytesToLevels(arrayBuffer: ArrayBuffer, startingOffset: number): Unpack
         const [position, colorNum, typeNum] = split16Bit(data, 8, 12);
         bytePosition += 2;
 
-        const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, ScreenEdgeBounceEnemy, ScreenEdgeBounceEnemy, SwoopEnemy, SwoopEnemy][typeNum];
+        const TypeConstructor = [StraightEnemy, PauseEnemy, WaveEnemy, WaveEnemy, WaveEnemy, WaveEnemy, WaveEnemy, WaveEnemy][typeNum];
         wave.enemies.push(new TypeConstructor(position, colorNum, !!(typeNum % 2)));
       });
 

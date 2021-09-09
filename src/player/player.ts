@@ -10,6 +10,7 @@ class Player {
   readonly startY = 272;
   position = { x: this.startX, y: this.startY };
   width = 16;
+  radius = 8;
   height = 20;
   isOnSatelite = true;
   isLeavingSatellite = true;
@@ -54,10 +55,6 @@ class Player {
     this.stateMachine.getState().onUpdate();
   }
 
-  getRadius() {
-    return this.width / 2;
-  }
-
   getCenter() {
     return { x: this.position.x + (this.width / 2), y: this.position.y + 12};
   }
@@ -71,7 +68,7 @@ class Player {
   }
 
   private isOffScreen() {
-    const pixelBuffer = this.getRadius() + 40;
+    const pixelBuffer = this.radius + 40;
     const center = this.getCenter();
     const renderMultiplier = assetEngine.drawEngine.getRenderMultiplier();
     const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
@@ -90,6 +87,7 @@ class Player {
   }
 
   landOnSatellite() {
+    this.enemyAttachedTo = undefined;
     this.isOnSatelite = true;
     this.isLeavingSatellite = true;
     this.currentFrame = this.standingFrame;
@@ -117,10 +115,10 @@ class Player {
   onLandedUpdate() {
     this.enemyJumpingFrom = undefined;
     this.currentFrame = this.frameSequencer?.next().value;
-    this.drawAtAngle(this.angle);
+    this.drawAtAngle();
     if (this.isOnEnemy && this.enemyAttachedTo) {
-      this.position.x = this.enemyAttachedTo?.getCenter().x - this.getRadius();
-      this.position.y = this.enemyAttachedTo?.getCenter().y - this.getRadius();
+      this.position.x = this.enemyAttachedTo?.getCenter().x - this.radius;
+      this.position.y = this.enemyAttachedTo?.getCenter().y - this.radius;
     }
 
     if (controls.isAnalogStickPressed) {
@@ -154,7 +152,7 @@ class Player {
   }
 
   onJumpingUpdate() {
-    this.drawAtAngle(this.jumpAngle);
+    this.drawAtAngle();
 
     this.position.x -= this.speed * Math.cos((this.jumpAngle) * Math.PI / 180);
     this.position.y -= this.speed * Math.sin((this.jumpAngle) * Math.PI / 180);
@@ -177,9 +175,9 @@ class Player {
       this.position.y -= 0.9;
       this.respawnScale += 0.025;
       this.angle = 90;
-      this.drawAtAngle(this.angle);
+      this.drawAtAngle();
     } else {
-      this.drawAtAngle(this.angle);
+      this.drawAtAngle();
       this.respawnScale = 1;
       this.stateMachine.setState('landed');
     }
@@ -190,27 +188,8 @@ class Player {
     this.isLeavingSatellite = true;
   }
 
-  drawAtAngle(angle: number) {
-    const context = assetEngine.drawEngine.getContext();
-    context.save();
-    const center = this.getCenter();
-    context.scale(4, 4);
-    context.translate(center.x, center.y);
-    context.rotate((angle - 90) * Math.PI / 180);
-    const flip = (this.angle > -90 && this.angle < 90) ? -1 : 1;
-    context.scale(1/4 * this.respawnScale * flip, 1/4 * this.respawnScale);
-    assetEngine.drawEngine.drawSprite(this.currentFrame, -this.width / 2, -22);
-    context.restore();
-
-    // DEBUG
-    // context.save();
-    // context.fillStyle = 'blue';
-    // context.beginPath();
-    // context.scale(4, 4);
-    // context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
-    // context.stroke();
-    // context.fill();
-    // context.restore();
+  drawAtAngle() {
+    assetEngine.drawEngine.drawSpriteBetter(this.currentFrame, this.getCenter(), this.respawnScale, this.angle, 16, 44);
   }
 }
 

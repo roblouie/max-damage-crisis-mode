@@ -6,7 +6,6 @@ import { Point } from "../core/point";
 import { Level } from "../levels/level";
 import { hud } from "../hud";
 import {gameStateMachine} from "../game-state-machine";
-import { comboEngine } from "../combo-engine";
 import { satellite } from "../npcs/satellite";
 import { controls } from "../core/controls";
 import { debounce } from "../core/timing-helpers";
@@ -18,7 +17,7 @@ export class InLevel implements State {
   lastColor = '#ffffff';
 
   onEnter(levelNumber: number) {
-    comboEngine.reset();
+    hud.resetCombo();
     backgroundManager.loadBackgrounds(Math.floor(levelNumber / 3));
     assetEngine.musicEngine.startSong(1);
     hud.resetHealth();
@@ -40,21 +39,25 @@ export class InLevel implements State {
     }
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
-    assetEngine.effectEngine.update();
 
     this.currentLevel.update();
 
     if (player.isJumping()) {
       this.currentLevel.activeEnemies.forEach((enemy, index, enemies) => {
         // See if we should land on the enemy
-        if (enemy !== player.enemyAttachedTo && enemy !== player.enemyJumpingFrom && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.getRadius() + enemy.getRadius()) {
+        if (enemy !== player.enemyAttachedTo && enemy !== player.enemyJumpingFrom && !enemy.isDead && Point.DistanceBetweenTwo(enemy.getCenter(), player.getCenter()) <= player.radius + enemy.radius) {
           this.killMinedEnemies(enemy.color, enemies);
 
           // After marking other enemies as dead, we can land on this enemy and place a mine on it
           player.landOnEnemy(enemy);
           this.lastColor = enemy.color;
           enemy.isMineAttached = true;
-          comboEngine.updateOnLand(enemy);
+          const enemiesToActivate = enemies.filter(enemy => enemy.isMineAttached && !enemy.isDead);
+          if (enemiesToActivate.length >= 3) {
+            enemiesToActivate.forEach(enemy => enemy.isMineActivated = true);
+            assetEngine.sfxEngine.playEffect(5);
+          }
+          hud.updateOnLand(enemy);
         }
       });
     }
@@ -63,14 +66,14 @@ export class InLevel implements State {
     // satellite. It's important that we check this separately because landing on enemies should always have priority.
     // You should only be able to land on a satellite if no enemies are around.
     if (!player.isLeavingSatellite && player.isJumping()) {
-      if (Point.DistanceBetweenTwo(player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + player.getRadius()) {
+      if (Point.DistanceBetweenTwo(player.getCenter(), satellite.getCenter()) <= satellite.getRadius() + player.radius) {
         player.landOnSatellite();
         this.killMinedEnemies('', this.currentLevel.activeEnemies);
       }
     }
 
     if (player.isRespawning()) {
-      comboEngine.reset();
+      hud.resetCombo();
       this.currentLevel.activeEnemies.forEach(enemy => enemy.isMineAttached = false);
     }
 
@@ -87,10 +90,11 @@ export class InLevel implements State {
       gameStateMachine.setState('end-of-level', this.levelNumber);
     }
 
+    assetEngine.effectEngine.update();
+
     satellite.update();
     player.update();
     hud.update();
-    comboEngine.update();
   }
 
   private killMinedEnemies(color: string, enemies: Enemy[]) {
@@ -101,12 +105,14 @@ export class InLevel implements State {
         if (enemy.isMineAttached) {
           if (minedEnemyCount > 2) {
             enemy.isDead = true;
-            assetEngine.effectEngine.addEffect(enemy.position, [22, 23, 24, 25, 26], 5, 25, 0.8, new Point(0, enemy.speed), 3, 0.01)
+            assetEngine.effectEngine.addEffect(enemy.position, [84, 85, 86, 87, 88], 5, 25, new Point(0, enemy.speed), 3, 1.01)
             debounce(() => assetEngine.sfxEngine.playEffect(0), 1);
             hud.updateForEnemyKilled();
-            comboEngine.updateOnKill(enemy);
+            hud.updateOnKill(enemy);
           } else {
             enemies.forEach(enemy => enemy.isMineAttached = false);
+            assetEngine.effectEngine.addEffect({ x: enemy.position.x + 8, y: enemy.position.y + 8 }, [94, 95], 5, 25, new Point(0, enemy.speed), -2, 1.01);
+            debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
           }
         }
       })

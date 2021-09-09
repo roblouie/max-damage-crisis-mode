@@ -9,7 +9,6 @@ import { endOfLevel } from "./game-states/end-of-level.state";
 import { initializeHud } from "./hud";
 import { initializePlayer } from "./player/player";
 import { levelTransition } from "./game-states/level-transition.state";
-import {credits} from "./game-states/credits.state";
 
 
 window.onload = async () => {
@@ -48,12 +47,6 @@ window.onload = async () => {
       onEnter: (levelNumber: number) => levelTransition.onEnter(levelNumber),
       onUpdate: () => levelTransition.onUpdate(),
     },
-    {
-      stateName: 'credits',
-      onEnter: () => credits.onEnter(),
-      onUpdate: () => credits.onUpdate(),
-      onLeave: () => credits.onLeave(),
-    }
   ]);
 
   gameStateMachine.setState('menu', 0, 19000);

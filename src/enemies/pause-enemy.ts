@@ -7,11 +7,11 @@ export class PauseEnemy extends Enemy {
   speed = 0.8;
 
   constructor(gridPosition: number, colorNum: number) {
-    super(gridPosition, 32, colorNum, [
-      [7, 8, 9],
-      [10, 11, 12],
-      [13, 14, 15],
-      [16, 17, 18],
+    super(gridPosition, colorNum, [
+      [31, 32, 33, 34],
+      [35, 36, 37, 38],
+      [39, 40, 41, 42],
+      [43, 44, 45, 46],
     ][colorNum]);
   }
 

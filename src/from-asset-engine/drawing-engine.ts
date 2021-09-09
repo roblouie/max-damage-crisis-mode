@@ -6,6 +6,7 @@ import { split24Bit } from "../core/binary-helperts";
 import {doTimes, runOnce} from "../core/timing-helpers";
 import { assetEngine } from "../core/asset-engine-instance";
 import {controls} from "../core/controls";
+import { Point } from "../core/point";
 
 export class DrawingEngine {
   sprites: Sprite[];
@@ -73,7 +74,6 @@ export class DrawingEngine {
     context.fillText(text, x * scale, y * scale);
     this.canvasContext.drawImage(this.offscreenCanvases[4], 0, 0, 960, 1280);
     context.clearRect(0, 0, 480, 640)
-
   }
 
   drawMenu(startPositionY: number, options: string[], callback: (arg0: number) => void) {
@@ -113,13 +113,27 @@ export class DrawingEngine {
     });
   }
 
-  drawSprite(spriteNumber: number, positionX: number, positionY: number) {
-    const sprite = this.sprites[spriteNumber];
+  drawSpriteBetter(spriteNumber: number, center: Point, scale = 1, angle = 90, widthOverride?: number, heightOverride?: number) {
+    const context = this.getContext();
     const canvas = this.offscreenCanvases[3];
-    this.canvasContext.save();
-    this.canvasContext.scale(4, 4);
-    this.canvasContext.drawImage(canvas, spriteNumber * 32, 0, sprite.width * 16, sprite.height * 16, positionX, positionY, sprite.width * 16, sprite.height * 16);
-    this.canvasContext.restore();
+    context.save();
+    context.scale(4, 4);
+    context.translate(center.x, center.y);
+    context.rotate((angle - 90) * Math.PI / 180);
+    context.scale(1/4 * scale, 1/4 * scale);
+    const sprite = this.sprites[spriteNumber];
+    this.canvasContext.scale(4 * scale, 4 * scale);
+    this.canvasContext.drawImage(
+      canvas,
+      spriteNumber * 32,
+      0, sprite.width * 16,
+      sprite.height * 16,
+      -(widthOverride ?? (sprite.width * 16)) / 2,
+      -(heightOverride ?? (sprite.height * 16)) / 2,
+      sprite.width * 16,
+      sprite.height * 16
+    );
+    context.restore();
   }
 
   private drawSpriteToCanvas(spriteNumber: number, positionX: number, positionY: number, ocContextNumber?: number) {
@@ -157,9 +171,14 @@ export class DrawingEngine {
     });
   }
 
-  drawBackgroundLayerToBackgroundCanvases(backgroundIndex: number) {
+  drawBackgroundLayerToBackgroundCanvases(backgroundIndex: number, baseColor: string) {
     doTimes(3, (i: number) => {
-      this.offscreenContexts[i].clearRect(0, 0, 128, 256);
+      if (i === 0) {
+        this.offscreenContexts[i].fillStyle = baseColor;
+        this.offscreenContexts[i].fillRect(0, 0, 128, 256)
+      } else {
+        this.offscreenContexts[i].clearRect(0, 0, 128, 256);
+      }
       const backgroundLayer = this.backgrounds[backgroundIndex][i];
 
       backgroundLayer.sprites.forEach(sprite => {
