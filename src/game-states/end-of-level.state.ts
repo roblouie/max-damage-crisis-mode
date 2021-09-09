@@ -18,9 +18,7 @@ class EndOfLevelState implements State {
     this.framesElapsed++;
 
     const { drawEngine } = assetEngine;
-    const context = drawEngine.getContext();
-    context.save();
-    drawEngine.clearContext();
+    assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
     satellite.update();
@@ -30,14 +28,12 @@ class EndOfLevelState implements State {
     } else {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
-      context.save();
       if (this.framesElapsed === 340) {
         assetEngine.effectEngine.addEffect({x: 120, y: 278}, [3], 999, 31, new Point(0, -5), 0, 1.07, 90)
         assetEngine.sfxEngine.playEffect(2);
         assetEngine.sfxEngine.playEffect(6);
       }
       this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 278});
-      context.restore();
     }
 
     if (this.framesElapsed > 30) {
@@ -54,7 +50,6 @@ class EndOfLevelState implements State {
       }
     }
 
-    context.restore();
     assetEngine.effectEngine.update();
     hud.update();
 
