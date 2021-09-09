@@ -6,7 +6,7 @@ import {SfxWidthInstruction} from "./sfx-width-instruction.model";
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
-  private sfxGain = new GainNode(audioContext, { gain: 0.8 })
+  private sfxGain = new GainNode(audioContext, { gain: 0.2 })
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
