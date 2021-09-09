@@ -2,7 +2,7 @@ import { State } from "../core/state";
 import { assetEngine } from "../core/asset-engine-instance";
 import { controls } from "../core/controls";
 import { gameStateMachine } from "../game-state-machine";
-import {audioContext, masterGainNode, toggleMute} from "../from-asset-engine/audio-initializer";
+import {audioContext, masterGainNode} from "../from-asset-engine/audio-initializer";
 import {hud} from "../hud";
 import { backgroundManager } from "../background-manager";
 
@@ -15,15 +15,14 @@ class MenuState implements State {
     assetEngine.drawEngine.drawText('BOMBER', 60, 120, 120, '#00A99D');
     assetEngine.drawEngine.drawSprite(2, { x: 120, y: 145 }, 2);
 
-    assetEngine.drawEngine.drawMenu(235, ['New Game', this.getAudioText(), '', `High Score: ${hud.getHighScore()}`], (returnIndex: number) => {
+    assetEngine.drawEngine.drawMenu(235, ['New Game', masterGainNode.gain.value === 0 ? '🔈 Enable Audio' : '🔈 Mute', '', `High Score: ${hud.getHighScore()}`,], (returnIndex: number) => {
       switch (returnIndex) {
         case 0:
           gameStateMachine.setState('level-transition', 0);
-          return;
+          break;
         case 1:
-          audioContext.resume();
-          toggleMute();
-          if (masterGainNode.gain.value === 1){
+          if ((masterGainNode.gain.value = masterGainNode.gain.value === 1 ? 0 : 1) === 1){
+            audioContext.resume();
             assetEngine.musicEngine.startSong(0);
           }
       }
@@ -36,10 +35,6 @@ class MenuState implements State {
 
   onLeave() {
     controls.onClick(undefined);
-  }
-
-  getAudioText() {
-    return masterGainNode.gain.value === 0 ? '🔈 Enable Audio' : '🔈 Mute'
   }
 }
 

@@ -9,8 +9,3 @@ async function initializeWhiteNoiseProcessor() {
   const blob = new Blob([whiteNoiseText], { type: 'application/javascript' });
   await audioContext.audioWorklet.addModule(URL.createObjectURL(blob));
 }
-
-// masterGainNode.gain itself is source of truth for muted state
-export function toggleMute() {
-  masterGainNode.gain.value = masterGainNode.gain.value === 0 ? 1 : 0;
-}

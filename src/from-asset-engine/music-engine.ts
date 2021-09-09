@@ -44,7 +44,10 @@ export class MusicEngine {
   stopSong() {
     this.isSongPlaying = false;
     clearTimeout(this.repeatTimer);
-    this.oscillators.forEach(osc => osc.stop());
+    this.oscillators.forEach((osc, index) => {
+      osc.disconnect();
+      this.gainNodes[index].disconnect();
+    });
     this.oscillators = [];
     this.gainNodes = [];
   }
