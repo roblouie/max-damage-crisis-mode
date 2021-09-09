@@ -14,7 +14,7 @@ class MenuState implements State {
     assetEngine.drawEngine.drawMenu(200, ['New Game', this.getAudioText(), '', '', `High Score: ${hud.getHighScore()}`], (returnIndex: number) => {
       switch (returnIndex) {
         case 0:
-          gameStateMachine.setState('level-transition', 7);
+          gameStateMachine.setState('level-transition', 0);
           return;
         case 1:
           audioContext.resume();

@@ -54,6 +54,7 @@ class EndOfLevelState implements State {
     hud.update();
 
     if (this.framesElapsed >= 370) {
+      this.resistanceBonus = 0;
       gameStateMachine.setState('level-transition', this.levelNumberEnded + 1);
     }
   }

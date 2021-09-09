@@ -20,7 +20,7 @@ export class PauseEnemy extends Enemy {
       this.startingY = this.position.y;
     }
 
-    if (this.position.y >= this.startingY + 320 && this.pausedFor < 10) {
+    if (this.position.y >= this.startingY + 280 && this.pausedFor < 10) {
       this.pausedFor += 0.0167;
     } else {
       this.position.y += this.speed;

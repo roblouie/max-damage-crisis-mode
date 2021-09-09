@@ -73,7 +73,8 @@ class Hud {
 
       this.comboCount = 1;
     } else {
-      this.comboCount++;
+      if (!enemy.isMineAttached)
+        this.comboCount++;
     }
 
     this.lastColor = enemy.color;

@@ -6,7 +6,8 @@ class Satellite {
   private startY = 280;
   private size = 32;
 
-  private frameSequencer = animationFrameSequencer([45, 46, 47], 10, true);
+  private frameSequencer = animationFrameSequencer([89, 90], 10, true);
+  suggestLanding = false;
 
   getRadius() {
     return this.size / 2;
@@ -17,7 +18,7 @@ class Satellite {
   }
 
   update() {
-    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.getCenter());
+    assetEngine.drawEngine.drawSprite(this.suggestLanding ? this.frameSequencer.next().value : 90, this.getCenter());
   }
 }
 
