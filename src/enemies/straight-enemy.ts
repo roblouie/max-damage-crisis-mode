@@ -15,15 +15,6 @@ export class StraightEnemy extends Enemy {
 
   update() {
     this.position.y += this.speed;
-    // const context = assetEngine.drawEngine.getContext();
-    // context.save();
-    // context.fillStyle = this.color;
-    // context.beginPath();
-    // context.scale(4, 4);
-    // context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
-    // context.stroke();
-    // context.fill();
-    // context.restore();
     super.update();
   }
 }

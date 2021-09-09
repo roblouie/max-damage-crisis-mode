@@ -10,7 +10,7 @@ class Player {
   readonly startY = 272;
   position = { x: this.startX, y: this.startY };
   width = 16;
-  radius = 8;
+  radius = 6;
   isOnSatelite = true;
   isLeavingSatellite = true;
   enemyAttachedTo?: Enemy;
@@ -173,6 +173,16 @@ class Player {
 
   drawAtAngle() {
     assetEngine.drawEngine.drawSprite(this.currentFrame, this.getCenter(), this.respawnScale, this.angle, 16, 44, (this.angle > -90 && this.angle < 90) ? -1 : 1);
+    // DEBUG
+    // const context = assetEngine.drawEngine.getContext();
+    // context.save();
+    // context.fillStyle = 'white';
+    // context.beginPath();
+    // context.scale(4, 4);
+    // context.arc(this.getCenter().x, this.getCenter().y, this.radius, 0, 2 * Math.PI);
+    // context.stroke();
+    // context.fill();
+    // context.restore();
   }
 }
 
