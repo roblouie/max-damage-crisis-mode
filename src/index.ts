@@ -63,7 +63,6 @@ function update(currentTime: number) {
     previousTime = currentTime - (delta % interval);
 
     gameStateMachine.getState().onUpdate(currentTime);
-    controls.queryButtons();
   }
   requestAnimationFrame(update);
 }

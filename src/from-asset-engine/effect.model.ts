@@ -36,7 +36,7 @@ export class Effect {
     this.position.y += this.translationRate.y;
     this.currentScale *= this.scaleRate;
     this.currentRotation += this.rotationRate;
-    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter(), this.currentScale, this.initialAngle + this.currentRotation);
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.getCenter(), this.currentScale, this.initialAngle + this.currentRotation);
     this.currentFrame += 1;
   }
 

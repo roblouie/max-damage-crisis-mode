@@ -113,7 +113,7 @@ export class InLevel implements State {
           } else {
             enemies.forEach(enemy => enemy.isMineAttached = false);
             // Play mine fizzle out effect and sound
-            assetEngine.effectEngine.addEffect({ x: enemy.position.x + 8, y: enemy.position.y + 8 }, [84, 85], 5, 15, new Point(0, enemy.speed), -2, 1.01);
+            assetEngine.effectEngine.addEffect({ x: enemy.position.x + 8, y: enemy.position.y + 8 }, [84], 5, 15, new Point(0, enemy.speed), -10, .92);
             debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
           }
         }

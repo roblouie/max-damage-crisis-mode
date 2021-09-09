@@ -36,9 +36,9 @@ export abstract class Enemy {
   }
 
   update() {
-    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter());
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.getCenter());
     if (this.isMineAttached) {
-      assetEngine.drawEngine.drawSpriteBetter(this.isMineActivated ? this.minePlantedSequencer.next().value : 79, this.getCenter());
+      assetEngine.drawEngine.drawSprite(this.isMineActivated ? this.minePlantedSequencer.next().value : 79, this.getCenter());
     }
   }
 

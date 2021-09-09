@@ -5,6 +5,7 @@ class Satellite {
   private startX = 104;
   private startY = 280;
   private size = 32;
+
   private frameSequencer = animationFrameSequencer([45, 46, 47], 10, true);
 
   getRadius() {
@@ -16,17 +17,7 @@ class Satellite {
   }
 
   update() {
-    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter());
-    // DEBUG
-    // const context = assetEngine.drawEngine.getContext();
-    // context.save();
-    // context.fillStyle = 'white';
-    // context.beginPath();
-    // context.scale(4, 4);
-    // context.arc(this.getCenter().x, this.getCenter().y, this.getRadius(), 0, 2 * Math.PI);
-    // context.stroke();
-    // context.fill();
-    // context.restore();
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.getCenter());
   }
 }
 
