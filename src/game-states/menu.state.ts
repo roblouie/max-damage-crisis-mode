@@ -11,18 +11,21 @@ class MenuState implements State {
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
 
-    assetEngine.drawEngine.drawMenu(60, ['Main Menu', '', 'New Game', this.getAudioText(), '', '', `High Score: ${hud.getHighScore()}`], (returnIndex: number) => {
+    assetEngine.drawEngine.drawText('SPACE JUMP', 40, 120, 70, '#cf2127');
+    assetEngine.drawEngine.drawText('BOMBER', 60, 120, 120, '#00A99D');
+    assetEngine.drawEngine.drawSprite(2, { x: 120, y: 145 }, 2);
+
+    assetEngine.drawEngine.drawMenu(235, ['New Game', this.getAudioText(), '', `High Score: ${hud.getHighScore()}`], (returnIndex: number) => {
       switch (returnIndex) {
-        case 2:
-          gameStateMachine.setState('level-transition', 5)
-          break;
-        case 3:
+        case 0:
+          gameStateMachine.setState('level-transition', 0);
+          return;
+        case 1:
           audioContext.resume();
           toggleMute();
           if (masterGainNode.gain.value === 1){
             assetEngine.musicEngine.startSong(0);
           }
-          break;
       }
     });
   }

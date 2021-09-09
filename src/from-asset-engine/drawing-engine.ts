@@ -3,7 +3,7 @@ import { SpriteTile } from "./sprite-tile.model";
 import { Sprite } from "./sprite.model";
 import { BackgroundLayer } from "./background-layer";
 import { split24Bit } from "../core/binary-helperts";
-import {doTimes, runOnce} from "../core/timing-helpers";
+import { doTimes } from "../core/timing-helpers";
 import { assetEngine } from "../core/asset-engine-instance";
 import {controls} from "../core/controls";
 import { Point } from "../core/point";
@@ -12,8 +12,6 @@ export class DrawingEngine {
   sprites: Sprite[];
   private tileSize = 16;
   private canvasContext: CanvasRenderingContext2D;
-  private readonly width = 960;
-  private readonly height = 1280;
   private readonly renderMultiplier = 4;
   private offscreenCanvases: HTMLCanvasElement[] = [];
   private offscreenContexts: CanvasRenderingContext2D[] = [];
@@ -23,7 +21,7 @@ export class DrawingEngine {
     private tiles: number[][],
     sprites: Sprite[],
     public backgrounds: BackgroundLayer[][],
-    private canvas: HTMLCanvasElement,
+    public canvas: HTMLCanvasElement,
   ) {
     this.sprites = sprites;
     this.canvasContext = canvas.getContext('2d')!;
@@ -37,20 +35,12 @@ export class DrawingEngine {
     });
   }
 
-  getCanvas(): HTMLCanvasElement {
-    return this.canvas;
-  }
-
   getContext(): CanvasRenderingContext2D {
     return this.canvasContext;
   }
 
-  getScreenWidth(): number {
-    return this.width;
-  }
-
-  getScreenHeight(): number {
-    return this.height;
+  getRenderHeight(): number {
+    return 320;
   }
 
   getRenderMultiplier(): number {
@@ -58,7 +48,7 @@ export class DrawingEngine {
   }
 
   clearContext(): void {
-    this.canvasContext.clearRect(0, 0, this.width, this.height);
+    this.canvasContext.clearRect(0, 0, 960, 1280);
   }
 
   drawText(text: string, fontSize: number, x: number, y: number, color = 'white', textAlign: 'center' | 'left' | 'right' = 'center') {
@@ -113,7 +103,7 @@ export class DrawingEngine {
     });
   }
 
-  drawSpriteBetter(spriteNumber: number, center: Point, scale = 1, angle = 90, widthOverride?: number, heightOverride?: number) {
+  drawSprite(spriteNumber: number, center: Point, scale = 1, angle = 90, widthOverride?: number, heightOverride?: number, flipX = 1) {
     const context = this.getContext();
     const canvas = this.offscreenCanvases[3];
     context.save();
@@ -122,7 +112,7 @@ export class DrawingEngine {
     context.rotate((angle - 90) * Math.PI / 180);
     context.scale(1/4 * scale, 1/4 * scale);
     const sprite = this.sprites[spriteNumber];
-    this.canvasContext.scale(4 * scale, 4 * scale);
+    this.canvasContext.scale(4 * scale * flipX, 4 * scale);
     this.canvasContext.drawImage(
       canvas,
       spriteNumber * 32,

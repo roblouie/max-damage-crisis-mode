@@ -11,10 +11,8 @@ class Player {
   position = { x: this.startX, y: this.startY };
   width = 16;
   radius = 8;
-  height = 20;
   isOnSatelite = true;
   isLeavingSatellite = true;
-  isOnEnemy = false;
   enemyAttachedTo?: Enemy;
   enemyJumpingFrom?: Enemy;
   angle = 90;
@@ -24,7 +22,7 @@ class Player {
   respawnScale = 1;
   standingFrame = 2;
   jumpingFrame = 3;
-  plantFrame = 5;
+  plantFrame = 4;
   crouchFrame = 1;
   currentFrame = this.standingFrame;
   frameSequencer?: Generator<number>;
@@ -56,7 +54,7 @@ class Player {
   }
 
   getCenter() {
-    return { x: this.position.x + (this.width / 2), y: this.position.y + 12};
+    return { x: this.position.x + 8, y: this.position.y + 12};
   }
 
   isJumping() {
@@ -68,19 +66,13 @@ class Player {
   }
 
   private isOffScreen() {
-    const pixelBuffer = this.radius + 40;
     const center = this.getCenter();
-    const renderMultiplier = assetEngine.drawEngine.getRenderMultiplier();
-    const isOffVertical = center.y - pixelBuffer > (assetEngine.drawEngine.getScreenHeight() / renderMultiplier)
-      || center.y + this.height + pixelBuffer < 0;
-    const isOffHorizontal = center.x - pixelBuffer > (assetEngine.drawEngine.getScreenWidth() / renderMultiplier)
-      || center.x + this.width + pixelBuffer < 0;
+    const isOffVertical = center.y < -56 || center.y > 376;
+    const isOffHorizontal = center.x < -56 || center.x > 296;
     return isOffVertical || isOffHorizontal;
   }
 
-
   landOnEnemy(enemy: Enemy) {
-    this.isOnEnemy = true;
     this.enemyAttachedTo = enemy;
     this.stateMachine.setState('landed');
     this.isLeavingSatellite = false;
@@ -92,6 +84,7 @@ class Player {
     this.isLeavingSatellite = true;
     this.currentFrame = this.standingFrame;
     this.stateMachine.setState('landed');
+    this.angle = 90;
   }
 
   onLandedEnter() {
@@ -107,7 +100,7 @@ class Player {
 
     if (this.isOnSatelite) {
       this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 8);
-    } else if (this.isOnEnemy) {
+    } else if (this.enemyAttachedTo) {
       this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.plantFrame, this.crouchFrame], 7);
     }
   }
@@ -116,18 +109,9 @@ class Player {
     this.enemyJumpingFrom = undefined;
     this.currentFrame = this.frameSequencer?.next().value;
     this.drawAtAngle();
-    if (this.isOnEnemy && this.enemyAttachedTo) {
-      this.position.x = this.enemyAttachedTo?.getCenter().x - this.radius;
-      this.position.y = this.enemyAttachedTo?.getCenter().y - this.radius;
-    }
-
-    if (controls.isAnalogStickPressed) {
-      this.angle = controls.analogStickAngle;
-    }
-
-    if (controls.isJumpPressed) {
-      this.jumpAngle = this.angle;
-      this.stateMachine.setState('jumping');
+    if (this.enemyAttachedTo) {
+      this.position.x = this.enemyAttachedTo?.getCenter().x - 8;
+      this.position.y = this.enemyAttachedTo?.getCenter().y - 15;
     }
 
     if (this.isOnSatelite) {
@@ -146,7 +130,6 @@ class Player {
     assetEngine.sfxEngine.playEffect(2);
     controls.onMouseMove(undefined);
     controls.onClick(undefined);
-    this.isOnEnemy = false;
     this.isOnSatelite = false;
     this.enemyJumpingFrom = this.enemyAttachedTo;
   }
@@ -162,8 +145,7 @@ class Player {
   }
 
   onRespawningEnter() {
-    this.position = { x: this.startX, y: this.startY + 40}
-    this.isOnEnemy = false;
+    this.position = { x: this.startX, y: this.startY + 40};
     this.enemyAttachedTo = undefined;
     this.respawnScale = 0;
     controls.onClick(undefined)
@@ -175,12 +157,11 @@ class Player {
       this.position.y -= 0.9;
       this.respawnScale += 0.025;
       this.angle = 90;
-      this.drawAtAngle();
     } else {
-      this.drawAtAngle();
       this.respawnScale = 1;
       this.stateMachine.setState('landed');
     }
+    this.drawAtAngle();
   }
 
   onRespawningLeave() {
@@ -189,7 +170,7 @@ class Player {
   }
 
   drawAtAngle() {
-    assetEngine.drawEngine.drawSpriteBetter(this.currentFrame, this.getCenter(), this.respawnScale, this.angle, 16, 44);
+    assetEngine.drawEngine.drawSprite(this.currentFrame, this.getCenter(), this.respawnScale, this.angle, 16, 44, (this.angle > -90 && this.angle < 90) ? -1 : 1);
   }
 }
 

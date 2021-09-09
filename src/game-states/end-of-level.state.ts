@@ -33,7 +33,7 @@ class EndOfLevelState implements State {
         assetEngine.sfxEngine.playEffect(2);
         assetEngine.sfxEngine.playEffect(6);
       }
-      this.framesElapsed < 340 && drawEngine.drawSpriteBetter(2, {x: 120, y: 278});
+      this.framesElapsed < 340 && drawEngine.drawSprite(2, {x: 120, y: 278});
     }
 
     if (this.framesElapsed > 30) {
@@ -54,6 +54,7 @@ class EndOfLevelState implements State {
     hud.update();
 
     if (this.framesElapsed >= 370) {
+      this.resistanceBonus = 0;
       gameStateMachine.setState('level-transition', this.levelNumberEnded + 1);
     }
   }

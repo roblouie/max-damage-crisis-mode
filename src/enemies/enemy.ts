@@ -1,5 +1,7 @@
 import { assetEngine } from "../core/asset-engine-instance";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { Point } from "../core/point";
+import { debounce } from "../core/timing-helpers";
 
 export abstract class Enemy {
   position = { x: 0, y: 0 };
@@ -32,17 +34,24 @@ export abstract class Enemy {
     this.position.y = row * 35;
     this.color = Enemy.Colors[colorNum];
     this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
-    this.minePlantedSequencer = animationFrameSequencer([[90, 91, 92, 93][colorNum], 89], 10, true);
+    this.minePlantedSequencer = animationFrameSequencer([[77, 78, 79, 80][colorNum], 76], 10, true);
   }
 
   update() {
-    assetEngine.drawEngine.drawSpriteBetter(this.frameSequencer.next().value, this.getCenter());
+    assetEngine.drawEngine.drawSprite(this.frameSequencer.next().value, this.getCenter());
     if (this.isMineAttached) {
-      assetEngine.drawEngine.drawSpriteBetter(this.isMineActivated ? this.minePlantedSequencer.next().value : 89, this.getCenter());
+      assetEngine.drawEngine.drawSprite(this.isMineActivated ? this.minePlantedSequencer.next().value : 76, this.getCenter());
     }
   }
 
+  removeMine() {
+    this.isMineAttached = false;
+    this.isMineAttached = false;
+    assetEngine.effectEngine.addEffect({ x: this.position.x + 8, y: this.position.y + 8 }, [81], 5, 18, new Point(0, this.speed), -10, .94);
+    debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
+  }
+
   isOffScreen() {
-    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getScreenHeight() / assetEngine.drawEngine.getRenderMultiplier();
+    return (this.position.y - this.size - 20) >= assetEngine.drawEngine.getRenderHeight();
   }
 }
