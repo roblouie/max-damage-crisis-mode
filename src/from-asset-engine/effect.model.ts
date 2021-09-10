@@ -17,7 +17,7 @@ export class Effect {
   private frameSequencer: Generator<number>;
   private initialAngle = 0;
 
-  constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, translationRate: Point, rotationRate: number, scaleRate: number, initialAngle = 0) {
+  constructor(startPosition: Point, animationFrames: number[], animationRate: number, durationInFrames: number, translationRate: Point, rotationRate: number, scaleRate: number, initialAngle = 0, initialScale = 1) {
     this.position = startPosition;
     this.animationFrames = animationFrames;
     this.duration = durationInFrames;
@@ -29,6 +29,7 @@ export class Effect {
     this.width = startSprite.width * 16;
     this.frameSequencer = animationFrameSequencer(animationFrames, animationRate);
     this.initialAngle = initialAngle;
+    this.currentScale = initialScale;
   }
 
   update() {
@@ -41,7 +42,7 @@ export class Effect {
   }
 
   getCenter() {
-    return { x: this.position.x + (this.width / 2), y: this.position.y + (this.height / 2)};
+    return new Point(this.position).plus(this.width / 2, this.height / 2);
   }
 
   getIsDone() {

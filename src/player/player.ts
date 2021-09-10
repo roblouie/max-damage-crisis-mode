@@ -6,9 +6,8 @@ import { Enemy } from "../enemies/enemy";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class Player {
-  readonly startX = 112;
-  readonly startY = 272;
-  position = { x: this.startX, y: this.startY };
+  startPosition = new Point(112, 272);
+  position = new Point(this.startPosition);
   width = 16;
   radius = 6;
   isOnSatelite = true;
@@ -54,7 +53,7 @@ class Player {
   }
 
   getCenter() {
-    return { x: this.position.x + 8, y: this.position.y + 12};
+    return new Point(this.position).plus(8, 12);
   }
 
   isJumping() {
@@ -117,8 +116,7 @@ class Player {
     }
 
     if (this.isOnSatelite) {
-      this.position.x = this.startX;
-      this.position.y = this.startY;
+      this.position = new Point(this.startPosition);
     }
 
     if (this.isOffScreen()) {
@@ -147,7 +145,7 @@ class Player {
   }
 
   onRespawningEnter() {
-    this.position = { x: this.startX, y: this.startY + 40};
+    this.position = new Point(this.startPosition).plus(0, 40);
     this.enemyAttachedTo = undefined;
     this.respawnScale = 0;
     controls.onClick(undefined)
@@ -155,7 +153,7 @@ class Player {
   }
 
   onRespawningUpdate() {
-    if (this.position.y > this.startY) {
+    if (this.position.y > this.startPosition.y) {
       this.position.y -= 0.9;
       this.respawnScale += 0.025;
       this.angle = 90;

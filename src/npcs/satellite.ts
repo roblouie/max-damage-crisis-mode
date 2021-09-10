@@ -1,12 +1,12 @@
 import {assetEngine} from "../core/asset-engine-instance";
 import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { Point } from "../core/point";
 
 class Satellite {
-  private startX = 104;
-  private startY = 280;
+  private position = new Point(104, 280);
   private size = 32;
 
-  private frameSequencer = animationFrameSequencer([89, 90], 10, true);
+  private frameSequencer = animationFrameSequencer([89, 90], 20, true);
   suggestLanding = false;
 
   getRadius() {
@@ -14,7 +14,7 @@ class Satellite {
   }
 
   getCenter() {
-    return { x: this.startX + this.getRadius(), y: this.startY + this.getRadius() };
+    return new Point(this.position).plus(this.getRadius());
   }
 
   update() {

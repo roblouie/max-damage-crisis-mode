@@ -29,7 +29,7 @@ class Hud {
     this.score = 0;
   }
 
-  takeHit(toDecreaseBy = 5) {
+  takeHit(toDecreaseBy = 10) {
     this.healthPercent -= toDecreaseBy;
   }
 
@@ -57,7 +57,7 @@ class Hud {
 
   updateOnKill(enemyKilled: Enemy) {
     if (enemyKilled.color === this.lastColor) {
-      this.comboCount++;
+      // this.comboCount++;
       this.comboCountSizeMultiplier = 1.3;
     }
   }
@@ -88,8 +88,8 @@ class Hud {
     context.fillRect(10, 1235, 294 * (this.healthPercent * .01), 30);
     context.strokeStyle = 'white';
     context.strokeRect(10, 1235, 294, 30);
-    assetEngine.drawEngine.drawText('Earth Resistance Forces', 7, 39, 307);
-    assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 7, 200, 315);
+    assetEngine.drawEngine.drawText(`Earth's Defense`, 10, 39, 307);
+    assetEngine.drawEngine.drawText(this.score.toString(10).padStart(15, '0'), 10, 195, 315);
 
     if (this.comboCountSizeMultiplier >= 1.0) {
       this.comboCountSizeMultiplier -= 0.05;
@@ -101,13 +101,13 @@ class Hud {
 
 
     if (this.comboCount > -1) {
-      assetEngine.drawEngine.drawText(this.comboCount + 'x', 14 * this.comboCountSizeMultiplier, 220, 300, this.lastColor);
-      assetEngine.drawEngine.drawText('COMBO', 6 * this.comboCountSizeMultiplier, 220, 307, this.lastColor);
+      assetEngine.drawEngine.drawText(this.comboCount + 'x', 16 * this.comboCountSizeMultiplier, 212, 298, this.lastColor);
+      assetEngine.drawEngine.drawText('COMBO', 8 * this.comboCountSizeMultiplier, 212, 305, this.lastColor);
     }
 
     if (this.comboChain > -1) {
-      assetEngine.drawEngine.drawText(this.comboChain + 'x', 14 * this.comboChainSizeMultiplier, 200, 300);
-      assetEngine.drawEngine.drawText('CHAIN', 6 * this.comboChainSizeMultiplier, 200, 307);
+      assetEngine.drawEngine.drawText(this.comboChain + 'x', 16 * this.comboChainSizeMultiplier, 183, 298);
+      assetEngine.drawEngine.drawText('CHAIN', 8 * this.comboChainSizeMultiplier, 183, 305);
     }
 
     context.restore();

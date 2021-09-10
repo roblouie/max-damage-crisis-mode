@@ -19,7 +19,7 @@ class LevelTransitionState implements State {
     isLastLevel && this.framesElapsed === 0 && assetEngine.musicEngine.startSong(4, false);
     this.framesElapsed++;
     assetEngine.drawEngine.clearContext();
-    assetEngine.drawEngine.drawText(text, 10, 120, 100);
+    assetEngine.drawEngine.drawText(text, 12, 120, 100);
 
     if (this.framesElapsed >= (isLastLevel ? 600 : 121)) {
       hud.saveHighScore();
