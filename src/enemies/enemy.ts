@@ -1,5 +1,5 @@
 import { assetEngine } from "../core/asset-engine-instance";
-import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { sequencer } from "../core/sequencer";
 import { Point } from "../core/point";
 import { debounce } from "../core/timing-helpers";
 
@@ -33,8 +33,8 @@ export abstract class Enemy {
     this.position.x = xPositions[column];
     this.position.y = row * 40 - 700;
     this.color = Enemy.Colors[colorNum];
-    this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
-    this.minePlantedSequencer = animationFrameSequencer([[77, 78, 79, 80][colorNum], 76], 10, true);
+    this.frameSequencer = sequencer(spriteFrames, 7, true);
+    this.minePlantedSequencer = sequencer([[77, 78, 79, 80][colorNum], 76], 10, true);
   }
 
   update() {

@@ -1,6 +1,6 @@
 import {Point} from "../core/point";
 import {assetEngine} from "../core/asset-engine-instance";
-import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { sequencer } from "../core/sequencer";
 
 export class Effect {
   private currentFrame = 0;
@@ -27,7 +27,7 @@ export class Effect {
     const startSprite = assetEngine.drawEngine.sprites[this.animationFrames[0]];
     this.height = startSprite.height * 16;
     this.width = startSprite.width * 16;
-    this.frameSequencer = animationFrameSequencer(animationFrames, animationRate);
+    this.frameSequencer = sequencer(animationFrames, animationRate);
     this.initialAngle = initialAngle;
   }
 

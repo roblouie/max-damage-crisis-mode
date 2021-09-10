@@ -1,12 +1,12 @@
 import {assetEngine} from "../core/asset-engine-instance";
-import { animationFrameSequencer } from "../core/animation-frame-sequencer";
+import { sequencer } from "../core/sequencer";
 
 class Satellite {
   private startX = 104;
   private startY = 280;
   private size = 32;
 
-  private frameSequencer = animationFrameSequencer([89, 90], 10, true);
+  private frameSequencer = sequencer([89, 90], 10, true);
   suggestLanding = false;
 
   getRadius() {
