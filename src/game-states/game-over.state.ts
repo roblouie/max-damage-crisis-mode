@@ -11,13 +11,13 @@ class GameOverState implements State {
     assetEngine.drawEngine.drawText('Game Over', 12, 120, 100);
   }
 
-  onEnter() {
+  onEnter(levelNumber: number) {
     hud.saveHighScore();
     hud.resetScore();
     assetEngine.musicEngine.startSong(2, false);
     assetEngine.drawEngine.clearContext();
     controls.onClick(() => {
-      gameStateMachine.setState('in-level', 0);
+      gameStateMachine.setState('menu', levelNumber);
     });
   }
 }

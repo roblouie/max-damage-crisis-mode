@@ -8,7 +8,7 @@ import { hud } from "../hud";
 import {gameStateMachine} from "../game-state-machine";
 import { satellite } from "../npcs/satellite";
 import { controls } from "../core/controls";
-import { debounce } from "../core/timing-helpers";
+import { debounce, doTimes } from "../core/timing-helpers";
 import { Enemy } from "../enemies/enemy";
 
 export class InLevel implements State {
@@ -21,6 +21,7 @@ export class InLevel implements State {
     backgroundManager.loadBackgrounds(Math.floor(levelNumber / 3));
     assetEngine.musicEngine.startSong(1);
     hud.resetHealth();
+    satellite.suggestLanding = false;
     initializePlayer();
     this.currentLevel = assetEngine.levels[levelNumber];
     this.levelNumber = levelNumber;
@@ -35,7 +36,7 @@ export class InLevel implements State {
 
   onUpdate(): void {
     if (hud.healthPercent <= 0) {
-      gameStateMachine.setState('game-over');
+      gameStateMachine.setState('game-over', this.levelNumber);
     }
     assetEngine.drawEngine.clearContext();
     backgroundManager.updateBackgrounds();
@@ -77,7 +78,10 @@ export class InLevel implements State {
 
     if (player.isRespawning()) {
       hud.resetCombo();
-      minedEnemies.forEach(enemy => enemy.removeMine());
+      minedEnemies.forEach(enemy => {
+        enemy.removeMine()
+        debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
+      });
     }
 
     this.currentLevel.activeEnemies.forEach(enemy => {
@@ -108,15 +112,34 @@ export class InLevel implements State {
         if (minedEnemies.length > 2) {
           enemy.isDead = true;
           // Play mine explosion effect and sound
-          assetEngine.effectEngine.addEffect(enemy.position, [71, 72, 73, 74, 75], 5, 25, new Point(0, enemy.speed), 3, 1.01);
+          this.drawExplosion(enemy);
           debounce(() => assetEngine.sfxEngine.playEffect(0), 1);
           hud.updateForEnemyKilled();
           hud.updateOnKill(enemy);
         } else {
-          minedEnemies.forEach(enemy => enemy.removeMine());
+          minedEnemies.forEach(enemy => {
+            enemy.removeMine();
+            debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
+          });
         }
       });
     }
+  }
+
+  private drawExplosion(enemy: Enemy) {
+    const numberOfPieces = Math.floor(this.randomNumber(2, 5));
+
+    doTimes(numberOfPieces, () => {
+      const direction = new Point(this.randomNumber(-1, 1), this.randomNumber(-1, 1));
+      const rotationRate = this.randomNumber(-6, 6);
+      const initialSize = this.randomNumber(1, 2);
+      assetEngine.effectEngine.addEffect(new Point(enemy.position).plus(16), [91], 40, 40, direction, rotationRate, 0.975, 1, initialSize);
+    });
+    assetEngine.effectEngine.addEffect(new Point(enemy.position).plus(enemy.radius), [71, 72, 73, 74, 75], 5, 25, new Point(0, 0), 3, 1.01);
+  }
+
+  private randomNumber(min: number, max: number) {
+    return Math.random() * (max - min) + min;
   }
 }
 

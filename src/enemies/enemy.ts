@@ -4,7 +4,7 @@ import { Point } from "../core/point";
 import { debounce } from "../core/timing-helpers";
 
 export abstract class Enemy {
-  position = { x: 0, y: 0 };
+  position = new Point(0, 0);
   size = 32;
   radius = 14;
   color = '#000000';
@@ -16,7 +16,7 @@ export abstract class Enemy {
   private minePlantedSequencer: Generator<number>;
 
   getCenter() {
-    return { x: this.position.x + this.radius, y: this.position.y + this.radius }
+    return new Point(this.position).plus(this.radius);
   }
 
   static Colors = [
@@ -31,7 +31,7 @@ export abstract class Enemy {
     const column = (gridPosition % 7);
     const row = Math.floor(gridPosition / 7);
     this.position.x = xPositions[column];
-    this.position.y = row * 40 - 700;
+    this.position.y = row * 40 - 710;
     this.color = Enemy.Colors[colorNum];
     this.frameSequencer = animationFrameSequencer(spriteFrames, 7, true);
     this.minePlantedSequencer = animationFrameSequencer([[77, 78, 79, 80][colorNum], 76], 10, true);
@@ -59,8 +59,7 @@ export abstract class Enemy {
   removeMine() {
     this.isMineAttached = false;
     this.isMineAttached = false;
-    assetEngine.effectEngine.addEffect({ x: this.position.x + 8, y: this.position.y + 8 }, [81], 5, 18, new Point(0, this.speed), -10, .94);
-    debounce(() => assetEngine.sfxEngine.playEffect(4), 1);
+    assetEngine.effectEngine.addEffect(new Point(this.position).plus(8), [81], 5, 18, new Point(0, this.speed), -10, .94);
   }
 
   isOffScreen() {

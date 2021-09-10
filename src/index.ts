@@ -20,7 +20,7 @@ window.onload = async () => {
   createGameStateMachine([
     {
       stateName: 'menu',
-      onEnter: () => menu.onEnter(),
+      onEnter: (levelNumber: number) => menu.onEnter(levelNumber),
       onLeave: () => menu.onLeave(),
       onUpdate: () => menu.onUpdate(),
     },
@@ -37,7 +37,7 @@ window.onload = async () => {
     },
     {
       stateName: 'game-over',
-      onEnter: () => gameOver.onEnter(),
+      onEnter: (levelNumber: number) => gameOver.onEnter(levelNumber),
       onUpdate: () => gameOver.onUpdate(),
     },
     {
@@ -47,7 +47,7 @@ window.onload = async () => {
     },
   ]);
 
-  gameStateMachine.setState('menu', 0, 19000);
+  gameStateMachine.setState('menu', 0);
 
   requestAnimationFrame(update);
 }

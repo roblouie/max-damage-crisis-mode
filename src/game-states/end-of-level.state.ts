@@ -29,20 +29,20 @@ class EndOfLevelState implements State {
       controls.onClick(undefined);
       controls.onMouseMove(undefined);
       if (this.framesElapsed === 340) {
-        assetEngine.effectEngine.addEffect({x: 120, y: 278}, [3], 999, 31, new Point(0, -5), 0, 1.07, 90)
+        assetEngine.effectEngine.addEffect(new Point(120, 278), [3], 999, 31, new Point(0, -5), 0, 1.07, 90)
         assetEngine.sfxEngine.playEffect(2);
         assetEngine.sfxEngine.playEffect(6);
       }
-      this.framesElapsed < 340 && drawEngine.drawSprite(2, {x: 120, y: 278});
+      this.framesElapsed < 340 && drawEngine.drawSprite(2, new Point(120, 278));
     }
 
     if (this.framesElapsed > 30) {
-      drawEngine.drawText('Level Complete!', 10, 120, 100);
+      drawEngine.drawText('Level Complete!', 14, 120, 100);
     }
 
     if (this.framesElapsed >= 60) {
-      drawEngine.drawText('Resistance Bonus', 10, 40, 125, 'white', 'left');
-      drawEngine.drawText(this.resistanceBonus.toString(), 10, 180, 125, 'white', 'right');
+      drawEngine.drawText('Resistance Bonus', 12, 40, 125, 'white', 'left');
+      drawEngine.drawText(this.resistanceBonus.toString(), 12, 200, 125, 'white', 'right');
       if (hud.healthPercent >= 0.5) {
         hud.takeHit(0.5);
         hud.updateScore(500);

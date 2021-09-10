@@ -1,19 +1,20 @@
 import {SoundEffect} from "./sound-effect.model";
-import {audioContext, masterGainNode} from "./audio-initializer";
+import { audioContext, masterGainNode } from "./audio-initializer";
 import {SfxPitchInstruction} from "./sfx-pitch-instruction.model";
 import {SfxGainInstruction} from "./sfx-gain-instruction.model";
 import { SfxWidthInstruction } from "./sfx-width-instruction.model";
-import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class EffectPlayer {
   oscillator: OscillatorNode;
   whiteNoise: AudioWorkletNode;
   gainNodes: GainNode[];
+  soundEffect: SoundEffect;
 
-  constructor(sfxGain: GainNode) {
+  constructor(sfxGain: GainNode, soundEffect: SoundEffect) {
     this.gainNodes = [new GainNode(audioContext, { gain: 0 }), new GainNode(audioContext, { gain: 0 })];
     this.oscillator = new OscillatorNode(audioContext, { type: 'square' });
     this.whiteNoise = new AudioWorkletNode(audioContext, 'wn');
+    this.soundEffect = soundEffect;
 
     this.oscillator
       .connect(this.gainNodes[0])
@@ -26,15 +27,9 @@ class EffectPlayer {
     this.oscillator.start();
   }
 
-  canceller(...toCancel: AudioParam[]) {
-    toCancel.forEach(cancelMe => cancelMe.cancelScheduledValues(audioContext.currentTime));
-  }
-
-  play(soundEffect: SoundEffect) {
+  play() {
     const whiteNoiseFrequency = this.whiteNoise.parameters.get('freq')!;
     const whiteNoiseWidth = this.whiteNoise.parameters.get('width')!;
-
-    this.canceller(whiteNoiseFrequency, whiteNoiseWidth, this.oscillator.frequency, ...this.gainNodes.map(gainNode => gainNode.gain));
 
     whiteNoiseWidth.value = 15;
 
@@ -48,7 +43,7 @@ class EffectPlayer {
 
     frequencies.forEach((freq, frequencyIndex) => {
       pitchDurationInSeconds = 0;
-      soundEffect.pitchInstructions.forEach((instruction: SfxPitchInstruction, index: number) => {
+      this.soundEffect.pitchInstructions.forEach((instruction: SfxPitchInstruction, index: number) => {
         const pitch = frequencyIndex === 0 ? instruction.pitch : (instruction.pitch / .3)
         pitchDurationInSeconds += instruction.durationInSeconds;
         if (index === 0){
@@ -61,7 +56,7 @@ class EffectPlayer {
     let secondsSinceWidthChange = 0;
     let isSeven = false;
 
-    soundEffect.widthInstructions.forEach((instruction: SfxWidthInstruction) => {
+    this.soundEffect.widthInstructions.forEach((instruction: SfxWidthInstruction) => {
       secondsSinceWidthChange += instruction.timeFromLastInstruction;
       whiteNoiseWidth.setValueAtTime(isSeven ? 15 : 7,audioContext.currentTime + secondsSinceWidthChange);
       isSeven = !isSeven;
@@ -69,7 +64,7 @@ class EffectPlayer {
 
     const totalGainTimePerChanel = [0, 0];
 
-    soundEffect.gainInstructions.forEach((instruction: SfxGainInstruction) => {
+    this.soundEffect.gainInstructions.forEach((instruction: SfxGainInstruction) => {
       const index = instruction.isWhiteNoise ? 1 : 0;
       this.gainNodes[index].gain[linearRampString](instruction.gain, audioContext.currentTime + totalGainTimePerChanel[index] + instruction.timeFromLastInstruction);
       totalGainTimePerChanel[index] += instruction.timeFromLastInstruction;
@@ -82,21 +77,15 @@ class EffectPlayer {
 export class SfxEngine {
   soundEffects: SoundEffect[];
   effectPlayers: EffectPlayer[];
-  currentEffectPlayer = 0;
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
     const sfxGain = new GainNode(audioContext, { gain: 0.7 });
-    sfxGain.connect(audioContext.destination);
-    this.effectPlayers = [new EffectPlayer(sfxGain), new EffectPlayer(sfxGain), new EffectPlayer(sfxGain)];
+    sfxGain.connect(masterGainNode);
+    this.effectPlayers = soundEffects.map(soundEffect => new EffectPlayer(sfxGain, soundEffect));
   }
 
   async playEffect(effectIndex: number) {
-    const soundEffect = this.soundEffects[effectIndex];
-    this.effectPlayers[this.currentEffectPlayer].play(soundEffect);
-    this.currentEffectPlayer++;
-    if (this.currentEffectPlayer >= this.effectPlayers.length) {
-      this.currentEffectPlayer = 0;
-    }
+    this.effectPlayers[effectIndex].play();
   }
 }

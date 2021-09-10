@@ -2,9 +2,25 @@ export class Point {
   x: number;
   y: number;
 
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
+  constructor(point: Point);
+  constructor(x: number, y: number)
+  constructor(...args: any) {
+    this.x = args[0].x ?? args[0];
+    this.y = args[0].y ?? args[1];
+  }
+
+  times(multiplier: number) {
+    this.x *= multiplier;
+    this.y *= multiplier;
+    return this;
+  }
+
+  plus(val: number): Point;
+  plus(x: number, y: number): Point;
+  plus(xOrVal: number, y?: number) {
+    this.x += xOrVal;
+    this.y += y ?? xOrVal;
+    return this;
   }
 
   static AngleBetweenTwo(point1: Point, point2: Point) {
@@ -12,7 +28,6 @@ export class Point {
     const dx = point1.x - point2.x;
     let theta = Math.atan2(dy, dx); // range (-PI, PI]
     theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-    //if (theta < 0) theta = 360 + theta; // range [0, 360)
     return theta;
   }
 
