@@ -12,8 +12,8 @@ import { levelTransition } from "./game-states/level-transition.state";
 
 window.onload = async () => {
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;
-  await initializeAssetEngine(canvas);
   await whiteNoiseLoading;
+  await initializeAssetEngine(canvas);
   initializeHud();
   initializeControls();
   assetEngine.drawEngine.loadSpritesToSpriteCanvas();

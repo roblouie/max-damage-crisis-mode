@@ -4,7 +4,7 @@ import {audioContext, masterGainNode} from "./audio-initializer";
 
 export class MusicEngine {
   private currentTempo = 0;
-  private musicGain = new GainNode(audioContext, { gain: 0.05 });
+  private musicGain = new GainNode(audioContext, { gain: 0.13 });
   private isSongPlaying = false;
 
   private oscillators: OscillatorNode[] = [];
