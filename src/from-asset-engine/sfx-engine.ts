@@ -3,7 +3,7 @@ import {audioContext, masterGainNode} from "./audio-initializer";
 import {SfxPitchInstruction} from "./sfx-pitch-instruction.model";
 import {SfxGainInstruction} from "./sfx-gain-instruction.model";
 import { SfxWidthInstruction } from "./sfx-width-instruction.model";
-import { sequencer } from "../core/sequencer";
+import { animationFrameSequencer } from "../core/animation-frame-sequencer";
 
 class EffectPlayer {
   oscillator: OscillatorNode;
@@ -12,7 +12,6 @@ class EffectPlayer {
 
   constructor(sfxGain: GainNode) {
     this.gainNodes = [new GainNode(audioContext, { gain: 0 }), new GainNode(audioContext, { gain: 0 })];
-
     this.oscillator = new OscillatorNode(audioContext, { type: 'square' });
     this.whiteNoise = new AudioWorkletNode(audioContext, 'wn');
 
@@ -27,18 +26,21 @@ class EffectPlayer {
     this.oscillator.start();
   }
 
-  private canceller(...toCancel: AudioParam[]) {
-    toCancel.forEach(cancelMe => cancelMe.cancelScheduledValues(audioContext.currentTime))
+  canceller(...toCancel: AudioParam[]) {
+    toCancel.forEach(cancelMe => cancelMe.cancelScheduledValues(audioContext.currentTime));
   }
 
   play(soundEffect: SoundEffect) {
     const whiteNoiseFrequency = this.whiteNoise.parameters.get('freq')!;
     const whiteNoiseWidth = this.whiteNoise.parameters.get('width')!;
+
+    this.canceller(whiteNoiseFrequency, whiteNoiseWidth, this.oscillator.frequency, ...this.gainNodes.map(gainNode => gainNode.gain));
+
     whiteNoiseWidth.value = 15;
 
-    this.canceller(whiteNoiseFrequency, whiteNoiseWidth, this.oscillator.frequency, ...this.gainNodes.map(gain => gain.gain));
-
-    this.gainNodes.forEach(gainNode => gainNode.gain.value = 1);
+    this.gainNodes.forEach(gainNode => {
+      gainNode.gain.value = 1;
+    });
 
     const frequencies = [this.oscillator.frequency, whiteNoiseFrequency];
     const linearRampString = 'linearRampToValueAtTime';
@@ -79,17 +81,22 @@ class EffectPlayer {
 
 export class SfxEngine {
   soundEffects: SoundEffect[];
-  private sfxGain = new GainNode(audioContext, { gain: 0.7 });
-  effectPlayers: Generator<EffectPlayer>;
+  effectPlayers: EffectPlayer[];
+  currentEffectPlayer = 0;
 
   constructor(soundEffects: SoundEffect[]) {
     this.soundEffects = soundEffects;
-    this.sfxGain.connect(masterGainNode);
-    this.effectPlayers = sequencer([new EffectPlayer(this.sfxGain), new EffectPlayer(this.sfxGain), new EffectPlayer(this.sfxGain)], 1);
+    const sfxGain = new GainNode(audioContext, { gain: 0.7 });
+    sfxGain.connect(audioContext.destination);
+    this.effectPlayers = [new EffectPlayer(sfxGain), new EffectPlayer(sfxGain), new EffectPlayer(sfxGain)];
   }
 
   async playEffect(effectIndex: number) {
     const soundEffect = this.soundEffects[effectIndex];
-    this.effectPlayers.next().value.play(soundEffect);
+    this.effectPlayers[this.currentEffectPlayer].play(soundEffect);
+    this.currentEffectPlayer++;
+    if (this.currentEffectPlayer >= this.effectPlayers.length) {
+      this.currentEffectPlayer = 0;
+    }
   }
 }
