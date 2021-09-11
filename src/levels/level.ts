@@ -19,7 +19,7 @@ export class Level {
     this.activeEnemies.forEach(enemy => enemy.update());
 
     if (this.mostRecentWaveIndex === this.enemyWaves.length - 1) {
-      if (this.activeEnemies.filter(enemy => enemy.isMineAttached && enemy.position.y > enemy.size).length === this.activeEnemies.length) {
+      if (this.activeEnemies.filter(enemy => enemy.isMineAttached && enemy.position.y > enemy.size).length === this.activeEnemies.length || this.activeEnemies.length < 3) {
         satellite.suggestLanding = true;
       }
 

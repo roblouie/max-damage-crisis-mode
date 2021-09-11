@@ -4,7 +4,7 @@ export class WaveEnemy extends Enemy {
   startingX?: number;
   momentum = 0;
   isMovingLeft = false;
-  speed = 0.8;
+  speed = 0.6;
 
   constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
     super(gridPosition, colorNum, [
@@ -23,23 +23,18 @@ export class WaveEnemy extends Enemy {
       this.startingX = this.position.x;
     }
 
-    if ((this.position.x <= (this.startingX - 5)) && this.isMovingLeft) {
+    if ((this.position.x <= (this.startingX - 6)) && this.isMovingLeft) {
       this.isMovingLeft = false;
     }
 
-    if ((this.position.x >= (this.startingX + 5)) && !this.isMovingLeft) {
+    if ((this.position.x >= (this.startingX + 6)) && !this.isMovingLeft) {
       this.isMovingLeft = true;
     }
 
     this.momentum += (this.isMovingLeft ? -0.05 : 0.05);
 
-    if (this.momentum > 1.5) {
-      this.momentum = 1.5;
-    }
-
-    if (this.momentum < -1.5) {
-      this.momentum = -1.5;
-    }
+    // Clamp horizontal speed to 1.5
+    this.momentum = Math.min(Math.max(this.momentum, -1.3), 1.3);
 
     this.position.x += this.momentum;
     this.position.y += this.speed;

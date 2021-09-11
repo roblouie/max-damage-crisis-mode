@@ -15,7 +15,7 @@ class BackgroundManager {
   loadBackgrounds(backgroundNumber: number) {
     this.resetPositions();
     this.backgroundNumber = backgroundNumber;
-    assetEngine.drawEngine.drawBackgroundLayerToBackgroundCanvases(backgroundNumber, ['#9cd775', '#000', '#AF5F33'][backgroundNumber]);
+    assetEngine.drawEngine.drawBackgroundLayerToBackgroundCanvases(backgroundNumber, ['#8dd35f', '#000', '#AF5F33'][backgroundNumber]);
   }
 
   private tempBackgroundLocations = [0, 0, 0];

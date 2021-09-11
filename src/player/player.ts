@@ -46,6 +46,20 @@ class Player {
       }
     ]);
     this.stateMachine.setState('respawning');
+
+    controls.onClick(position => {
+      if (this.stateMachine.getState().stateName === 'landed') {
+        const angle = Point.AngleBetweenTwo(this.getCenter(), position);
+        this.angle = angle
+        this.jumpAngle = angle;
+        this.stateMachine.setState('jumping');
+      }
+    });
+
+    controls.onMouseMove(position => {
+      if (this.stateMachine.getState().stateName === 'landed')
+        this.angle = Point.AngleBetweenTwo(this.getCenter(), position);
+    });
   }
 
   update() {
@@ -88,16 +102,6 @@ class Player {
 
   onLandedEnter() {
     assetEngine.sfxEngine.playEffect(3);
-    controls.onClick(position => {
-      const angle = Point.AngleBetweenTwo(this.getCenter(), position);
-      this.angle = angle
-      this.jumpAngle = angle;
-      this.stateMachine.setState('jumping');
-    });
-
-    controls.onMouseMove(position => {
-      this.angle = Point.AngleBetweenTwo(this.getCenter(), position);
-    });
 
     if (this.isOnSatelite) {
       this.frameSequencer = animationFrameSequencer([this.crouchFrame, this.standingFrame], 8);
@@ -128,8 +132,6 @@ class Player {
   onJumpingEnter() {
     this.currentFrame = this.jumpingFrame;
     assetEngine.sfxEngine.playEffect(2);
-    controls.onMouseMove(undefined);
-    controls.onClick(undefined);
     this.isOnSatelite = false;
     this.enemyJumpingFrom = this.enemyAttachedTo;
   }
@@ -148,8 +150,6 @@ class Player {
     this.position = new Point(this.startPosition).plus(0, 40);
     this.enemyAttachedTo = undefined;
     this.respawnScale = 0;
-    controls.onClick(undefined)
-    controls.onMouseMove(undefined);
   }
 
   onRespawningUpdate() {
