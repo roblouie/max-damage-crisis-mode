@@ -23,7 +23,7 @@ class LevelTransitionState implements State {
 
     if (this.framesElapsed >= (isLastLevel ? 600 : 121)) {
       hud.saveHighScore();
-      isLastLevel ? gameStateMachine.setState('menu') : gameStateMachine.setState('in-level', this.levelNumber);
+      isLastLevel ? gameStateMachine.setState('menu', 0) : gameStateMachine.setState('in-level', this.levelNumber);
     }
   }
 }

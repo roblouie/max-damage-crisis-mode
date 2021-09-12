@@ -27,7 +27,7 @@ export abstract class Enemy {
   ];
 
   protected constructor(gridPosition: number, colorNum: number, spriteFrames: number[]) {
-    const xPositions = [0, 35, 70, 104, 139, 174, 208];
+    const xPositions = [1, 35, 70, 104, 139, 174, 208];
     const column = (gridPosition % 7);
     const row = Math.floor(gridPosition / 7);
     this.position.x = xPositions[column];

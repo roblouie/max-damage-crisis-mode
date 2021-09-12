@@ -9,7 +9,6 @@ class EffectPlayer {
   whiteNoise: AudioWorkletNode;
   gainNodes: GainNode[];
   soundEffect: SoundEffect;
-  private isPlaying = false;
 
   constructor(sfxGain: GainNode, soundEffect: SoundEffect) {
     this.gainNodes = [new GainNode(audioContext, { gain: 0 }), new GainNode(audioContext, { gain: 0 })];
@@ -29,9 +28,6 @@ class EffectPlayer {
   }
 
   play() {
-    if (this.isPlaying) return;
-
-    this.isPlaying = true;
     const whiteNoiseFrequency = this.whiteNoise.parameters.get('freq')!;
     const whiteNoiseWidth = this.whiteNoise.parameters.get('width')!;
 
@@ -75,7 +71,6 @@ class EffectPlayer {
     });
 
     this.gainNodes.forEach(gain=> gain.gain.setValueAtTime(0, audioContext.currentTime + pitchDurationInSeconds));
-    setTimeout(() => this.isPlaying = false, pitchDurationInSeconds / 1000);
   }
 }
 

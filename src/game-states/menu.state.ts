@@ -26,7 +26,7 @@ class MenuState implements State {
     ], (returnIndex: number) => {
       switch (returnIndex) {
         case 0:
-          gameStateMachine.setState('level-transition', 3);
+          gameStateMachine.setState('level-transition', this.levelNumber);
           break;
         case 1:
           if ((masterGainNode.gain.value = masterGainNode.gain.value === 1 ? 0 : 1) === 1){

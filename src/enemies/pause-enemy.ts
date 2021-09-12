@@ -4,7 +4,7 @@ import { assetEngine } from "../core/asset-engine-instance";
 export class PauseEnemy extends Enemy {
   pausedFor = 0;
   startingY?: number;
-  speed = 0.6;
+  speed = 0.75;
 
   constructor(gridPosition: number, colorNum: number) {
     super(gridPosition, colorNum, [
@@ -20,7 +20,7 @@ export class PauseEnemy extends Enemy {
       this.startingY = this.position.y;
     }
 
-    if (this.position.y >= this.startingY + 270 && this.pausedFor < 10) {
+    if (this.position.y >= this.startingY + 270 && this.pausedFor < 8) {
       this.pausedFor += 0.0167;
     } else {
       this.position.y += this.speed;

@@ -4,7 +4,7 @@ export class WaveEnemy extends Enemy {
   startingX?: number;
   momentum = 0;
   isMovingLeft = false;
-  speed = 0.6;
+  speed = 0.75;
 
   constructor(gridPosition: number, colorNum: number, isMovingLeft?: boolean) {
     super(gridPosition, colorNum, [
